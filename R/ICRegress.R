@@ -2353,7 +2353,11 @@ test_children <- function(dna_pool=children,
         smallest_gap <- min(abs( gap_from_Y))
         best <- which( abs( gap_from_Y)==    smallest_gap)
         solution_set <-   which( abs( gap_from_Y) <= closeness_threshold) #indices, not case IDs!
-        attr(solution_set, 'names') <- NULL
+       #if the solution set is not consisting of at least two points, set it to integer(0)
+        if (length(solution_set)<2){
+          solution_set <- vector("integer",0)
+        }
+         attr(solution_set, 'names') <- NULL
 
         #store the solutions (cases as rows) for this particular dna strand (columns)
         solution_table[solution_set,dna] <- 1
@@ -2403,6 +2407,11 @@ test_children <- function(dna_pool=children,
     #store the solutions (cases as rows, dna strands as columns)
     solution_table <- matrix(0, nrow=nrow(input_data), ncol=nrow(dna_pool))
     small_solution_set <- large_solution_set_plotting$new_matrix_index
+
+    if (length(small_solution_set)<2){
+      small_solution_set <- vector("integer",0)
+    }
+
     solution_table[small_solution_set] <- 1
 
 
