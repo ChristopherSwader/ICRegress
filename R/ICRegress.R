@@ -1119,6 +1119,7 @@ rownames(newdf) <- save_row_names
 #' @param dv The dependent variable. If not specified, the first column is used.
 #' @param ivs The independent variable. If not specified, all variables besides the dv are used.
 #' @param starting_pop Starting sets of random coefficients (population, children) in first generation of genetic algorithm.
+#' @param force_subgroup_n The number of model-relevant subgroups may be manually set with an integer, thus ignoring the automatic identification of of the ideal number of subgroups. The composition of chosen n subgroups will still be automatically determined.
 #' @keywords ICR
 #' @examples
 #'  icr_results <- icr(generations=400,
@@ -1144,7 +1145,9 @@ icr <- function(generations=c(1000),
                           mutation_rate=.2,
                           n_children=2,
                           death_by_ageing =60,
-                          nelitism=10){
+                          nelitism=10,
+                          force_subgroup_n=NA){
+
 
   options(scipen=999)
 
@@ -1184,7 +1187,9 @@ dummy_set_ivs <- dummy_set_ivs[ !dummy_set_ivs==dv]
   which_not_dummies <- which(!dummy_sets)
   #!sapply(df, class) == 'character'
 
-  df[,which_not_dummies] <- sapply(df[,which_not_dummies], rescale)
+
+
+  df[,which_not_dummies] <- sapply(df[,which_not_dummies], scales::rescale)
   df <- data.frame(df)
 
   #cut out any rows with NA values in any column
@@ -1317,6 +1322,7 @@ dummy_set_ivs <- dummy_set_ivs[ !dummy_set_ivs==dv]
                                      nelitism = nelitism)
 
 
+
     # saveRDS(result_training,paste0("./testing/",i, " training results.RDS"))
     #
     ### IF no training. training is NA###
@@ -1348,6 +1354,8 @@ dummy_set_ivs <- dummy_set_ivs[ !dummy_set_ivs==dv]
       #only condense if more than one model was found!
       ###IF more than one training model found###
       if (nrow(result_training$dna_pool)>1){
+
+        if (is.na(force_subgroup_n)){
         condense_max <- 6
         condense_min <- 2
         parameter_check <- 1:(length(condense_min:condense_max)+1)
@@ -1357,6 +1365,19 @@ dummy_set_ivs <- dummy_set_ivs[ !dummy_set_ivs==dv]
         minimum_models <- 2
         best_check_list <- list()
         condense_possibilities <- vector("list", length =length(parameter_check) )
+        }else{
+          #this is for manually setting the number of subgroups to return
+
+          parameter_check <- 1
+          condense_number <- force_subgroup_n
+          method_style <- "best"
+          best_check_ratio <- 0
+          minimum_models <- 2
+          best_check_list <- list()
+          condense_possibilities <- vector("list", length =length(parameter_check) )
+
+        }
+
 
         for (i in parameter_check){
 
