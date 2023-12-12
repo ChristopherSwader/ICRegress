@@ -1120,6 +1120,7 @@ rownames(newdf) <- save_row_names
 #' @param ivs The independent variable. If not specified, all variables besides the dv are used.
 #' @param starting_pop Starting sets of random coefficients (population, children) in first generation of genetic algorithm.
 #' @param force_subgroup_n The number of model-relevant subgroups may be manually set with an integer, thus ignoring the automatic identification of of the ideal number of subgroups. The composition of chosen n subgroups will still be automatically determined.
+#' @param re_use_variables Allows the same variable to be split multiple times if possible and relevant during the agglomeration tree step.
 #' @keywords ICR
 #' @examples
 #'  icr_results <- icr(generations=400,
@@ -1146,7 +1147,8 @@ icr <- function(generations=c(1000),
                           n_children=2,
                           death_by_ageing =60,
                           nelitism=10,
-                          force_subgroup_n=NA){
+                          force_subgroup_n=NA,
+                          re_use_variables=F){
 
 
   options(scipen=999)
@@ -1635,7 +1637,7 @@ dummy_set_ivs <- dummy_set_ivs[ !dummy_set_ivs==dv]
 
       population_tree_results <<- agglom_tree(data=streamlined_data_and_models,
                                              original_data = original_data[training_indices,],
-                                             re_use_variables = F)
+                                             re_use_variables = re_use_variables)
 
 
     }else{
