@@ -1,3 +1,5 @@
+#Notes for commit:1.  compatibility with different data forms in dataset enhanced.
+# 2. Agglomeration tree was adapted to only function with the correct number of independent variables or more
 
 
 
@@ -1159,13 +1161,22 @@ icr <- function(generations=c(1000),
 
 
 
+
 tc <- "residuals"
+
+
+if (!is.na( force_subgroup_n)){
+  force_subgroup_n <- min(force_subgroup_n,length(iv)+1 )
+}else{
+  force_subgroup_n <- force_subgroup_n
+}
 
   ###data prep start
   original_variables <<- c(dv, iv)
 
   df <- input_data[,original_variables]
   dv<<-dv
+  #ivs<<-iv
   #throw error if DV is not numerical
 
 if(  is.numeric(df[,dv])){
@@ -1174,24 +1185,63 @@ if(  is.numeric(df[,dv])){
   stop("Dependent variable must be numeric.")
 }
 
+  #convert factors to character
+
+
+  which_factor <- lapply(df[,iv], is.factor)
+  #if the factors have more than two categories, convert to char. Otherwise, integer
+  which_factor <-  which_factor[which_factor==T]
+  more_than_two_cats <- sapply(unique(df), FUN = function(x) length( unique((x))))>2
+
+  factors_more_than_two <-more_than_two_cats[ names(more_than_two_cats) %in% names(which_factor) ]
+
+  if (length(which_factor)>0){
+  for (i in 1:length(which_factor)){
+    this_factor <- names(which_factor[i])
+    this_more_than_two <-   factors_more_than_two[names(factors_more_than_two)==this_factor]
+
+    if (this_more_than_two==T){
+
+      df[, iv[iv==this_factor]] <- as.character(  df[, iv[iv==this_factor]] )
+
+
+    }else{
+      df[, iv[iv==this_factor]]  <- as.integer(  df[, iv[iv==this_factor]])
+    }
+
+  }
+  }
+
+  #convert two cat variables to dummy form
+
+two_cats <- sapply(unique(df), FUN = function(x) length( unique((x))))==2
+
+#are they coded as dummies?
+correctly_coded <- lapply(df[,names(two_cats[two_cats==T])], FUN=function(x) is.integer(x) | is.numeric(x))
+if (F %in% correctly_coded){
+df[,names(correctly_coded[!unlist(correctly_coded)])] <- as.integer(as.factor(df[,names(correctly_coded[!unlist(correctly_coded)])]))
+}
+
   #now automatically find which are dummysets
 
 which_maybe_dummysets <-   sapply(df, class) == "character" |  sapply(df, class) == "factor"
 
 #now verify more than 2 categories
-more_than_two_cats <- sapply(unique(df[, which_maybe_dummysets,drop=FALSE]), FUN = function(x) length( unique((x))))>2
-which_maybe_dummysets[names(more_than_two_cats)] <- more_than_two_cats
+#more_than_two_cats <- sapply(unique(df[, which_maybe_dummysets,drop=FALSE]), FUN = function(x) length( unique((x))))>2
+which_maybe_dummysets[which_maybe_dummysets] <- more_than_two_cats[which_maybe_dummysets]
 dummy_sets <<- which_maybe_dummysets #made global because this never changes from original data
 
 
 dummy_set_ivs <- names(dummy_sets)[dummy_sets]
 dummy_set_ivs <- dummy_set_ivs[ !dummy_set_ivs==dv]
+
+
   which_not_dummies <- which(!dummy_sets)
   #!sapply(df, class) == 'character'
 
 
 
-  df[,which_not_dummies] <- sapply(df[,which_not_dummies], scales::rescale)
+  df[,which_not_dummies] <- sapply(df[,which_not_dummies], FUN = function(x) scales::rescale(as.numeric(x)))
   df <- data.frame(df)
 
   #cut out any rows with NA values in any column
@@ -1199,10 +1249,23 @@ dummy_set_ivs <- dummy_set_ivs[ !dummy_set_ivs==dv]
   df <- df[complete.cases(df),]
 
     newdf <- df
+
+if (length(dummy_set_ivs)>0){
+#cleaning category names!
+for (x in 1:length(dummy_set_ivs)){
+    this_dummy_set <- dummy_set_ivs[x]
+
+
+    df[,this_dummy_set] <- gsub(" ", "_",     df[,this_dummy_set])
+    df[,this_dummy_set]<- gsub("\\(", "_",  df[,this_dummy_set])
+    df[,this_dummy_set] <- gsub("\\)", "_",  df[,this_dummy_set])
+
+}
+
+}
+
+
     original_data <<- df #before dummy splits!
-
-
-
 
   ###Form dummysets###
     if (T %in% dummy_sets){
@@ -1249,6 +1312,12 @@ dummy_set_ivs <- dummy_set_ivs[ !dummy_set_ivs==dv]
     print("these parameters")
     print(parameter_set)
 
+
+    #new df column names fixed
+
+    colnames(newdf) <- gsub(" ", "_",        colnames(newdf) )
+    colnames(newdf) <- gsub("\\(", "_",      colnames(newdf) )
+    colnames(newdf)  <- gsub("\\)", "_",      colnames(newdf) )
 
 
 
@@ -1297,6 +1366,8 @@ dummy_set_ivs <- dummy_set_ivs[ !dummy_set_ivs==dv]
                                normal=T, #normally distributed with the following SD. If not, then this_range is used
                                this_sd=.5, #standard deviation of the coefficients.. this shoudl be tailored to the data's form.
                                this_range=c(-10, 10))
+
+
 
     ##4.  RUN TRAINING SET###
 
@@ -1358,7 +1429,12 @@ dummy_set_ivs <- dummy_set_ivs[ !dummy_set_ivs==dv]
       if (nrow(result_training$dna_pool)>1){
 
         if (is.na(force_subgroup_n)){
-        condense_max <- 6
+
+          if (re_use_variables==F){
+        condense_max <- min(6,length(iv)+1 )
+          }else{
+            condense_max <- 6
+          }
         condense_min <- 2
         parameter_check <- 1:(length(condense_min:condense_max)+1)
         condense_number <- c( condense_min:condense_max, "NULL")
@@ -1555,8 +1631,9 @@ dummy_set_ivs <- dummy_set_ivs[ !dummy_set_ivs==dv]
 
         }else{ #if condensation ends only in one model
           #ADD NAs for ICR results
-          compare_three_methods <- rbind(compare_three_methods,  c("ICR streamlined",NA, NA, NA, NA, parameter_set,1,  "only one model from condensation" ))
-          compare_three_methods <- rbind(compare_three_methods, c("ICR case-based",NA, NA, NA, NA, parameter_set,1, "only one model from condensation" ))
+
+          stop("\n Condensation ended in only one model. Use standard regression or try a different set of training parameters.")
+
 
         }
 
@@ -1635,6 +1712,9 @@ dummy_set_ivs <- dummy_set_ivs[ !dummy_set_ivs==dv]
       rownames( streamlined_data_and_models$dna_profiles) <- new_model_names
       streamlined_data_and_models$model_assignment$model <- new_model_data_order
 
+
+      #ERROR!####
+      #this is not working properly for DF3!. it does not produce a universal model as it should.
       population_tree_results <<- agglom_tree(data=streamlined_data_and_models,
                                              original_data = original_data[training_indices,],
                                              re_use_variables = re_use_variables)
@@ -1655,7 +1735,10 @@ dummy_set_ivs <- dummy_set_ivs[ !dummy_set_ivs==dv]
       if (length(population_tree_results$cutlist)>1){
 
      #this is the training data being converted into case-base assignments from population-based ones.
-        case_based_model_assignment <- population_to_case_tree(cutlist=population_tree_results$cutlist,
+
+        #make sure all columsn are included here.
+
+           case_based_model_assignment <- population_to_case_tree(cutlist=population_tree_results$cutlist,
                                                                population_data=population_tree_results$data)
 
       }else if (is.null( population_tree_results$data[1])){ #if only one model
@@ -1685,11 +1768,15 @@ dummy_set_ivs <- dummy_set_ivs[ !dummy_set_ivs==dv]
 
     #so we remove columns that are not the model and not in the newdf dataset
     if (!is.null(select_this_condensation)){
-      columns_to_keep <- c(colnames(newdf), "model")
-      case_based_model_assignment$data <- case_based_model_assignment$data[,colnames(case_based_model_assignment$data) %in% columns_to_keep]
-
+      #columns_to_keep <- c(colnames(newdf), "model")
+      model_assignments <- case_based_model_assignment$data$model
+      #case_based_model_assignment$data <- case_based_model_assignment$data[,colnames(case_based_model_assignment$data) %in% columns_to_keep]
+case_based_model_assignment$data <- streamlined_data_and_models$model_assignment
+case_based_model_assignment$data$model <- model_assignments
 
 #check number of rows!
+
+
 
       true_regression_case_based <- streamline(models=NULL,
                                                profiles=case_based_model_assignment$profiles,
@@ -1701,7 +1788,7 @@ dummy_set_ivs <- dummy_set_ivs[ !dummy_set_ivs==dv]
 
 
 
-
+ #make sure all columns appear in models and profiles
       result_training_case_based <- predict_new(models=true_regression_case_based$dna_pool,
                                                 profiles=true_regression_case_based$dna_profiles,
                                                 new_data=true_regression_case_based$model_assignment,
@@ -1720,6 +1807,7 @@ dummy_set_ivs <- dummy_set_ivs[ !dummy_set_ivs==dv]
       ## 12. Run PREDICTIONS for new cases###
 
     #  testing_set$model <- unique(population_tree_results$data$model)
+
       result_testing_case_based <- predict_new(models=true_regression_case_based$dna_pool,
                                                profiles=true_regression_case_based$dna_profiles,
                                                new_data=testing_set,
@@ -1821,7 +1909,7 @@ dummy_set_ivs <- dummy_set_ivs[ !dummy_set_ivs==dv]
 
     original_data$model <- NA
     original_data$model[training_indices] <- true_regression_case_based$model_assignment$model
-    original_data$model[-training_indices] <- assign_test_case_based$model
+    original_data$model[-training_indices] <- as.integer( assign_test_case_based$model)
 
     original_after_dummies_df <- rbind(training_set, testing_set)
     integer_rows <- as.integer(rownames(original_after_dummies_df))
@@ -1848,7 +1936,7 @@ dummy_set_ivs <- dummy_set_ivs[ !dummy_set_ivs==dv]
 
  this_sample <- original_after_dummies_df[,!cut_models]
  last_column <- ncol(this_sample)
- dv <- colnames(this_sample)[1]
+ #dv <- colnames(this_sample)[1]
  ivs <- colnames(this_sample)[2:last_column]
 
  f <- as.formula(
@@ -1878,7 +1966,8 @@ dummy_set_ivs <- dummy_set_ivs[ !dummy_set_ivs==dv]
                                      method="residuals")
 
 
-  return(list(original_data_with_new_models=original_data,  cutlist=population_tree_results$cutlist,agglomeration_tree=population_tree_results$tree_blueprint,models= true_regression_case_based$dna_pool,  model_subgroup_profiles=overall_ICR_profiles, training_results=result_training_case_based, testing_results=result_testing_case_based, simple_regression_results=result_simple_testset, training_perc_solved=result_training$discrete_percent_solved))
+
+  return(list(original_data_with_new_models=original_data, model_distribution=table(original_data$model), cutlist=population_tree_results$cutlist,agglomeration_tree=population_tree_results$tree_blueprint,models= true_regression_case_based$dna_pool,  model_subgroup_profiles=overall_ICR_profiles, training_results=result_training_case_based, testing_results=result_testing_case_based, simple_regression_results=result_simple_testset, training_perc_solved=result_training$discrete_percent_solved))
 
 
 }
@@ -2908,6 +2997,16 @@ create_profile <- function(data_after_dummies=df,
   #output. dna profiles for each model
 
 
+  # initial_levels_list <- vector("list", length(dummy_vars))
+  #
+  # for (i in 1:length(dummy_vars)){
+  #
+  #
+  #
+  #   initial_levels <-   unique(original_data[,dummy_set_ivs[i]])
+  #   initial_levels_list[[i]] <- initial_levels
+  # }
+
   if (length(dummy_vars)>0){
   save_rownames <- rownames(data_after_dummies)
 
@@ -2922,6 +3021,20 @@ this_dummy <- dummy_vars[d]
 #in every case, get FULL dummy columns for the profiles, don't leave ref categories out.
   working_df <- dummy_cols(working_df, select_columns = this_dummy, remove_first_dummy = F, ignore_na = T, remove_selected_columns = T)
   rownames(working_df) <- save_rownames
+
+
+  # missing_columns <- !unlist( lapply(initial_levels_list[[d]], FUN = function(x) T %in% grepl(x, colnames(data_after_dummies))  ))
+  #
+  # missing_categories <- initial_levels_list[[d]] [missing_columns]
+  #
+  # for (missing in 1:length(missing_categories)){
+  #   column_name <- paste0(this_dummy, "_",missing_categories[missing] )
+  #   working_df[,column_name] <- 0
+  #
+  # }
+
+
+
   }else{
 
   }
@@ -3288,7 +3401,12 @@ if (nrow(dna_pool)==1){
       this_sample <- data_with_models[data_with_models$model==model_vector[i],-ncol(data_with_models)]
       #are any of the IV's without any variation?
       sapply(lapply(data_with_models, unique), length)
-
+  colnames(this_sample) <- gsub(" ", "_", colnames(this_sample))
+  colnames(this_sample) <- gsub("\\(", "_", colnames(this_sample))
+  colnames(this_sample) <- gsub("\\)", "_", colnames(this_sample))
+ ivs <- gsub(" ", "_", ivs)
+ ivs <- gsub("\\(", "_", ivs)
+ ivs <- gsub("\\)", "_", ivs)
 
       f <- as.formula(
         paste(dv,
@@ -3879,6 +3997,13 @@ data_with_models <- model_closeness(data=data,
 
     this_sample <- data_with_models[data_with_models$model==model_vector[i],-last_column]
 
+    colnames(this_sample) <- gsub(" ", "_", colnames(this_sample))
+    colnames(this_sample) <- gsub("\\(", "_", colnames(this_sample))
+    colnames(this_sample) <- gsub("\\)", "_", colnames(this_sample))
+    ivs <- gsub(" ", "_", ivs)
+    ivs <- gsub("\\(", "_", ivs)
+    ivs <- gsub("\\)", "_", ivs)
+
 
     f <- as.formula(
       paste(dv,
@@ -4009,6 +4134,11 @@ agglom_tree <- function(data,
       }
 
 
+      #if EVERYTHING is already considered
+      # if ((F %in% already_considered)==F){
+      #   break
+      # }
+
       greatest_gap_in_similar_models_otherwise <- biggest_anova_gap(all_ivs[!already_considered], #all ivs except the one already considered . we only split each iv once for parsimony
                                                                     models[models %in% smallest_pair_gap_biggest_F], #only the key pair
                                                                     populations)
@@ -4024,6 +4154,9 @@ agglom_tree <- function(data,
 
          }
       }
+
+
+
       greatest_gap_in_similar_models_otherwise <- biggest_anova_gap(all_ivs[!already_considered], #all ivs except the one already considered . we only split each iv once for parsimony
                                                                     models[models %in% smallest_pair_gap_biggest_F], #only the key pair
                                                                     populations)
@@ -4432,7 +4565,7 @@ cut_list$original_cut <-  cut_list$cut
 #' @export
 combinatorial_columns <- function(input_data){
   #for dummy variable sets, will build their combinations, so that splits can be made properly between multiple categories (e.g. Eastern and Southern Europe vs. the rest)
-
+ #input data lacks mining column
 
   dummy_set_ivs <<- original_variables[dummy_sets]
 
@@ -4450,6 +4583,9 @@ combinatorial_columns <- function(input_data){
     initial_levels <-   unique(original_data[,dummy_set_ivs[i]])
 
 
+if (length(initial_levels)>20){
+  stop(paste0(dummy_set_ivs[i], " variable has more than 20 categories. There are too many possible combinations. Recode into fewer categories."))
+}
     combos <-  as.matrix(gtools::combinations(length(initial_levels), length(initial_levels)-1, v=initial_levels, repeats.allowed = T))
 
     this_is_duplicated <-   t(unlist(apply(combos, 1, stri_duplicated, simplify = T)))
@@ -4466,13 +4602,16 @@ combinatorial_columns <- function(input_data){
   if (length(dummy_set_ivs)>0){
     save_rownames <- rownames(input_data)
 
-   #dummy columns should be re-done, because they ones in the data have reference categories removed!
+   #dummy columns should be re-done, because the ones in the data have reference categories removed!
 #so remove dummy columns and replace with the original column
+
+    #!WHAT happened to MINING?####
+
 
     col_to_remove <- colnames(input_data)[grepl(paste0(dummy_set_ivs, collapse = "|"), colnames(input_data))]
     col_to_remove <- col_to_remove[!col_to_remove %in% dummy_set_ivs]
 
-    #all categorical variables are gone now.
+    #all categorical separate variable columns are gone now
     data_with_no_cat_variables <- input_data[,!colnames(input_data) %in% col_to_remove]
 
         if(!identical(dummy_set_ivs, intersect(dummy_set_ivs, colnames(input_data)))){
@@ -4487,13 +4626,24 @@ combinatorial_columns <- function(input_data){
 
           data_with_no_cat_variables[,dummy_set_ivs] <- this_set
         }
+
         working_df <- data_with_no_cat_variables
 
         for (d in 1:length(dummy_set_ivs) ){
         this_dummy <- dummy_set_ivs[d]
         working_df <- dummy_cols(working_df, select_columns = this_dummy, remove_first_dummy = F, ignore_na = T, remove_selected_columns = T)
 
+#now add empty columns!!
 
+        missing_columns <- !initial_levels_list[[d]] %in% unique(data_with_no_cat_variables[,this_dummy])
+
+        missing_categories <- initial_levels_list[[d]] [missing_columns]
+
+        for (missing in 1:length(missing_categories)){
+          column_name <- paste0(this_dummy, "_",missing_categories[missing] )
+working_df[,column_name] <- 0
+
+        }
 
         }
 
@@ -4749,7 +4899,10 @@ if (anova_results[[choose_me]]$F_value>=F_threshold){
 
   biggest_F <- anova_results[[choose_me]]$mean_comparison
 }else{ #lower than threshold
-  biggest_F <- NA
+
+  warning(paste0(this_iv, " split is introduced despite an F value below the threshold."))
+  biggest_F <- anova_results[[choose_me]]$mean_comparison
+  #alternative is to set biggest F to NA in this case, but then we need another way to end the tree
 
 }
 
