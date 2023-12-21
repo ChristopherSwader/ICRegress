@@ -1,6 +1,7 @@
-#Notes for commit:1.  compatibility with different data forms in dataset enhanced.
-# 2. Agglomeration tree was adapted to only function with the correct number of independent variables or more
+#Notes for commit:
 
+#fixed error in predict new related to extra columns.
+#Full model objects are now included as results of the icr() function, including significance levels, standard errors, T values, etc.
 
 
 #FUNCTION DEFINITIONS####
@@ -1967,8 +1968,7 @@ case_based_model_assignment$data$model <- model_assignments
 
 
 
-  return(list(original_data_with_new_models=original_data, model_distribution=table(original_data$model), cutlist=population_tree_results$cutlist,agglomeration_tree=population_tree_results$tree_blueprint,models= true_regression_case_based$dna_pool,  model_subgroup_profiles=overall_ICR_profiles, training_results=result_training_case_based, testing_results=result_testing_case_based, simple_regression_results=result_simple_testset, training_perc_solved=result_training$discrete_percent_solved))
-
+  return(list(original_data_with_new_models=original_data, model_distribution=table(original_data$model), cutlist=population_tree_results$cutlist,agglomeration_tree=population_tree_results$tree_blueprint,models= true_regression_case_based$dna_pool,  model_subgroup_profiles=overall_ICR_profiles, training_results=result_training_case_based, testing_results=result_testing_case_based, simple_regression_results=result_simple_testset, training_perc_solved=result_training$discrete_percent_solved, full_models=true_regression_case_based$full_models))
 
 }
 
@@ -3528,6 +3528,11 @@ if ("model" %in% colnames(new_data_matrix)){
 
 #now multiply
 
+if ("DNA_rating" %in% colnames(relevant_model_matrix)){
+
+  relevant_model_matrix <- relevant_model_matrix[,-which(colnames(relevant_model_matrix) %in% colnames("DNA_rating", "DNA_age"))]
+}
+
 
 product_matrix <- new_data_matrix*relevant_model_matrix
 actual_predictions <- rowSums(product_matrix)
@@ -3983,7 +3988,7 @@ data_with_models <- model_closeness(data=data,
   dna_pool <- data.frame(matrix(0, nrow=length(model_vector), ncol=dim(data_with_models)[2]-1))
 
   colnames(dna_pool) <- colnames(data_with_models)[-ncol(data_with_models)]
-
+colnames(dna_pool)[1] <- "Intercept"
 
   if (!is.null(models)){
   #adapted to ignore models with no cases.
@@ -3992,6 +3997,8 @@ data_with_models <- model_closeness(data=data,
     models <- models[rownames(models) %in% keep_these,]
   }
   }
+
+  full_models <- vector("list", length(model_vector))
 
   for (i in 1:length(model_vector)){
 
@@ -4013,7 +4020,7 @@ data_with_models <- model_closeness(data=data,
     true_regression <- eval(bquote(   lm(.(f), data = this_sample)   ))
 
     dna_pool[i,] <- true_regression$coefficients
-
+full_models[[i]] <- true_regression
 
   }
 #replace NA's with zero coefficients.####
@@ -4033,7 +4040,8 @@ data_with_models <- model_closeness(data=data,
 
   return(list(dna_pool=dna_pool,
               model_assignment=data_with_models,
-              dna_profiles=dna_profiles
+              dna_profiles=dna_profiles,
+              full_models=full_models
               ))
 
 }
