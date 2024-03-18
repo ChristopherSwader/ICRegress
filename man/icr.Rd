@@ -16,7 +16,11 @@ icr(
   mutation_rate = 0.2,
   n_children = 2,
   death_by_ageing = 60,
-  nelitism = 10
+  nelitism = 10,
+  force_subgroup_n = NA,
+  re_use_variables = F,
+  .tuning = F,
+  autotune_params = NULL
 )
 }
 \arguments{
@@ -33,6 +37,12 @@ icr(
 \item{dv}{The dependent variable. If not specified, the first column is used.}
 
 \item{starting_pop}{Starting sets of random coefficients (population, children) in first generation of genetic algorithm.}
+
+\item{force_subgroup_n}{The number of model-relevant subgroups may be manually set with an integer, thus ignoring the automatic identification of of the ideal number of subgroups. The composition of chosen n subgroups will still be automatically determined.}
+
+\item{re_use_variables}{Allows the same variable to be split multiple times if possible and relevant during the agglomeration tree step.}
+
+\item{autotune_params}{A list object exported from autotune(). If an autotune object is provided, it overrides the settings of solution_thresh, n_strands, starting_pop, mutation_rate, n_children, and nelitism.}
 
 \item{ivs}{The independent variable. If not specified, all variables besides the dv are used.}
 }

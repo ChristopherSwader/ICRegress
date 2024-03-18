@@ -1,10 +1,382 @@
+
 #Notes for commit:
+#1. Improved the speed of combinatorial_columns() for factors with many categories.
+#2. Full models now accurately named.
+#3. Fixed bugs which impacted prediction accuracy in predict_new().
+#4. Added an autotune() function.
+#5. Fixed problems in handling diverse input data formats.
 
-#fixed error in predict new related to extra columns.
-#Full model objects are now included as results of the icr() function, including significance levels, standard errors, T values, etc.
 
+# TO DO in future
+#1. save best result during training. and after completion, revert to best results before condensation instead of LAST results.
+
+
+#!!!FIX####
+#ICR ecological results differ from those in autotune for some reason for the same seed.?!
+
+#There is a difference between the reported starting why is the starting percent in autotune compared to autotune(), one gen in icr(), and 2 or more gens in icr()?
+  #might have to do with getting the results from the function output vs. cat
+  #might have to do with the gen loops being different for 1st gen and others.
+
+# allow breaking of variables separate times in separate branches. e.g.make this apply ONLY to dummy variables?
+# figure out how to handle controls. suggest variables that do not enter agglom tree but that enter the final models.
+# allow training to autobreak or cut after certain % achievement or growth
+
+# training R-squared fix it...
+#how to fix poor models due to small sample size ?
+#.. curvilinear effect!.. count data!... solution: take insights into main model as interaction terms. highlight small sample size. use confidence intervals
+#use lm()n linear probability modeling. ....  add logistic regression...
+# glm() for logistc.
+#describe analytical procedure of comparing coefficients.
+# create argument to turn off insignificant coefficients in 'model' table?
 
 #FUNCTION DEFINITIONS####
+
+#' Autotune
+#'
+#' Generate automatically a set of tuning parameters for a particular modeling problem.
+#' @param input_data Input the same input data set as you will use for the main icr analysis.
+#' @keywords Autotune optimization parameters.
+#' @examples
+#'  test <- benchmarking(random_seeds=100001:100025, n_cases=10000)
+#' @export
+autotune <- function( input_data,
+                      dv,
+                      iv,
+                      restrict_sample=T){ #this takes a sample of the overall data and autotunes it. This seems to work as well as the whole set.
+
+
+
+#input is the data, dvs, ivs.
+#output is a set of autotune parameters that may be used as an argument for the icr() function.
+
+  # autotuning principles....
+  #a. starting_pop should always be high! should scale somehow with number of cases
+  #b. n strands should scale with number of cases as well.fewer cases means more strands possible.
+  #c. set solution thresh in relation to strand number  thresh*2 * strands ==1 #3/4ths of the strands will miss by default
+  #d. adjust solution thresh to get starting % around 40 to 50%
+    #fix it through threshold? and/or strands
+  #e. if not enough growth (to 80% or higher),
+  #f. input data should be restricted for speed? take a sample of 10k max? YES take a small sample.
+  #g. try different random seeds and check for same tuning results
+
+  #adjust mutation rate, death by ageging, nchildren, elitism
+  #add a few strands
+
+#reduce sample size for speed up.
+if (restrict_sample==T){
+
+  sample_input_data <- 1000 #this limits the size of the input data set.
+  this_sample <- sample(1:nrow(input_data), sample_input_data, replace = F)
+  input_data <- input_data[this_sample,]
+
+}
+
+n_cases <- nrow(input_data)
+
+#Determine number of starting dna strands 'starting pop'
+max_starting_pop <- 10000 #25k or 50k. How many DNA strands to start with?
+min_starting_pop <- 1000
+#starting pop ranges between 1k and 100k
+starting_pop <- round(min(max_starting_pop,max(min_starting_pop,10000000000/(n_cases^2)) ))
+
+
+
+#Determine number of surviving dna strands each generation
+max_n_strands <- 200
+min_n_strands <- 20
+n_strands <- round(min(max_n_strands,max(min_n_strands,50000000/(n_cases^2)) ))
+
+
+max_solution_thresh <- .05
+min_solution_thresh <- .0005
+solved_by_random_strands <- .1 #percentage solved by random strands... higher means wider thresh
+solution_threshold <-  min(max_solution_thresh, max(min_solution_thresh, solved_by_random_strands/(n_strands*2) ) )#these strands should hit about 40% of the theoretical solution space.
+
+
+#ADJUST!####
+min_mutation_rate <- .02
+max_mutation_rate <- .05
+#starting_mutation_rate <- .02
+mutation_vector <- seq(from=min_mutation_rate, to=max_mutation_rate, by=.01)
+
+min_n_children <- 1 # minimum number of children per couple
+max_n_children <- 3
+#starting_n_children <- 2
+n_children_vector <- c(2,3,4)
+
+min_death_by_ageing <- 50
+max_death_by_ageing <- 200
+#starting_death_by_ageing <- 80
+death_by_ageing_vector <- c(80)#, 50, 200) #makes no sense to test this with various, as gens will only be 40 or 80 in total!
+
+min_elitism <- 0
+max_elitism <- round(n_strands/2)
+#starting_elitism <- round(n_strands/5)
+elitism_vector <- c( round(n_strands/10)) #or zero, 2
+
+#now two tuning iterations... first to start at between 40 to 50%.
+#Then to learn to beyond 80%
+starting_percentage_correct <- FALSE
+
+while(starting_percentage_correct==F){
+
+
+  cat("\n\nCalculating ideal tuning for your data and variable set. Part 1.")
+  capture.output({
+
+starting_percentage_run <-  icr(generations=1, #1000 as default
+                   input_data=input_data,
+                   dv=dv,
+                   iv=iv,
+                   starting_pop=starting_pop, #1000
+                   n_strands = n_strands,
+                   mutation_rate = mutation_vector[1],
+                   solution_thresh = solution_threshold,
+                   n_children=n_children_vector[1],
+                   death_by_ageing =death_by_ageing_vector[1],
+                   nelitism=elitism_vector[1],
+                   force_subgroup_n = NA,
+                   re_use_variables=F,
+                   .tuning = T)
+  })
+
+
+
+starting_value <-  starting_percentage_run$ecological_results
+
+solved_to_strand_ratio <- starting_value/n_strands
+
+#The ratio is used in order to decide whether to change the number of strands or the threshold
+#lower limit above ratio
+lower_SSR <- 1
+upper_SSR <- 3
+
+too_small <-starting_value <40
+
+too_big <- starting_value>55
+
+#nudge factors differ to prevent equilibrium and lack of convergence
+minimize_nudge_factor_thresh <- 1.5
+minimize_nudge_factor_strands <- 1.1
+
+
+
+#perhaps try to maintain an ideal ratio of % solved per strand
+   #if too few solved per strand, increase threshold and/or decrease strands
+
+   #if too many solved per strand, decrease threshold and/or increase strands.
+  #what if I just keep strands steady, since that is tied to time complexity, and simply adjust threshold
+
+
+#if too big, drop strands!
+#if too small, increase threshold
+
+
+cat("\nStarting value is ", starting_value, "for a target between 40 and 50.")
+
+if (too_big==T){
+  gap_factor_thresh <- max(1.01,(starting_value/50)*minimize_nudge_factor_thresh) #we keep the changes less drastic
+  gap_factor_strands <- max(1.01,(starting_value/50)*minimize_nudge_factor_strands) #we keep the changes less drastic
+
+  if (solved_to_strand_ratio< lower_SSR){
+    #we remove strands in order to raise SSR lower starting percent
+
+    cat("\nCurrent solved to strand ratio is ", solved_to_strand_ratio)
+
+    n_strands <- floor( n_strands/(gap_factor_strands))
+    cat("\nNew n_strands decreased to ", n_strands)
+
+
+  }else if (solved_to_strand_ratio> upper_SSR){
+
+    #Decrease threshold (in order to lower the SSR and lower the starting percent)
+    cat("\nCurrent solved to strand ratio is ", solved_to_strand_ratio)
+
+      solution_threshold <- solution_threshold/(gap_factor_thresh)
+
+    cat("\nNew solution_threshold decreased to ", solution_threshold)
+
+
+
+
+
+  }else{
+
+    #if SSR is fine, simply adjust the threshold
+    cat("\nCurrent solved to strand ratio is ", solved_to_strand_ratio)
+
+    solution_threshold <- solution_threshold/(gap_factor_thresh)
+
+    cat("\nNew solution_threshold decreased to ", solution_threshold)
+
+
+
+  }
+
+
+
+
+
+}else if(too_small==T){
+
+  gap_factor_thresh <- min(.99,(starting_value/40)*(1/minimize_nudge_factor_thresh))
+  gap_factor_strands <- min(.99,(starting_value/40)*(1/minimize_nudge_factor_strands))
+
+
+  if (solved_to_strand_ratio< lower_SSR){
+    #if too few solved per strand, increase threshold, in order to raise the SSR and raise the starting percent
+    cat("\nCurrent solved to strand ratio is ", solved_to_strand_ratio)
+
+
+    solution_threshold <- solution_threshold/(gap_factor_thresh)
+
+    cat("\nNew solution_threshold increased to ", solution_threshold)
+
+
+
+  }else if (solved_to_strand_ratio> upper_SSR){
+
+    #increase strands (in order to lower the SSR) and increase starting percent
+    cat("\nCurrent solved to strand ratio is ", solved_to_strand_ratio)
+
+    n_strands <- ceiling( n_strands/(gap_factor_strands))
+    cat("\nNew n_strands inreased to ", n_strands)
+
+
+
+
+
+  }else{
+
+    #if SSR is fine, simply adjust the threshold
+    cat("\nCurrent solved to strand ratio is ", solved_to_strand_ratio)
+
+    solution_threshold <- solution_threshold*(gap_factor_thresh)
+
+    cat("\nNew solution_threshold is increased to ", solution_threshold)
+
+
+
+  }
+
+
+
+
+
+
+
+
+
+} else{
+  cat("\nCurrent solved to strand ratio is ", solved_to_strand_ratio)
+
+    starting_percentage_correct <- TRUE
+    cat("\nAcceptable starting value found of", starting_value)
+    cat("\nStrands", n_strands)
+    cat("\nSolution threshold", solution_threshold)
+    cat("\nStarting population", starting_pop)
+
+  }
+
+#readline(prompt="Press [enter] to continue")
+
+}#end while to fix starting percentage
+
+if (n_strands<20){
+  warning("The number of strands is lower that the recommended amount. It is suggested that you manually increase the number to at least 20 and correspondingly lower the solution threshold to compensate.")
+}
+
+
+  #Run learning routine.
+
+
+#use n_strands, starting pop, and solution_threshold that were successful.
+#achieve stable growth through
+#A. mutation_rate,
+#B. n_children, (should be limited by N strands)
+#C. death by ageing,
+#D. elitism (should be limited by N_strands)
+
+
+
+#plan... get a list of combinations of each of these possibility vectors, test them all for stability across the growth to 40 generations and from 40 to 80.
+growth_parameter_grid <- expand.grid(mutation_rate=mutation_vector, n_children=n_children_vector, death_by_ageing=death_by_ageing_vector, elitism=elitism_vector)
+growth_parameter_grid$achieved_t1 <- 0
+growth_parameter_grid$achieved_t2 <- 0
+
+generation_t_points <- c(40,80) #growth will be checked at two equidistant generational points
+#TO DO#### sample different seeds until the initial growth is sufficient.
+
+for (gen in 1:length(generation_t_points)){
+  n_generations <- generation_t_points[gen]
+
+for (combo in 1:nrow(growth_parameter_grid)){
+
+  #pull parameters out of the combination grid
+  mr <- growth_parameter_grid$mutation_rate[combo]
+  nc <- growth_parameter_grid$n_children[combo]
+  da <- growth_parameter_grid$death_by_ageing[combo]
+  el <- growth_parameter_grid$elitism[combo]
+
+
+  cat("\n\nCalculating ideal tuning for your data and variable set. Part 2.", nrow(growth_parameter_grid)*(gen-1)+combo, "of",2* nrow(growth_parameter_grid))
+
+   capture.output({
+
+    growth_run <-  icr(generations=n_generations, #1000 as default
+                                    input_data=input_data,
+                                    dv=dv,
+                                    iv=iv,
+                                    starting_pop=starting_pop, #1000
+                                    n_strands = n_strands,
+                                    mutation_rate = mr,
+                                    solution_thresh = solution_threshold,
+                                    n_children=nc,
+                                    death_by_ageing =da,
+                                    nelitism=el,
+                                    force_subgroup_n = NA,
+                                    re_use_variables=F,
+                                    .tuning = T)
+  })
+
+
+if (is.na(growth_run[1])){
+  growth_value <- NA
+}else{
+  growth_value <-growth_run$ecological_result
+
+  growth_parameter_grid[combo,4+gen ] <- growth_value
+
+}
+
+
+} #end parameter check
+
+
+} #end list of generation cut points to check
+
+#continue!!!!####
+
+
+#how to judge t1 compared to t2 growth.
+#t2 as a ratio to T1 growth?
+growth_parameter_grid$growth_value <-((growth_parameter_grid$achieved_t2- growth_parameter_grid$achieved_t1)*2+ (growth_parameter_grid$achieved_t1-starting_value))/3
+winning_parameter_set <- which(growth_parameter_grid$growth_value==max(growth_parameter_grid$growth_value))[1]
+
+
+return(list(starting_pop=starting_pop,
+            n_strands=n_strands,
+            solution_threshold=solution_threshold,
+            mutation_rate=growth_parameter_grid$mutation_rate[winning_parameter_set],
+            n_children=growth_parameter_grid$n_children[winning_parameter_set] ,
+            death_by_ageing=growth_parameter_grid$death_by_ageing[winning_parameter_set],
+            elitism=growth_parameter_grid$elitism[winning_parameter_set]))
+
+
+}
+
+
 
 #' Benchmarking
 #'
@@ -1124,6 +1496,7 @@ rownames(newdf) <- save_row_names
 #' @param starting_pop Starting sets of random coefficients (population, children) in first generation of genetic algorithm.
 #' @param force_subgroup_n The number of model-relevant subgroups may be manually set with an integer, thus ignoring the automatic identification of of the ideal number of subgroups. The composition of chosen n subgroups will still be automatically determined.
 #' @param re_use_variables Allows the same variable to be split multiple times if possible and relevant during the agglomeration tree step.
+#' @param autotune_params A list object exported from autotune(). If an autotune object is provided, it overrides the settings of solution_thresh, n_strands, starting_pop, mutation_rate, n_children, and nelitism.
 #' @keywords ICR
 #' @examples
 #'  icr_results <- icr(generations=400,
@@ -1151,8 +1524,19 @@ icr <- function(generations=c(1000),
                           death_by_ageing =60,
                           nelitism=10,
                           force_subgroup_n=NA,
-                          re_use_variables=F){
+                          re_use_variables=F,
+                          .tuning=F,
+                          autotune_params=NULL){ #if an autotune set is provided, it overides all other manual settings
 
+  if (!is.null(autotune_params)){
+    solution_thresh <- autotune_params$solution_threshold
+    n_strands <- autotune_params$n_strands
+    starting_pop <- autotune_params$starting_pop
+    mutation_rate <- autotune_params$mutation_rate
+    n_children <- autotune_params$n_children
+    nelitism <- autotune_params$elitism
+    death_by_ageing <- autotune_params$death_by_ageing
+  }
 
   options(scipen=999)
 
@@ -1380,7 +1764,7 @@ for (x in 1:length(dummy_set_ivs)){
 #Test children call####
     result_training <- test_children(dna_pool=children,
                                      input_data=training_set,
-                                     closeness_threshold=solution_threshold, #defines how close a solution is to the found solution
+                                     closeness_threshold=so, #defines how close a solution is to the found solution
                                      generations=ge,
                                      difficulty=.8,#currently unused
                                      death_rating_thresh=0,
@@ -1389,7 +1773,7 @@ for (x in 1:length(dummy_set_ivs)){
                                      death_by_ageing = death_by_ageing,
                                      number_of_children = n_children,
                                      min_strand_solution_proportion=0, #valid solutions must cover at least this proportion of cases.
-                                     mutations = .2,
+                                     mutations = mutation_rate,
                                      mating = "random",
                                      mating_power = 2,
                                      selection = "probability",
@@ -1397,6 +1781,16 @@ for (x in 1:length(dummy_set_ivs)){
 
 
 
+
+if (.tuning==T){
+  #if this is just for tuning purposes, just exit!
+if (is.na(result_training[1])){
+  return(NA)
+}else{
+  #FIX THIS#
+  return(list(original_data_with_new_models=original_data, model_distribution=table(original_data$model), cutlist=NA,agglomeration_tree=NA,models= result_training$dna_pool,  model_subgroup_profiles=NA, ecological_results=result_training$ecological_results, testing_results=NA, simple_regression_results=NA, training_perc_solved=result_training$discrete_percent_solved, full_models=NA))
+}
+}
     # saveRDS(result_training,paste0("./testing/",i, " training results.RDS"))
     #
     ### IF no training. training is NA###
@@ -1644,10 +2038,11 @@ for (x in 1:length(dummy_set_ivs)){
 
         cat("\nNo condensations available. Use single model or adjust condensation selection parameters.\n")
 
+return("No condensations available. Use single model or adjust condensation selection parameters.")
 
         #ADD NAs for ICR results
-        compare_three_methods <- rbind(compare_three_methods,  c("ICR streamlined",NA, NA, NA, NA, parameter_set,1,  "only one model survived training" ))
-        compare_three_methods <- rbind(compare_three_methods, c("ICR case-based",NA, NA, NA, NA, parameter_set,1, "only one model survived training" ))
+       # compare_three_methods <- rbind(compare_three_methods,  c("ICR streamlined",NA, NA, NA, NA, parameter_set,1,  "only one model survived training" ))
+       # compare_three_methods <- rbind(compare_three_methods, c("ICR case-based",NA, NA, NA, NA, parameter_set,1, "only one model survived training" ))
 
 
       }  #end if related to one more more training rows
@@ -1667,10 +2062,11 @@ for (x in 1:length(dummy_set_ivs)){
 
          select_this_condensation <- NULL
       #streamlined_data_and_models <- result_training
-
+return("No condensation conducted because no models survived training")
       #ADD NAs for ICR results
-      compare_three_methods <- rbind(compare_three_methods,  c("ICR streamlined",NA, NA, NA, NA, parameter_set,0, "no models survived training" ))
-      compare_three_methods <- rbind(compare_three_methods, c("ICR case-based",NA, NA, NA, NA, parameter_set,0,"no models survived training" ))
+
+      #compare_three_methods <- rbind(compare_three_methods,  c("ICR streamlined",NA, NA, NA, NA, parameter_set,0, "no models survived training" ))
+      #compare_three_methods <- rbind(compare_three_methods, c("ICR case-based",NA, NA, NA, NA, parameter_set,0,"no models survived training" ))
 
 
     } #end if, for situation with training with no surviving models
@@ -1714,7 +2110,6 @@ for (x in 1:length(dummy_set_ivs)){
       streamlined_data_and_models$model_assignment$model <- new_model_data_order
 
 
-      #ERROR!####
       #this is not working properly for DF3!. it does not produce a universal model as it should.
       population_tree_results <<- agglom_tree(data=streamlined_data_and_models,
                                              original_data = original_data[training_indices,],
@@ -1967,8 +2362,7 @@ case_based_model_assignment$data$model <- model_assignments
                                      method="residuals")
 
 
-
-  return(list(original_data_with_new_models=original_data, model_distribution=table(original_data$model), cutlist=population_tree_results$cutlist,agglomeration_tree=population_tree_results$tree_blueprint,models= true_regression_case_based$dna_pool,  model_subgroup_profiles=overall_ICR_profiles, training_results=result_training_case_based, testing_results=result_testing_case_based, simple_regression_results=result_simple_testset, training_perc_solved=result_training$discrete_percent_solved, full_models=true_regression_case_based$full_models))
+  return(list(original_data_with_new_models=original_data, model_distribution=table(original_data$model), cutlist=population_tree_results$cutlist,agglomeration_tree=population_tree_results$tree_blueprint,models= true_regression_case_based$dna_pool,  model_subgroup_profiles=overall_ICR_profiles, ecological_results=result_training, training_results=result_training_case_based, testing_results=result_testing_case_based, simple_regression_results=result_simple_testset, training_perc_solved=result_training$discrete_percent_solved, full_models=true_regression_case_based$full_models))
 
 }
 
@@ -2398,7 +2792,7 @@ test_children <- function(dna_pool=children,
 
   ###
   input_data <- data.frame(input_data)
-
+  original_data <- input_data
 
   #initial report about dna pool individual indicators
   dna_length <-  ncol(dna_pool)-2
@@ -2614,6 +3008,17 @@ test_children <- function(dna_pool=children,
     colnames(solution_table) <- rownames(dna_pool)
     rownames(solution_table) <- rownames(input_data)
 
+    #adapt so that the solved count involves the top 20, before elites or mating selection take place.
+    #FIXed####
+
+
+    #top X strands corresponding to n_strands in icr()
+    ecological_solution_table <- as.data.frame(solution_table[,1:min(ncol(solution_table), death_number_thresh), drop=F])
+
+
+    ecologically_solved <- round(length( which (rowSums(  ecological_solution_table)>0))/nrow(ecological_solution_table)*100, digits = 2)
+
+
 
     # Elitism
 
@@ -2750,6 +3155,7 @@ for (i in 2:(ncol(solution_table)-1)){ #minus one because there is a model colum
 dna_profiles <- building_dna_profiles
 
 
+
 #and then remove the model column here because it does not make sense because models overlap
 solution_table <- solution_table[,-which(colnames(solution_table)== "model"), drop=F]
     # Only mate if not the last generation
@@ -2789,6 +3195,8 @@ solution_table <- solution_table[,-which(colnames(solution_table)== "model"), dr
     #    write.csv(dna_pool, row.names = F, paste0(getwd(), "/QUEENS/configurational regression/",format(Sys.time(), "%d-%b-%Y %H_%M_%OS4"),"DNA generation ", g,".csv"))
     #   write.csv(dna_profiles, row.names = F, paste0(getwd(),"/QUEENS/configurational regression/",format(Sys.time(), "%d-%b-%Y %H_%M_%OS4"),"DNA_profiles generation ", g,".csv"))
     #  write.csv(solution_table, row.names = F, paste0(getwd(),"/QUEENS/configurational regression/",format(Sys.time(), "%d-%b-%Y %H_%M_%OS4"),"solution_table generation ", g,".csv"))
+
+
 
     #now let them mutate and mate
     if (mating == "pam" || mating == "dam"){
@@ -2872,13 +3280,16 @@ solution_table <- solution_table[,-which(colnames(solution_table)== "model"), dr
 
 
 #   Ecological solutions below are the total solved by ANY model.
-solved <- round(length( which (rowSums(  solution_table)>0))/nrow(solution_table)*100, digits = 2)
+#collect this before elitism!
+
+#solved <- round(length( which (rowSums(  solution_table)>0))/nrow(solution_table)*100, digits = 2)
+
 
 #below are the model_specific solutions
  #   these_dna_active <- dna_pool[ rownames(dna_pool) %in%  rownames(dna_profiles),]
   #  solved <- predict_new(models=these_dna_active,profiles = dna_profiles , new_data = training_set)
-
-    cat("\n\n Generation", generation, "complete. Solved %:", solved, "of",nrow(input_data), "cases, with", ncol(solution_table), "DNA strands\n\n")
+ #is this percentage that same as the one exported?
+    cat("\n\n Generation", generation, "complete. Ecologically solved %:", ecologically_solved, "of",nrow(input_data), "cases, with", ncol(solution_table), "surviving DNA strands\n\n")
 
     # only for the purpose of visualization
     dna_pool_gen <-cbind(dna_pool, generation = rep(g, nrow(dna_pool)))
@@ -2890,17 +3301,19 @@ solved <- round(length( which (rowSums(  solution_table)>0))/nrow(solution_table
 
 
 #add R-squared solution
+  #and the prediction solution for the training set. The points are assigned to a model based on their closest residual values
 
 training_perc_explained <- predict_new(models=dna_pool,
                                        profiles=dna_profiles,
-                                       new_data = input_data,
+                                       new_data = original_data,
                                        assign_models = T,
                                        method = "residuals")
 
 
 
+
   # dna_evolution is only for visualization!! Deprecated.
-  return(list(dna_pool=dna_pool, dna_profiles=dna_profiles, solution_table=solution_table,  indicator_report=compare_means, dna_evolution = dna_evolution, discrete_percent_solved=training_perc_explained$discrete_percent_solved, r_squared=training_perc_explained$r_squared))
+  return(list(dna_pool=dna_pool, dna_profiles=dna_profiles, solution_table=solution_table,  indicator_report=compare_means, dna_evolution = dna_evolution, discrete_percent_solved=training_perc_explained$discrete_percent_solved, r_squared=training_perc_explained$r_squared, ecological_results=ecologically_solved))
 
 }
 
@@ -3447,14 +3860,14 @@ predict_new <- function(models=result_training$dna_pool,
 imported_data <- new_data
   #Assess the size of the input data
 
-  if (ncol(models)>ncol(profiles)){ #resize models only if it does not match profiles
-  models <- models[,1:(ncol(models)-2)]
+  if ("DNA_age" %in% colnames(models)){ #Remove DNA_age and rating from the models
+  models <- models[,-which(colnames(models) %in% c("DNA_age", "DNA_rating"))]
   }
   #this_row <- new_data[1,]*models[1,]
 
-  if (ncol(profiles)>ncol(models)){
-  profiles <- profiles[,2:ncol(profiles)] # we dont want the DV or intercept profiles
-  }
+  # if (ncol(profiles)>ncol(models)){
+  # profiles <- profiles[,2:ncol(profiles)] # we dont want the DV or intercept profiles
+  # }
 
   if (assign_models==T){
 
@@ -3530,7 +3943,7 @@ if ("model" %in% colnames(new_data_matrix)){
 
 if ("DNA_rating" %in% colnames(relevant_model_matrix)){
 
-  relevant_model_matrix <- relevant_model_matrix[,-which(colnames(relevant_model_matrix) %in% colnames("DNA_rating", "DNA_age"))]
+  relevant_model_matrix <- relevant_model_matrix[,-which(colnames(relevant_model_matrix) %in% c("DNA_rating", "DNA_age"))]
 }
 
 
@@ -4022,10 +4435,12 @@ colnames(dna_pool)[1] <- "Intercept"
     dna_pool[i,] <- true_regression$coefficients
 full_models[[i]] <- true_regression
 
+
   }
 #replace NA's with zero coefficients.####
   dna_pool[ is.na(dna_pool)] <- 0
   rownames(dna_pool) <-as.character( model_vector)
+  names(full_models) <- as.character( model_vector)
 
   #create profiles using function here!
 
@@ -4591,8 +5006,8 @@ combinatorial_columns <- function(input_data){
     initial_levels <-   unique(original_data[,dummy_set_ivs[i]])
 
 
-if (length(initial_levels)>20){
-  stop(paste0(dummy_set_ivs[i], " variable has more than 20 categories. There are too many possible combinations. Recode into fewer categories."))
+if (length(initial_levels)>10){
+  stop(paste0(dummy_set_ivs[i], " variable has more than 10 categories. There are too many possible combinations. Recode into fewer categories."))
 }
     combos <-  as.matrix(gtools::combinations(length(initial_levels), length(initial_levels)-1, v=initial_levels, repeats.allowed = T))
 
@@ -4670,13 +5085,20 @@ working_df[,column_name] <- 0
 
     for (d2 in 1:length(dummy_set_ivs)){
     these_columns <-  paste0( dummy_set_ivs[d2], "_", initial_levels_list[[d2]])
+    df_these_columns <-  dummy_df[,these_columns, drop=F]
     combos <- combos_list[[d2]]
 
-    for (combo in 1:nrow(combos)){
-      this_combo <-  combos[combo,][!is.na(combos[combo,])]
-      combo_subset <- dummy_df[,these_columns[ grepl(paste0(this_combo, collapse="|"), these_columns)], drop=F]
+
+
+ combos <- apply(combos,1,  FUN = function(x) x[!is.na(x)])
+
+
+
+    for (combo in 1:length(combos)){
+      this_combo <-  combos[[combo]]
+      combo_subset <- df_these_columns[, grepl(paste0(this_combo, collapse="|"), these_columns), drop=F]
       this_new_colname <- paste0(c( dummy_set_ivs[d2], "_", paste0(this_combo, collapse="_OR_")), collapse="")
-      new_values <- apply(combo_subset,1, FUN = function(x) as.integer(1 %in% x))
+      new_values <-  as.integer(rowSums(combo_subset)>0)
 
       if (this_new_colname %in% colnames(dummy_df)){
 
