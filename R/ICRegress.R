@@ -1,33 +1,21 @@
 
 #Notes for commit:
-#1. Improved the speed of combinatorial_columns() for factors with many categories.
-#2. Full models now accurately named.
-#3. Fixed bugs which impacted prediction accuracy in predict_new().
-#4. Added an autotune() function.
-#5. Fixed problems in handling diverse input data formats.
-
+#1. Fixed the reporting of the ecologically solved solution percentage.
+#2. Increased algo robustness for diverse data formats
+#3. Fixed a problem with random seed reproducibility with autotune().
+#4. The algo now saves the best result during training. and after completion, it reverts to the best result before condensation instead of LAST results.
+#5. An optimization of training time was performed.
 
 # TO DO in future
-#1. save best result during training. and after completion, revert to best results before condensation instead of LAST results.
+#1. allow breaking of variables separate times in separate branches where relevant.
+#2. Add a parameter to handle controls: Variables that do not enter agglom tree but that enter the final models.
+#3. Allow training to autobreak or cut after certain % achievement or growth
 
-
-#!!!FIX####
-#ICR ecological results differ from those in autotune for some reason for the same seed.?!
-
-#There is a difference between the reported starting why is the starting percent in autotune compared to autotune(), one gen in icr(), and 2 or more gens in icr()?
-  #might have to do with getting the results from the function output vs. cat
-  #might have to do with the gen loops being different for 1st gen and others.
-
-# allow breaking of variables separate times in separate branches. e.g.make this apply ONLY to dummy variables?
-# figure out how to handle controls. suggest variables that do not enter agglom tree but that enter the final models.
-# allow training to autobreak or cut after certain % achievement or growth
-
-# training R-squared fix it...
-#how to fix poor models due to small sample size ?
+#Other
+# training R-squared. Verify it
+# how to address small sample sizes in subgroups ?
 #.. curvilinear effect!.. count data!... solution: take insights into main model as interaction terms. highlight small sample size. use confidence intervals
-#use lm()n linear probability modeling. ....  add logistic regression...
-# glm() for logistc.
-#describe analytical procedure of comparing coefficients.
+# in Vignette describe analytical procedure of comparing coefficients.
 # create argument to turn off insignificant coefficients in 'model' table?
 
 #FUNCTION DEFINITIONS####
@@ -43,8 +31,8 @@
 autotune <- function( input_data,
                       dv,
                       iv,
-                      restrict_sample=T){ #this takes a sample of the overall data and autotunes it. This seems to work as well as the whole set.
-
+                      restrict_sample=T,
+                      random_seed){ #this takes a sample of the overall data and autotunes it. This seems to work as well as the whole set.
 
 
 #input is the data, dvs, ivs.
@@ -62,6 +50,8 @@ autotune <- function( input_data,
 
   #adjust mutation rate, death by ageging, nchildren, elitism
   #add a few strands
+
+
 
 #reduce sample size for speed up.
 if (restrict_sample==T){
@@ -122,9 +112,11 @@ starting_percentage_correct <- FALSE
 while(starting_percentage_correct==F){
 
 
-  cat("\n\nCalculating ideal tuning for your data and variable set. Part 1.")
-  capture.output({
+  cat("\n\nCalculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.")
+#Part 1####
 
+   capture.output({
+set.seed(random_seed)
 starting_percentage_run <-  icr(generations=1, #1000 as default
                    input_data=input_data,
                    dv=dv,
@@ -320,8 +312,8 @@ for (combo in 1:nrow(growth_parameter_grid)){
   el <- growth_parameter_grid$elitism[combo]
 
 
-  cat("\n\nCalculating ideal tuning for your data and variable set. Part 2.", nrow(growth_parameter_grid)*(gen-1)+combo, "of",2* nrow(growth_parameter_grid))
-
+  cat("\n\nCalculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism.", nrow(growth_parameter_grid)*(gen-1)+combo, "of",2* nrow(growth_parameter_grid))
+##Part 2####
    capture.output({
 
     growth_run <-  icr(generations=n_generations, #1000 as default
@@ -356,7 +348,7 @@ if (is.na(growth_run[1])){
 
 } #end list of generation cut points to check
 
-#continue!!!!####
+
 
 
 #how to judge t1 compared to t2 growth.
@@ -371,7 +363,8 @@ return(list(starting_pop=starting_pop,
             mutation_rate=growth_parameter_grid$mutation_rate[winning_parameter_set],
             n_children=growth_parameter_grid$n_children[winning_parameter_set] ,
             death_by_ageing=growth_parameter_grid$death_by_ageing[winning_parameter_set],
-            elitism=growth_parameter_grid$elitism[winning_parameter_set]))
+            elitism=growth_parameter_grid$elitism[winning_parameter_set],
+            growth_parameter_grid=growth_parameter_grid))
 
 
 }
@@ -600,7 +593,7 @@ rownames(newdf) <- save_row_names
     solution_threshold <<- so
 
 
-#Test children call####
+##Test children call####
     result_training <- test_children(dna_pool=children,
                                      input_data=training_set,
                                      closeness_threshold=solution_threshold, #defines how close a solution is to the found solution
@@ -1542,7 +1535,25 @@ icr <- function(generations=c(1000),
 
   input_data <- data.frame(input_data)
 
+  #remove all special characters from columns and cells
 
+
+
+which_cols_char <-   sapply(input_data, class) %in% c('character')
+which_cols_char <- which(which_cols_char==T)
+
+#removing all nonstandard characters as values
+for (this_col in 1:length(which_cols_char)){
+
+  input_data[,which_cols_char[ this_col]] <-  gsub('[[:punct:] ]+',' ',  input_data[,which_cols_char[ this_col]] )
+
+  }
+
+#which_cols_factor <-  sapply(input_data, class) %in% c('factor')
+
+
+
+#lapply(input_data, FUN = function(x)  gsub('[[:punct:] ]+',' ',x))[1]
 
 
 
@@ -1761,7 +1772,7 @@ for (x in 1:length(dummy_set_ivs)){
 
     solution_threshold <<- so
 
-#Test children call####
+    #Test children call####
     result_training <- test_children(dna_pool=children,
                                      input_data=training_set,
                                      closeness_threshold=so, #defines how close a solution is to the found solution
@@ -1777,6 +1788,7 @@ for (x in 1:length(dummy_set_ivs)){
                                      mating = "random",
                                      mating_power = 2,
                                      selection = "probability",
+                                     rem_doppleganger=T,
                                      nelitism = nelitism)
 
 
@@ -2814,6 +2826,11 @@ test_children <- function(dna_pool=children,
 
   generation <- 0
 
+  #capture best results over the course of all generations
+
+  best_ecological <- vector("list", length=0)
+  best_ecological$best_percent <- 0
+
   #need raw DNA strings without the ending two columns
 
   for (g in 1:generations){
@@ -2838,7 +2855,10 @@ test_children <- function(dna_pool=children,
 
     if (g==1){ #if the first generation, run through iteratively, because the matrices will be too big. Otherwise, use matrix operations
      cat("\n Running first generation. This may take a while. Further generations will be faster.")
-        solution_table <- matrix(0, nrow=nrow(input_data), ncol=nrow(dna_pool))
+
+
+
+       solution_table <- matrix(0, nrow=nrow(input_data), ncol=nrow(dna_pool))
 #
         #put aside dna-string traickig information for the dna pool
         dna_tracking <- dna_pool[,(ncol(dna_pool)-1):ncol(dna_pool)]
@@ -2873,7 +2893,6 @@ test_children <- function(dna_pool=children,
       } #end DNA loop
 
     }else{ #for every generation but the first
-
 
 
 
@@ -2992,6 +3011,7 @@ test_children <- function(dna_pool=children,
       return(NA)
     }
 
+
     dna_pool <- dna_pool[which_saved,]
 
     solution_table <- as.data.frame(  solution_table[,which_saved])
@@ -3008,9 +3028,8 @@ test_children <- function(dna_pool=children,
     colnames(solution_table) <- rownames(dna_pool)
     rownames(solution_table) <- rownames(input_data)
 
-    #adapt so that the solved count involves the top 20, before elites or mating selection take place.
-    #FIXed####
 
+#ecological solution####
 
     #top X strands corresponding to n_strands in icr()
     ecological_solution_table <- as.data.frame(solution_table[,1:min(ncol(solution_table), death_number_thresh), drop=F])
@@ -3018,9 +3037,17 @@ test_children <- function(dna_pool=children,
 
     ecologically_solved <- round(length( which (rowSums(  ecological_solution_table)>0))/nrow(ecological_solution_table)*100, digits = 2)
 
+    #save best ecological result here?
+
+    if (ecologically_solved > best_ecological$best_percent){
+      best_ecological$best_percent <- ecologically_solved
+      best_ecological$dna_pool <- dna_pool[1:min(ncol(solution_table), death_number_thresh), drop=F,]
+      best_ecological$ecological_solution_table <- ecological_solution_table
 
 
-    # Elitism
+    }
+
+    # Elitism####
 
     which_elit <- NULL
     solution_table_elit <- solution_table
@@ -3035,7 +3062,7 @@ if (nrow(dna_pool)>1){
       #remove all rows solved by this elite
       these_rows <-       which(colnames(solution_table_elit)== this_elit)
 
-
+#what is done with this solution table?
       solution_table_elit <- solution_table_elit[solution_table_elit[,these_rows] != 1,]
 
       #populate this with model names only!! not indices
@@ -3050,7 +3077,7 @@ if (nrow(dna_pool)>1){
 }else{
   dna_pool_noelit <- dna_pool
 }
-
+#Model survival####
     #save models based on threshold (only the top x number)
 
     if(selection == "threshold" | g==generations){
@@ -3103,62 +3130,9 @@ if (nrow(dna_pool)>1){
     dna_pool <- dna_pool[rownames(dna_pool) %in% which_selected,,drop=F]
     solution_table <- as.data.frame(solution_table[,colnames(solution_table) %in% which_selected, drop=F])
 
-    #we create the dna profiles here.
 
-# we start with the first column and then loop through the others
-
-    solution_table$model <- solution_table[,1]
-
-    building_dna_profiles <-    create_profile(data_after_dummies=df_full_dummies[training_indices,],
-                                               model_assignment_data=solution_table,
-                                               dummy_vars=original_variables[dummy_sets],
-                                               model_labels = colnames(solution_table)[1])
-
-
-
-#filling in remaining models
-if (ncol(solution_table)>2){
-for (i in 2:(ncol(solution_table)-1)){ #minus one because there is a model column for this solution table
-
-
-   solution_table$model <- solution_table[,i]
-
-  adding_dna_profiles <-    create_profile(data_after_dummies=df_full_dummies[training_indices,],
-                                             model_assignment_data=solution_table,
-                                             dummy_vars=original_variables[dummy_sets],
-                                             model_labels = colnames(solution_table)[i])
-
-
-  building_dna_profiles <- rbind(building_dna_profiles, adding_dna_profiles)
-
-}
-
-
-
-  #the cases have overlapping profiles at this point because multiple models solve multiple cases.
-  #so the dnaprofiles indeed need to be built column by column
-
-  #this leaves some cases without a model of course
-
-
-
-  }else{ #if there is only one model, assign it to all cases
-  solution_table$model <- 1
-
-
-  building_dna_profiles <-    create_profile(data_after_dummies=df_full_dummies[training_indices,],
-                                             model_assignment_data=solution_table,
-                                             dummy_vars=original_variables[dummy_sets],
-                                             model_labels = colnames(solution_table)[1])
-}
-
-dna_profiles <- building_dna_profiles
-
-
-
-#and then remove the model column here because it does not make sense because models overlap
-solution_table <- solution_table[,-which(colnames(solution_table)== "model"), drop=F]
-    # Only mate if not the last generation
+#Mating####
+# Only mate if not the last generation
     if (!g==generations){
     # If positive assortative mating is used:
     # aim is to make it more likely for models to mate with other models that are close to them
@@ -3252,6 +3226,7 @@ solution_table <- solution_table[,-which(colnames(solution_table)== "model"), dr
     dna_pool <- dna_pool[which_saved,]
     } #ends if statement for implementing mating if not last round.
 
+#Remove doppelgangers####
     if (rem_doppleganger==T){ #remove dopplegangers
 
 
@@ -3261,10 +3236,10 @@ solution_table <- solution_table[,-which(colnames(solution_table)== "model"), dr
       which_saved <- which(original_dna %in% which_unique)
 
       dna_pool <- dna_pool[which_saved,]
-
-      if (length(which_saved)<=dim(dna_profiles)[2]){
-            dna_profiles <- dna_profiles[which_saved,]
-      }
+#
+#       if (length(which_saved)<=dim(dna_profiles)[2]){
+#             dna_profiles <- dna_profiles[which_saved,]
+#       }
 
 
 
@@ -3279,29 +3254,91 @@ solution_table <- solution_table[,-which(colnames(solution_table)== "model"), dr
     #just use the trimmed down solution table!#
 
 
-#   Ecological solutions below are the total solved by ANY model.
-#collect this before elitism!
-
-#solved <- round(length( which (rowSums(  solution_table)>0))/nrow(solution_table)*100, digits = 2)
 
 
-#below are the model_specific solutions
- #   these_dna_active <- dna_pool[ rownames(dna_pool) %in%  rownames(dna_profiles),]
-  #  solved <- predict_new(models=these_dna_active,profiles = dna_profiles , new_data = training_set)
- #is this percentage that same as the one exported?
+
     cat("\n\n Generation", generation, "complete. Ecologically solved %:", ecologically_solved, "of",nrow(input_data), "cases, with", ncol(solution_table), "surviving DNA strands\n\n")
 
     # only for the purpose of visualization
-    dna_pool_gen <-cbind(dna_pool, generation = rep(g, nrow(dna_pool)))
-    dna_evolution <- rbind(dna_evolution, dna_pool_gen)
+#    dna_pool_gen <-cbind(dna_pool, generation = rep(g, nrow(dna_pool)))
+#    dna_evolution <- rbind(dna_evolution, dna_pool_gen)
+dna_evolution <- NA
+
   }#end generation loop
 
+#Output the best performance of all generations####
 
+  cat("\n\n ***Training complete. Best ecological performance across generations was %:", best_ecological$best_percent,"***\n\n")
+
+
+
+
+  ##Dna profile building####
+  #ONLY NEEDED FOR LAST GENERATION?!
+
+  #we create the dna profiles here.
+solution_table <- best_ecological$ecological_solution_table
+
+  # we start with the first column and then loop through the others
+
+  solution_table$model <- solution_table[,1]
+
+
+  building_dna_profiles <-    create_profile(data_after_dummies=df_full_dummies[training_indices,],
+                                             model_assignment_data=solution_table,
+                                             dummy_vars=original_variables[dummy_sets],
+                                             model_labels = colnames(solution_table)[1])
+
+
+
+  #filling in remaining models
+  if (ncol(solution_table)>2){
+    for (i in 2:(ncol(solution_table)-1)){ #minus one because there is a model column for this solution table
+
+
+      solution_table$model <- solution_table[,i]
+
+      adding_dna_profiles <-    create_profile(data_after_dummies=df_full_dummies[training_indices,],
+                                               model_assignment_data=solution_table,
+                                               dummy_vars=original_variables[dummy_sets],
+                                               model_labels = colnames(solution_table)[i])
+
+
+      building_dna_profiles <- rbind(building_dna_profiles, adding_dna_profiles)
+
+    }
+
+
+
+    #the cases have overlapping profiles at this point because multiple models solve multiple cases.
+    #so the dnaprofiles indeed need to be built column by column
+
+    #this leaves some cases without a model of course
+
+
+
+  }else{ #if there is only one model, assign it to all cases
+    solution_table$model <- 1
+
+
+    building_dna_profiles <-    create_profile(data_after_dummies=df_full_dummies[training_indices,],
+                                               model_assignment_data=solution_table,
+                                               dummy_vars=original_variables[dummy_sets],
+                                               model_labels = colnames(solution_table)[1])
+  }
+
+  dna_profiles <- building_dna_profiles
+
+
+
+  #and then remove the model column here because it does not make sense because models overlap
+  solution_table <- solution_table[,-which(colnames(solution_table)== "model"), drop=F]
 
 
 
 #add R-squared solution
   #and the prediction solution for the training set. The points are assigned to a model based on their closest residual values
+dna_pool <- best_ecological$dna_pool
 
 training_perc_explained <- predict_new(models=dna_pool,
                                        profiles=dna_profiles,
@@ -3313,7 +3350,7 @@ training_perc_explained <- predict_new(models=dna_pool,
 
 
   # dna_evolution is only for visualization!! Deprecated.
-  return(list(dna_pool=dna_pool, dna_profiles=dna_profiles, solution_table=solution_table,  indicator_report=compare_means, dna_evolution = dna_evolution, discrete_percent_solved=training_perc_explained$discrete_percent_solved, r_squared=training_perc_explained$r_squared, ecological_results=ecologically_solved))
+  return(list(dna_pool=dna_pool, dna_profiles=dna_profiles, solution_table=solution_table,   dna_evolution = dna_evolution, discrete_percent_solved=best_ecological$best_percent, r_squared=training_perc_explained$r_squared, ecological_results=ecologically_solved))
 
 }
 
