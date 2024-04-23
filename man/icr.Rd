@@ -20,7 +20,9 @@ icr(
   force_subgroup_n = NA,
   re_use_variables = F,
   .tuning = F,
-  autotune_params = NULL
+  autotune_params = NULL,
+  max_n_condensations = 6,
+  force_n_condensation = NULL
 )
 }
 \arguments{

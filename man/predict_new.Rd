@@ -11,7 +11,8 @@ predict_new(
   closeness_threshold = solution_threshold,
   assign_models = T,
   method = "case-based",
-  cutlist = NA
+  cutlist = NA,
+  dv = T
 )
 }
 \description{
