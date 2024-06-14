@@ -1,19 +1,10 @@
 
-#Notes for commit (*Beta* Package ICRegress Version: 0.0.0.9001):
-#1. Dev version numbers for the package are now tracked and updated
-#2. Refinements made to autotune() to enhance performance of generated parameters.
-#3. Users can now select the maximum number of condensations instead of it being hard coded at 6 through the max_n_condensations parameter in icr().
-#4. Users can now force condensations at a particular number of final models (if that is possible).
-#5. In icr(), in the condensation phase, the 'illegal correlation' threshold is now dynamic, depending on the model correlation distribution. This results in a greater number of models being maintained in the models in certain cases.
-#6. In icr(), mechanism for choosing the best condensation is improved.
-#7. Added predict.icr() method.
-#8. Enhanced compability with different data formats.
-#9. A quick start vignette has been added with instructions about how to use autotune. The main vignette will be updated later (with further testing).
-
-
-
+#Notes for commit (*Beta* Package ICRegress Version: 0.0.0.9002):
+#1. Improved compatability with various user data formats.
 
 # TO DO in future
+
+#0. !FIXING benchmarking! adding linear model trees####
 #1. allow breaking of variables separate times in separate branches where relevant.
 #2. Add a parameter to handle controls: Variables that do not enter agglom tree but that enter the final models.
 #3. Allow training to autobreak or cut after certain % achievement or growth
@@ -432,8 +423,8 @@ benchmarking <- function( random_seeds=c(100001:100050),#:100050, #parameter for
                           nelitism=10){
 
 
-
-stop("Function not currently in working order.")
+browser()
+#stop("Function not currently in working order.")
 
 
   n_parameters <- 8
@@ -480,8 +471,8 @@ stop("Function not currently in working order.")
   #number of combinations
   p_number <- length(random_seeds)*
     length(generations)*
-    length(solution_thresh)*
-    length(n_strands)*
+    length(solution_thresh)* #based on tuning
+    length(n_strands)* #based on tuning
     length(real_models)*
     length(n_IVs)*
     length(error_sd)*
@@ -491,11 +482,15 @@ stop("Function not currently in working order.")
                         n_strands, real_models, n_IVs,
                         error_sd, test_set_model_closeness)
 
+
+
+  browser()
+
   set.seed(774411)
 par_results <-  foreach(i = 1:p_number, .combine = rbind) %dorng% {
 
 
-
+browser()
 
 
     ra <- combos$Var1[i]
@@ -585,508 +580,53 @@ rownames(newdf) <- save_row_names
     #remove the models from the sample data
 
     newdf <- newdf[,!colnames(newdf)=="model"]
-
-
-
-
-    ##2. SPLIT DATA INTO TRAINING AND TEST SETS###
-    #newdf <- sample.data$data
-    training_proportion <- 0.6
-    training_set_N <- round(nrow(newdf)*training_proportion)
-    training_indices <<- sample(nrow(newdf), training_set_N, replace=F)
-    training_set <<- as.data.frame(newdf[training_indices, ])
-    testing_set <<- as.data.frame(newdf[-training_indices, ])
-
-
-    ##3. SPAWN CHILDREN###
-    children <- children_spawn(n_children= starting_population,#0 #500 was used in parameter testing,
-                               dna_length=ncol(newdf), #this should be the correct number of columns. We need one coefficient for every IV column (including dummies) and one forthe intercept (the DV column)
-                               col_names=c('intercept',colnames(newdf)[2:length(colnames(newdf))]), #the DV name column is replaced with 'intercept'
-                               normal=T, #normally distributed with the following SD. If not, then this_range is used
-                               this_sd=.5, #standard deviation of the coefficients.. this shoudl be tailored to the data's form! .25 is a good default
-                               this_range=c(-10, 10))
-
-    ##4.  RUN TRAINING SET###
-
-    cat("Running training set \n")
-
-    solution_threshold <<- so
-
-
-##Test children call####
-    result_training <- test_children(dna_pool=children,
-                                     input_data=training_set,
-                                     closeness_threshold=solution_threshold, #defines how close a solution is to the found solution
-                                     generations=ge,
-                                     difficulty=.8,#currently unused
-                                     death_rating_thresh=0,
-                                     death_number_thresh=ns,
-                                     uniqueness_power=8,
-                                     death_by_ageing = death_by_ageing,
-                                     number_of_children = n_children,
-                                     min_strand_solution_proportion=0, #valid solutions must cover at least this proportion of cases.
-                                     mutations = mutation_rate,
-                                     mating = "random",
-                                     mating_power = 2,
-                                     selection = "probability",
-                                     nelitism = nelitism)
-
-    # print("training results")
-
-    if (dir.exists("testing")){
-
-    }else{
-      dir.create("testing")
-    }
-
-  #  saveRDS(result_training,paste0("./testing/",i, " training results.RDS"))
-
-    ### IF no training. training is NA###
-    if (!is.na(result_training[1])){ #if the dna did not die out, then continue with condensation ONLY
-
-
-
-      assign_after_training <- model_closeness(data = training_set, result_training$dna_profiles,
-                                               models = result_training$dna_pool ,
-                                               method = tc)
-
-
-      model_plot(data_with_models=assign_after_training, label = "Post training",
-                 models = sample.data$models,
-                 base_line_plot = F,
-                 turned_on = detailed_plots_on,
-                 X_variable = 1,
-                 local_regression_line = T)
-
-
-
-
-
-      ##5. CONDENSE Training models, then streamline, and then re-run training set and try test set###
-      #this is all linked together into a loop for troubleshooting and optimizing.. to find the best condensation-streamlining combination
-
-      #only condense if more than one model was found!
-      ###IF more than one training model found###
-      if (nrow(result_training$dna_pool)>1){
-        condense_max <- 6
-        condense_min <- 2
-        parameter_check <- 1:(length(condense_min:condense_max)+1)
-        condense_number <- c( condense_min:condense_max, "NULL")
-        method_style <- c( rep("best", length(condense_min:condense_max)),"cluster" ) #condensation method
-        best_check_ratio <- 0
-        minimum_models <- 2
-        best_check_list <- list()
-        condense_possibilities <- vector("list", length =length(parameter_check) )
-
-        for (i in parameter_check){
-
-
-          this_condense_number <- condense_number[i]
-          this_method_style <- method_style[i]
-
-
-
-
-          this_condense <- condense_models(data = result_training,
-                                           training_set = training_set,
-                                           method = this_method_style, #or "cluster" / "best"
-                                           auto_cluster = TRUE, # indicates if algorithm should find the ideal number of cluster by itself
-                                           nmodel = this_condense_number, # only relevant for method = best or when auto_cluster is set to FALSE
-                                           solution_table=result_training$solution_table, #relevant only for genetic method
-                                           no_correlation_thresh =-.1)
-
-          print("this condense")
-          print(this_condense$models)
-
-          model_plot(data_with_models=this_condense$data_with_models,
-                     label = paste0("Condense training . Parameter: ",i),
-                     turned_on = detailed_plots_on,
-                     X_variable=1)
-
-          condensed_training <- predict_new(models=this_condense$models,
-                                            profiles=this_condense$dna_profiles,
-                                            new_data=this_condense$data_with_models,
-                                            closeness_threshold=solution_threshold, #set same as in training set!
-                                            assign_models = F)
-
-          ##6. STREAMLINE Take solution table and calculate true regressions for underlying subpopulations###
-          #This makes preditions more accurate and more clearly separates subpopulations
-
-
-
-          streamlined_data_and_models <- streamline(models=this_condense$models,
-                                                    profiles=this_condense$dna_profiles,
-                                                    data=training_set)
-
-
-
-
-
-          model_plot(data_with_models=streamlined_data_and_models$model_assignment,
-                     label = paste0("Streamlined Training. Parameter: ",i),
-                     turned_on = detailed_plots_on,
-                     X_variable = 1,
-                     base_line_plot = F,
-                     models = sample.data$models)
-
-
-          #now test how well we can predict training cases with the model
-
-          result_streamlined_training <- predict_new(models=streamlined_data_and_models$dna_pool,
-                                                     profiles=streamlined_data_and_models$dna_profiles,
-                                                     new_data=streamlined_data_and_models$model_assignment,
-                                                     closeness_threshold=solution_threshold, #set same as in training set!
-                                                     assign_models = F)
-
-
-
-
-
-
-
-          ##7.  RUN TEST SET###
-
-
-          result_testing <- predict_new(models=streamlined_data_and_models$dna_pool,
-                                        profiles=streamlined_data_and_models$dna_profiles,
-                                        new_data=testing_set,
-                                        closeness_threshold=solution_threshold, #set same as in training set!
-                                        assign_models = T,
-                                        method=tc)
-
-          assign_after_testing <- model_closeness(data = testing_set,
-                                                  profiles=streamlined_data_and_models$dna_profiles,
-                                                  models = streamlined_data_and_models$dna_pool ,
-                                                  method = tc)
-
-
-          model_plot(data_with_models=assign_after_testing,
-                     label=paste0("Testset Streamlined Profile. Parameter: ",i),
-                     turned_on = detailed_plots_on)
-
-
-
-#how does this differ from the streamline results above?
-#the purpose is to compare the streamlined models with the simple condensed ones on the test set?
-
-          result_testing_condensed <- predict_new(models=this_condense$models,
-                                                  profiles=this_condense$dna_profiles,
-                                                  new_data=testing_set,
-                                                  closeness_threshold=solution_threshold, #set same as in training set!
-                                                  assign_models = T,
-                                                  method=tc)
-
-          assign_condensed_after_testing <- model_closeness(data = testing_set,
-                                                            profiles=this_condense$dna_profiles,
-                                                            models = this_condense$models ,
-                                                            method = tc)
-
-
-          model_plot(data_with_models=assign_condensed_after_testing,
-                     label=paste0("Testset Condensed Profile. Parameter: ",i),
-                     turned_on = detailed_plots_on)
-
-
-
-          streamline_testset_dna_profiles <- create_profile(data_after_dummies=df_full_dummies[-training_indices,],
-                                                            model_assignment_data=assign_after_testing,
-                                                            dummy_vars=original_variables[dummy_sets],
-                                                            model_labels = NULL)
-
-          streamline_compare <- compare_data(true_sample=sample.data$profile,
-                                             found_sample=streamline_testset_dna_profiles,
-                                             true_case_assignments=sample.data$data,
-                                             found_case_assignments = assign_after_testing,
-                                             dna_pool=sample.data$models,
-                                             found_models=streamlined_data_and_models$dna_pool)
-
-          condense_possibilities[[i]] <-     list(condensed=this_condense,condensed_training=condensed_training, streamlined=streamlined_data_and_models,streamlined_training=result_streamlined_training, testset_streamlined= result_testing, testset_condensed= result_testing_condensed, streamline_compare=streamline_compare )
-
-
-          ##8. Compare Results to Choose Condensation###
-
-
-          cat("\nCondensation to",nrow(this_condense$models), "models using style:", this_method_style )
-          cat("\nInitial Training with full models. (Discrete  %):", result_training$discrete_percent_solved, "(R-squared):", result_training$r_squared)
-
-          cat("\nCondensed Training  (Discrete  %):", condensed_training$discrete_percent_solved, "(R-squared):", condensed_training$r_squared)
-
-
-          cat("\nStreamlined Training (Discrete  %):", result_streamlined_training$discrete_percent_solved, "(R-squared):",result_streamlined_training$r_squared)
-          cat("\nTest Set Condensed (Discrete  %):", result_testing_condensed$discrete_percent_solved, "(R-squared):",result_testing_condensed$r_squared)
-
-
-          cat("\nTest Set Streamlined (Discrete  %):", result_testing$discrete_percent_solved, "(R-squared):",result_testing$r_squared)
-
-
-          #here is the simple regression one-model comparison for test set###
-
-       #   this_check_ratio <- mean(x=c((as.numeric(result_testing$discrete_percent_solved)/100) , as.numeric( gsub("%", "",  result_testing$r_squared))))/(nrow(this_condense$models)^(1/3))
-
-          #removed the discrete number from this ratio, since it is the rsquared that matters at this point
-          this_check_ratio <-  as.numeric( gsub("%", "",  result_testing$r_squared))/(nrow(streamlined_data_and_models$dna_pool)^(1/3))
-
-
-          cat("\nR-squared to Models ratio:", round(this_check_ratio, digits = 2), "\n\n")
-
-
-
-
-          if (nrow(this_condense$models)>1){
-
-            if (this_check_ratio>best_check_ratio){
-              best_check_ratio <- this_check_ratio
-              best_check_list <- list(parameter_check=as.integer(i), ratio=this_check_ratio)
-            }
-
-          }else{ #if no models
-
-
-
-
-          }
-
-
-
-        } #end parameter check
-
-
-
-        select_this_condensation <- best_check_list$parameter_check
-        print(best_check_list$parameter_check)
-        #select_this_condensation <- 3
-        cat("\nChoosing this condensation", select_this_condensation,"\n\n")
-
-        #IF condensation ends in only one model###
-        if (!is.null( select_this_condensation)){
-          streamlined_data_and_models <- condense_possibilities[[select_this_condensation]]$streamlined
-
-
-        }else{ #if condensation ends only in one model
-          #ADD NAs for ICR results
-          compare_three_methods <- rbind(compare_three_methods,  c("ICR streamlined",NA, NA, NA, NA, parameter_set,1,  "only one model from condensation" ))
-          compare_three_methods <- rbind(compare_three_methods, c("ICR case-based",NA, NA, NA, NA, parameter_set,1, "only one model from condensation" ))
-
-        }
-
-
-      }else{ #if only one training row, then select this condensation becomes null and all ICR becomes NA
-        select_this_condensation <- NULL
-
-        cat("\nNo condensations available. Use single model or adjust condensation selection parameters.\n")
-
-
-        #ADD NAs for ICR results
-        compare_three_methods <- rbind(compare_three_methods,  c("ICR streamlined",NA, NA, NA, NA, parameter_set,1,  "only one model survived training" ))
-        compare_three_methods <- rbind(compare_three_methods, c("ICR case-based",NA, NA, NA, NA, parameter_set,1, "only one model survived training" ))
-
-
-      }  #end if related to one more more training rows
-
-
-
-
-
-
-      ##9. Interpretation and conversion to case-based model assignments###
-
-
-
-    }else{ #if training was NA, no models
-      cat("\nNo condensation conducted because no models survived training","\n")
-
-           select_this_condensation <- NULL
-
-      #ADD NAs for ICR results
-      compare_three_methods <- rbind(compare_three_methods,  c("ICR streamlined",NA, NA, NA, NA, parameter_set,0, "no models survived training" ))
-      compare_three_methods <- rbind(compare_three_methods, c("ICR case-based",NA, NA, NA, NA, parameter_set,0,"no models survived training" ))
-
-
-    } #end if, for situation with training with no surviving models
-
-    #For Data with dummy sets
-    if (!is.null(select_this_condensation)){ #Continue only if condensation was conducted
-      if (T %in% dummy_sets){
-        interpret_data <- transform_dummies(training_set, group_terms =original_variables[dummy_sets], reference_cat = reference_categories)
-
-        for (i in 1:length(dummy_set_ivs)){
-          this_dummy <- dummy_set_ivs[i]
-          interpret_data[,this_dummy] <- as.factor(interpret_data[,this_dummy])
-        }
-
-
-      }else{
-        interpret_data <- training_set
-      }
-
-    }else{ #if condensation was unsuccessful/ not conducted
-      streamlined_data_and_models <- NA
-      true_regression_case_based <- NA #there was no solution, children died out
-    }
-
-
-
-    ##10 a. Agglomerative Subgroup Characteristic Tree###
-
-    if (!is.null(select_this_condensation)){ #if condensation was conducted
-
-      population_tree_results <<- agglom_tree(data=streamlined_data_and_models,
-                                             original_data = original_data[training_indices,],
-                                             re_use_variables = F)
-    }else{
-      population_tree_results <<- NA
-    }
-
-    ##11. CONVERT FROM POPULATION-BASED TO CASE-BASED Model-Assignments###
-    # apply population differences as case-based differences to data set
-
-
-    #ADD dna profiles to that output!!
-    if (!is.null(select_this_condensation)){
-
-      #is cutlist NA?
-      if (length(population_tree_results$cutlist)>1){
-
-
-        case_based_model_assignment <- population_to_case_tree(cutlist=population_tree_results$cutlist,
-                                                               population_data=population_tree_results$data)
-
-      }else if (is.null( population_tree_results$data[1])){ #if only one model
-
-
-
-
-        case_based_model_assignment$data <-  training_set
-        case_based_model_assignment$data$model <- 1
-        # case_based_model_assignment$data$data <- dplyr::rename(case_based_model_assignment$data ,y="intercept")
-        case_based_model_assignment$profiles <- streamlined_data_and_models$dna_profiles
-
-
-      }else{
-
-        case_based_model_assignment <- list()
-        case_based_model_assignment$data <- population_tree_results$data
-
-      }
-    }#end if related to whether condensation happened
-
-    #update the models by calculating true regressions for those new model populations
-
-
-
-
-    #so we remove columns that are not the model and not in the newdf dataset
-    if (!is.null(select_this_condensation)){
-      columns_to_keep <- c(colnames(newdf), "model")
-      case_based_model_assignment$data <- case_based_model_assignment$data[,colnames(case_based_model_assignment$data) %in% columns_to_keep]
-
-
-
-      true_regression_case_based <- streamline(models=NULL,
-                                               profiles=case_based_model_assignment$profiles,
-                                               data=case_based_model_assignment$data,
-                                               assign_models = F)
-
-
-
-
-
-
-
-      result_training_case_based <- predict_new(models=true_regression_case_based$dna_pool,
-                                                profiles=true_regression_case_based$dna_profiles,
-                                                new_data=true_regression_case_based$model_assignment,
-                                                closeness_threshold=solution_threshold, #set same as in training set!
-                                                assign_models = F)
-
-      model_plot(data_with_models=case_based_model_assignment$data,
-                 label = "Case-based Training",
-                 turned_on = detailed_plots_on)
-
-      ##10 b. simplified model descriptions to this###
-
-
-
-
-      ## 12. Run PREDICTIONS for new cases###
-
-
-
-      result_testing_case_based <- predict_new(models=true_regression_case_based$dna_pool,
-                                               profiles=true_regression_case_based$dna_profiles,
-                                               new_data=testing_set,
-                                               closeness_threshold=solution_threshold, #set same as in training set!
-                                               assign_models = T,
-                                               method="case-based",
-                                               cutlist=population_tree_results$cutlist
-      )
-
-      assign_test_case_based <- result_testing_case_based$model_closeness_data
-
-
-      model_plot(data_with_models=assign_test_case_based,
-                 label = "Case-based Testing",
-                 turned_on = detailed_plots_on)
-
-
-
-
-
-      ##13. Compare results across steps###
-
-
-
-      ICR_dna_profiles <-    create_profile(data_after_dummies=df_full_dummies[-training_indices,], #remove model column here
-                                            model_assignment_data=assign_test_case_based,
-                                            dummy_vars=NULL,
-                                            model_labels = NULL)
-
-
-
-      compare_ICR <- compare_data(true_sample=sample.data$profile,
-                                  found_sample=ICR_dna_profiles,
-                                  true_case_assignments=sample.data$data,
-                                  found_case_assignments = assign_test_case_based,
-                                  dna_pool=sample.data$models,
-                                  found_models=true_regression_case_based$dna_pool)
-
-
-
-      print("case based compare results")
-      print(compare_ICR)
-      if (is.na(compare_ICR$model_similarity_error)){
-        #
-        #investigate NA's in model similarity error
-      }
-
-
-
-
-      compare_three_methods <- rbind(compare_three_methods, c("ICR case-based",result_testing_case_based$r_squared, result_testing_case_based$discrete_percent_solved, compare_ICR$case_assign_score, compare_ICR$model_similarity_error, parameter_set,nrow(ICR_dna_profiles), "" ))
-
-      ##ICR streamlined####
-
-
-
-
-      this_discrete <- condense_possibilities[[select_this_condensation]]$testset_streamlined$discrete_percent_solved
-      this_r2 <- condense_possibilities[[select_this_condensation]]$testset_streamlined$r_squared
-      this_case_score <- condense_possibilities[[select_this_condensation]]$streamline_compare$case_assign_score
-      this_model_error <- condense_possibilities[[select_this_condensation]]$streamline_compare$model_similarity_error
-
-
-      #how many models?
-      compare_three_methods <- rbind(compare_three_methods,  c("ICR streamlined",this_r2, this_discrete, this_case_score, this_model_error, parameter_set,nrow(ICR_dna_profiles) ,"" ))
-    }else{
-
-
-    } #end if to contininue with condensation, streamlining, etc.
-
+    iv <<- colnames(newdf)[2:length(colnames(newdf))]
+
+
+    #need to autotune once per parameter set. Otherwise takes forever.####
+    autotune_results <- autotune(newdf, dv=dv, iv=iv,
+                                 restrict_sample = T, #for dev version only?
+                             #    restrict_sample = F,
+                                 random_seed=ra)
+
+browser()
+    #!!!Use ICR() function here!####
+
+    browser()
+
+    # icr_results <- icr(generations=400, #1000 as default
+    #                    input_data=ess2016,
+    #                    dv="happy",
+    #                    iv=c("female", "age", "cntry", "ppltrst", "sclmeet","income", "health"),
+    #                    starting_pop=10000, #1000
+    #                    n_strands = 100,
+    #                    mutation_rate = .02,
+    #                    solution_thresh = .003,
+    #                    n_children=3,
+    #                    death_by_ageing =60,
+    #                    nelitism=10,
+    #                    force_subgroup_n = NA,
+    #                    re_use_variables=F,
+    #                    autotune_params = autotune_results) #or NULL if manually tuned
+
+    #then collect results
+    # #if condensation ends only in one model
+    # compare_three_methods <- rbind(compare_three_methods, c("ICR case-based",NA, NA, NA, NA, parameter_set,1, "only one model from condensation" ))
+    # #if only one training row, then select this condensation becomes null and all ICR becomes NA
+    # compare_three_methods <- rbind(compare_three_methods, c("ICR case-based",NA, NA, NA, NA, parameter_set,1, "only one model survived training" ))
+    # #if training was NA, no models
+    # compare_three_methods <- rbind(compare_three_methods, c("ICR case-based",NA, NA, NA, NA, parameter_set,0,"no models survived training" ))
+    #
+
+    #get the testset and training set from the icr output!
 
     ##Simple regression####
 
     #now the simple regression
-    this_sample <- testing_set
+    #fit with training set
+    #then predictions with test set
+
+    this_sample <- training_set
     last_column <- ncol(this_sample)
     dv <- colnames(this_sample)[1]
     ivs <- colnames(this_sample)[2:last_column]
@@ -1100,7 +640,10 @@ rownames(newdf) <- save_row_names
     #summary(simple_regression)
     simple_model <- t(data.frame(simple_regression$coefficients))
 
-
+    #now predict
+    regression_testset <-     predict(simple_regression, testing_set)
+    error_trainingset <- Metrics:: rmse(training_set$y, predict(simple_regression, training_set) )
+    error_testset <-Metrics:: rmse(testing_set$y,regression_testset )
 
 
     simple_testset_dna_profiles <- create_profile(data_after_dummies=df_full_dummies[-training_indices,],
@@ -1119,7 +662,7 @@ rownames(newdf) <- save_row_names
 
 
     rownames(simple_model) <- "1"
-
+    browser()
     compare_simple <- compare_data(true_sample=sample.data$profile,
                                    found_sample=simple_testset_dna_profiles,
                                    true_case_assignments=sample.data$data,
@@ -1128,72 +671,12 @@ rownames(newdf) <- save_row_names
                                    found_models=simple_model)
 
 
-    compare_three_methods <- rbind(compare_three_methods,   c("simple regression", result_simple_testset$r_squared, result_simple_testset$discrete_percent_solved, compare_simple$case_assign_score, compare_simple$model_similarity_error, parameter_set,1,"" ))
+    compare_three_methods <- rbind(compare_three_methods,   c("simple regression", error_testset, result_simple_testset$discrete_percent_solved, compare_simple$case_assign_score, compare_simple$model_similarity_error, parameter_set,1,"" ))
 
 
 
 
-
-
-
-
-
-
-
-
-    #ADD back in later ?###
-    #Model depiction###
-    # substantive_threshold <- .05 #below this is considered not relevant to present
-    #
-    # depicted_models <- true_regression_case_based$dna_pool
-    #
-    # passing_threshhold <- 1*(abs(depicted_models[, 2:ncol(depicted_models)])>=substantive_threshold)
-    #
-    # depicted_models[, 2:ncol(depicted_models)] <- depicted_models[, 2:ncol(depicted_models)] * passing_threshhold
-    #
-    # if (nrow(depicted_models)>1){
-    #   model_freq <- data.frame(table(streamlined_data_and_models$model_assignment$model))
-    #
-    # }else{
-    #   #this works?###
-    #   #define model_freq as 100%###
-    #
-    #   model_freq <- data.frame(matrix(nrow=1, ncol=2))
-    #   colnames(model_freq) <- c("var", "Freq")
-    #   model_freq$var <- rownames(depicted_models)[1]
-    #   model_freq$Freq <- nrow(streamlined_data_and_models$solution_table)
-    #
-    #   # streamlined_data_and_models$solution_table[,1] <- 1
-    #   # model_freq <-  data.frame(table(streamlined_data_and_models$solution_table[,1]))
-    # }
-    #
-    # depicted_models$cases <- model_freq$Freq
-    #
-    # #the first column, named after the DV, is the intercept!
-    # cat("\n\nModel Descriptions")
-    # #print(depicted_models)
-    # ##Manually add reference categories for interpretation###
-    # cat("\nReference Categories:\n")
-    # #cat("\nCountry: Eastern Europe")
-    # #cat("\ngndr:male")
-    # cat("\n")
-    #
-    # for (i in 1:nrow(depicted_models)){
-    #
-    #
-    #   this_model <- depicted_models[i,-ncol(depicted_models)]
-    #   this_model <- this_model[,!(this_model==0 | is.na(this_model)), drop=FALSE]
-    #   print( this_model, row.names = T)
-    # }
-
-
-
-
-
-
-    ##Mixture Regression####
-
-
+    #Mixture Regression####
 
 
     data <- training_set #form the model on the training set, test on testset
@@ -1380,6 +863,22 @@ rownames(newdf) <- save_row_names
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     #1. compare ICR and mixture in terms of model complexity (higher IVs, higher error )
 
 
@@ -1392,7 +891,7 @@ rownames(newdf) <- save_row_names
 
 
 
-    colnames(compare_three_methods) <- c("method", "weighted r2", "discrete solution", "case assignment score", "model similarity error","seed", "generations", "solution_thresh", "n_dna_strands", "real_model_n",
+    colnames(compare_three_methods) <- c("method", "rmse testset", "discrete solution", "case assignment score", "model similarity error","seed", "generations", "solution_thresh", "n_dna_strands", "real_model_n",
                                          "N_IVs", "error_sd", "test_set_model_closeness","n models", "notes")
 
   #  saveRDS(compare_three_methods, paste0( "./testing/", paste0(parameter_set,collapse = "_"), ".RDS"))
@@ -1509,11 +1008,21 @@ icr_data_prep <- function(input_data,
                           iv,
                           dv){ #DV is set to NA for the predict.icr usage
 
+  #remove special characters from column names
+  new_iv <- gsub('[[:punct:] ]+','_',  iv )
+    new_dv <- gsub('[[:punct:] ]+','_',  dv )
+
+    colnames(input_data)[match(iv,colnames(input_data))] <- new_iv
+    colnames(input_data)[match(dv,colnames(input_data))] <- new_dv
+    iv <- new_iv
+    dv <- new_dv
+
   #remove all special characters from columns and cells
 
-  #limit input values to a particular length?!
+  #limit input values to a particular length!
 
 #first convert factors to character
+
 
   which_cols_factors  <-   sapply(input_data, class) %in% c('factor')
   which_cols_factors <- which(which_cols_factors==T)
@@ -1540,9 +1049,9 @@ if (length(which_cols_char)>0){
 }
 
 #limit the length of all cells
-#insure column name does not change
+#ensure column name does not change
 
-input_data[,which_cols_char] <- substr(input_data[,which_cols_char], 1, 30)
+input_data[,which_cols_char] <- substr(unname(unlist(input_data[,which_cols_char])), 1, 30)
 
 
 
@@ -1605,9 +1114,16 @@ if (!is.na(dv)){
 
   #are they coded as dummies?
   correctly_coded <- lapply(df[,names(two_cats[two_cats==T])], FUN=function(x) is.integer(x) | is.numeric(x))
-  if (F %in% correctly_coded){
-    df[,names(correctly_coded[!unlist(correctly_coded)])] <- as.integer(as.factor(df[,names(correctly_coded[!unlist(correctly_coded)])]))
-  }
+
+    if (F %in% correctly_coded){
+
+      which_incorrect <- which(correctly_coded==F)
+    for (i in 1:length(which_incorrect)){
+     this_incorrect <- names(which_incorrect)[i]
+       df[,this_incorrect] <- as.integer(as.factor(       df[,this_incorrect] ))
+    }
+
+    }
 
   #now automatically find which are dummysets
 
@@ -1899,6 +1415,7 @@ df_full_dummies<<-data_prepped$df_dummies
     solution_threshold <<- so
 
     #Training####
+
     result_training <- test_children(dna_pool=children,
                                      input_data=training_set,
                                      closeness_threshold=so, #defines how close a solution is to the found solution
@@ -4006,8 +3523,8 @@ if (nrow(dna_pool)==1){
 
     model_vector <- unique(data_with_models$model)
     dv <- colnames(data_with_models)[1]
-    ivs <- colnames(data_with_models)[2:(ncol(data_with_models)-1)]
-    ivs <- ivs[!ivs=="model"]
+    these_ivs <- colnames(data_with_models)[2:(ncol(data_with_models)-1)]
+    these_ivs <- these_ivs[!these_ivs=="model"]
 
     results <- vector("list", length(model_vector))
 
@@ -4019,13 +3536,14 @@ if (nrow(dna_pool)==1){
   colnames(this_sample) <- gsub(" ", "_", colnames(this_sample))
   colnames(this_sample) <- gsub("\\(", "_", colnames(this_sample))
   colnames(this_sample) <- gsub("\\)", "_", colnames(this_sample))
- ivs <- gsub(" ", "_", ivs)
- ivs <- gsub("\\(", "_", ivs)
- ivs <- gsub("\\)", "_", ivs)
+  these_ivs <- gsub(" ", "_", these_ivs)
+  these_ivs <- gsub("\\(", "_", these_ivs)
+  these_ivs <- gsub("\\)", "_", these_ivs)
 
+#
       f <- as.formula(
         paste(dv,
-              paste(ivs, collapse = " + "),
+              paste(these_ivs, collapse = " + "),
               sep = " ~ "))
 
       this_regression <- eval(bquote(   lm(.(f), data = this_sample)   ))
@@ -5311,8 +4829,8 @@ working_df[,column_name] <- 0
 
  combos <- apply(combos,1,  FUN = function(x) x[!is.na(x)])
 
-
-
+#previous bug!?####
+#browser()
     for (combo in 1:length(combos)){
       this_combo <-  combos[[combo]]
       combo_subset <- df_these_columns[, grepl(paste0(this_combo, collapse="|"), these_columns), drop=F]
@@ -5322,7 +4840,7 @@ working_df[,column_name] <- 0
       if (this_new_colname %in% colnames(dummy_df)){
 
       }else{
-
+#browser()
         dummy_df <- eval(parse(text = paste0("cbind(dummy_df,", this_new_colname,"= new_values)" )))
       }
     }

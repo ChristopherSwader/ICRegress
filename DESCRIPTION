@@ -1,6 +1,6 @@
 Package: ICRegress
 Title: Interpretable Configurational Regression
-Version: 0.0.0.9001
+Version: 0.0.0.9002
 Authors@R: 
     person("Christopher", "Swader", , "christopher.swader@soc.lu.se", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0001-5920-4129"))
@@ -37,7 +37,8 @@ Depends:
     foreach,
     flexmix,
     doRNG,
-    doParallel
+    doParallel,
+    Metrics
 LazyData: true
 VignetteBuilder: knitr
 Suggests: knitr, rmarkdown
