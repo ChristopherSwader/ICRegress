@@ -529,7 +529,7 @@ benchmarking <- function( random_seed=c(123),#:100050, #parameter for testing
 
 
 
-browser()
+
 
 
 # PARALLEL####
