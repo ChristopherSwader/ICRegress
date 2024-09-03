@@ -4,7 +4,7 @@
 \alias{streamline}
 \title{Streamline}
 \usage{
-streamline(models, profiles, data, assign_models = T)
+streamline(models, profiles, data, assign_models = T, training_indices = NULL)
 }
 \description{
 Streamline forces underlying subpopulations to 'choose' one model.  It then plots a 'true regression' on those subpopulations. The purpose is to both increase prediction accuracy but more importantly to allow subpopulations to become distinct to aid in interpretation the updated model-subpopulation matchings are then tested to see how many cases are correctly 'solved' by their new sole models

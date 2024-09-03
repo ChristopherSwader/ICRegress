@@ -1,10 +1,20 @@
-
-#Notes for commit (*Beta* Package ICRegress Version: 0.0.0.9002):
-#1. Improved compatability with various user data formats.
+#!NEXT: ####
+#Notes for commit (for new *Beta* Package ICRegress Version: 0.0.0.9003):
+#1. Added parameter to icr() to allow training-testset split to be turned off.
+#2. benchmarking function updated to test also Linear Model trees.
+#3. Case assignment score now similar to precision. Number of true positives out of all positives.
+#4. Adjustment made to autotune to prevent it from getting stuck in an equilibrium
+#5. Added parameter target_training_percent to icr() and benchmarking () in order to stop training automatically after a set training percentage target is achieved.
+#6. Added parameter generation_limit to icr() and benchmarking () to stop training no matter what at a given generation count, despite the target not being achieved.
+#7. Made improvements to condensation procedure.
+#8. Improved autotune to increase threshold sizes.
+#9. Mutation rate is now dynamic, decreases as solution improves
 
 # TO DO in future
 
 #0. !FIXING benchmarking! adding linear model trees####
+#0.05 fix the agglom tree construction so that any remaining variable diversity can be used for a split.
+#0.1 Fix the random seeds used for benchmarking. ensure reproducibility####
 #1. allow breaking of variables separate times in separate branches where relevant.
 #2. Add a parameter to handle controls: Variables that do not enter agglom tree but that enter the final models.
 #3. Allow training to autobreak or cut after certain % achievement or growth
@@ -38,9 +48,12 @@ autotune <- function( input_data,
                       dv,
                       iv,
                       restrict_sample=T,
-                      random_seed){ #this takes a sample of the overall data and autotunes it. This seems to work as well as the whole set.
+                      random_seed,#this takes a sample of the overall data and autotunes it. This seems to work as well as the whole set.
+                      training_indices=NULL       ){
 
 
+
+   #tuning starting % is somehow the same each time!
 #input is the data, dvs, ivs.
 #output is a set of autotune parameters that may be used as an argument for the icr() function.
 
@@ -62,7 +75,7 @@ autotune <- function( input_data,
 #reduce sample size for speed up.
 if (restrict_sample==T){
 
-  sample_input_data <- 1000 #this limits the size of the input data set.
+  sample_input_data <- 2000 #1000 #this limits the size of the input data set.
   this_sample <- sample(1:nrow(input_data), sample_input_data, replace = F)
   input_data <- input_data[this_sample,]
 
@@ -74,27 +87,29 @@ n_cases <- nrow(input_data)
 max_starting_pop <- 10000 #25k or 50k. How many DNA strands to start with?
 min_starting_pop <- 2000
 #starting pop ranges between 1k and 100k
-starting_pop <- round(min(max_starting_pop,max(min_starting_pop,10000000000/(n_original_cases^2)) ))
+
+starting_pop <- round(min(max_starting_pop,max(min_starting_pop,20000000000/(n_original_cases^2)) ))
 
 
 
 #Determine number of surviving dna strands each generation
 #ADJUST!####
 
-max_n_strands <- 200
-min_n_strands <- 40
+max_n_strands <- 80 #previously 200
+min_n_strands <- 10 #previously 40
 n_strands <- round(min(max_n_strands,max(min_n_strands,1000000/((n_cases*.01)^2)) ))
 
 
-max_solution_thresh <- .05
-min_solution_thresh <- .0005
-solved_by_random_strands <- .1 #percentage solved by random strands... higher means wider thresh
-solution_threshold <-  min(max_solution_thresh, max(min_solution_thresh, solved_by_random_strands/(n_strands*2) ) )#these strands should hit about 40% of the theoretical solution space.
+max_solution_thresh <- .1 #previously .05
+min_solution_thresh <- .05 #previously .0005
+solved_by_random_strands <- .4 #previously .1 #percentage solved by random strands at the beginning... higher means wider thresh.
+  # the solution space of 1 is divided into bands. for 10 strands to cover the whole space would require a thresh of 1/10 divided again in half, because the thresh is on each side of the strand
+solution_threshold <-  min(max_solution_thresh, max(min_solution_thresh, (solved_by_random_strands/n_strands)/2) ) #these strands should hit about 40% of the theoretical solution space.
 
 
 
-min_mutation_rate <- .02
-max_mutation_rate <- .05
+min_mutation_rate <- .05 #former .02
+max_mutation_rate <- .08 #former .05
 #starting_mutation_rate <- .02
 mutation_vector <- seq(from=min_mutation_rate, to=max_mutation_rate, by=.01)
 
@@ -106,7 +121,7 @@ n_children_vector <- c(2,3,4)
 min_death_by_ageing <- 50
 max_death_by_ageing <- 200
 #starting_death_by_ageing <- 80
-death_by_ageing_vector <- c(80)#, 50, 200) #makes no sense to test this with various, as gens will only be 40 or 80 in total!
+death_by_ageing_vector <- c(100)#, 50, 200) #makes no sense to test this with various, as gens will only be 40 or 80 in total!
 
 min_elitism <- 0
 max_elitism <- round(n_strands/2)
@@ -117,14 +132,18 @@ elitism_vector <- c( round(n_strands/10)) #or zero, 2
 #Then to learn to beyond 80%
 starting_percentage_correct <- FALSE
 
+last_starting_value <- 0
+
 while(starting_percentage_correct==F){
 
 
   cat("\n\nCalculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.")
 #Part 1####
-
+#DEBUG####
    capture.output({
-set.seed(random_seed)
+
+    #ICR call####
+
 starting_percentage_run <-  icr(generations=1, #1000 as default
                    input_data=input_data,
                    dv=dv,
@@ -138,8 +157,12 @@ starting_percentage_run <-  icr(generations=1, #1000 as default
                    nelitism=elitism_vector[1],
                    force_subgroup_n = NA,
                    re_use_variables=F,
-                   .tuning = T)
+                   .tuning = T,
+                   training_indices = training_indices)
+
+
   })
+#DEBUG####
 
 
 
@@ -149,16 +172,19 @@ solved_to_strand_ratio <- starting_value/n_strands
 
 #The ratio is used in order to decide whether to change the number of strands or the threshold
 #lower limit above ratio
-lower_SSR <- 1
-upper_SSR <- 3
+#!Adjust####
+lower_SSR <- 2
+upper_SSR <- 4
 
 too_small <-starting_value <40
 
 too_big <- starting_value>55
 
 #nudge factors differ to prevent equilibrium and lack of convergence
-minimize_nudge_factor_thresh <- 1.5
-minimize_nudge_factor_strands <- 1.1
+#they are made slightly random to prevent getting stuck in an equilibrium
+
+minimize_nudge_factor_thresh <- rnorm(1, mean=1.5, sd=.05)
+minimize_nudge_factor_strands <- rnorm(1, mean=1.1, sd=.05)
 
 
 
@@ -176,15 +202,19 @@ minimize_nudge_factor_strands <- 1.1
 cat("\nStarting value is ", starting_value, "for a target between 40 and 55.")
 
 if (too_big==T){
-  gap_factor_thresh <- max(1.01,(starting_value/50)*minimize_nudge_factor_thresh) #we keep the changes less drastic
-  gap_factor_strands <- max(1.01,(starting_value/50)*minimize_nudge_factor_strands) #we keep the changes less drastic
 
-  if (solved_to_strand_ratio< lower_SSR){
-    #we remove strands in order to raise SSR lower starting percent
+  this_max <- max(1.01, rnorm(1, mean=1.01, sd=.01)) #we keep the changes less drastic
+
+
+  gap_factor_thresh <- max(this_max,(starting_value/50)*minimize_nudge_factor_thresh) #we keep the changes less drastic
+  gap_factor_strands <- max(this_max,(starting_value/50)*minimize_nudge_factor_strands) #we keep the changes less drastic
+
+  if (solved_to_strand_ratio< lower_SSR | (solution_threshold <= min_solution_thresh & n_strands>min_n_strands)){
+    #we remove strands in order to raise SSR and lower starting percent
 
     cat("\nCurrent solved to strand ratio is ", solved_to_strand_ratio)
 
-    n_strands <- floor( n_strands/(gap_factor_strands))
+    n_strands <- max(min_n_strands, floor( n_strands/(gap_factor_strands)))
     cat("\nNew n_strands decreased to ", n_strands)
 
 
@@ -203,13 +233,32 @@ if (too_big==T){
 
   }else{
 
-    #if SSR is fine, simply adjust the threshold
-    cat("\nCurrent solved to strand ratio is ", solved_to_strand_ratio)
+    #if SSR is fine, simply  remove strands to raise the SSR and lower the starting percent
+#OR     lower the threshold to lower SSR and lower the percent
 
-    solution_threshold <- solution_threshold/(gap_factor_thresh)
+    this_or_that <- sample(1:2, 1)
 
-    cat("\nNew solution_threshold decreased to ", solution_threshold)
+    if (this_or_that==1){
 
+      #remove strands
+
+      cat("\nCurrent solved to strand ratio is ", solved_to_strand_ratio)
+
+      n_strands <- floor( n_strands/(gap_factor_strands))
+      cat("\nNew n_strands decreased to ", n_strands)
+
+
+    }else if (this_or_that==2){
+
+      #lower threshold
+
+      cat("\nCurrent solved to strand ratio is ", solved_to_strand_ratio)
+
+      solution_threshold <- solution_threshold/(gap_factor_thresh)
+
+      cat("\nNew solution_threshold decreased to ", solution_threshold)
+
+    }
 
 
   }
@@ -218,13 +267,18 @@ if (too_big==T){
 
 
 
-}else if(too_small==T){
+}else if(too_small==T ){
 
-  gap_factor_thresh <- min(.99,(starting_value/40)*(1/minimize_nudge_factor_thresh))
-  gap_factor_strands <- min(.99,(starting_value/40)*(1/minimize_nudge_factor_strands))
+  #the minimum made slightly random to avoid equilibrium
+  this_minimum <- min(.99, rnorm(1, mean=.99, sd=.01)) #we keep the changes less drastic
 
 
-  if (solved_to_strand_ratio< lower_SSR){
+
+  gap_factor_thresh <- min(this_minimum,(starting_value/40)*(1/minimize_nudge_factor_thresh))
+  gap_factor_strands <- min(this_minimum,(starting_value/40)*(1/minimize_nudge_factor_strands))
+
+
+  if (solved_to_strand_ratio< lower_SSR ){
     #if too few solved per strand, increase threshold, in order to raise the SSR and raise the starting percent
     cat("\nCurrent solved to strand ratio is ", solved_to_strand_ratio)
 
@@ -249,12 +303,31 @@ if (too_big==T){
 
   }else{
 
-    #if SSR is fine, simply adjust the threshold
-    cat("\nCurrent solved to strand ratio is ", solved_to_strand_ratio)
+    #increase threshold or strands. to shift the ssr in either direction and raise the starting percent
 
-    solution_threshold <- solution_threshold*(gap_factor_thresh)
+    this_or_that <- sample(1:2, 1)
 
-    cat("\nNew solution_threshold is increased to ", solution_threshold)
+    if (this_or_that==1){
+
+      #increase threshold
+
+      cat("\nCurrent solved to strand ratio is ", solved_to_strand_ratio)
+
+      solution_threshold <- solution_threshold*(gap_factor_thresh)
+
+      cat("\nNew solution_threshold is increased to ", solution_threshold)
+
+    }else if (this_or_that==2){
+
+      #increase strands (in order to lower the SSR) and increase starting percent
+      cat("\nCurrent solved to strand ratio is ", solved_to_strand_ratio)
+
+      n_strands <- ceiling( n_strands/(gap_factor_strands))
+      cat("\nNew n_strands inreased to ", n_strands)
+
+    }
+
+
 
 
 
@@ -281,6 +354,8 @@ if (too_big==T){
 
 #readline(prompt="Press [enter] to continue")
 
+last_starting_value <- starting_value
+
 }#end while to fix starting percentage
 
 if (n_strands<20){
@@ -305,6 +380,7 @@ growth_parameter_grid <- expand.grid(mutation_rate=mutation_vector, n_children=n
 growth_parameter_grid$achieved_t1 <- 0
 growth_parameter_grid$achieved_t2 <- 0
 
+#ADJUST!####
 generation_t_points <- c(40,80) #growth will be checked at two equidistant generational points
 #TO DO#### sample different seeds until the initial growth is sufficient.
 
@@ -312,6 +388,9 @@ for (gen in 1:length(generation_t_points)){
   n_generations <- generation_t_points[gen]
 
 for (combo in 1:nrow(growth_parameter_grid)){
+
+  #for (combo in 1:1){
+      #!!CHANGE DEBUG ONLY####
 
   #pull parameters out of the combination grid
   mr <- growth_parameter_grid$mutation_rate[combo]
@@ -337,7 +416,8 @@ for (combo in 1:nrow(growth_parameter_grid)){
                                     nelitism=el,
                                     force_subgroup_n = NA,
                                     re_use_variables=F,
-                                    .tuning = T)
+                                    .tuning = T,
+                                   training_indices = NULL)
   })
 
 
@@ -356,11 +436,16 @@ if (is.na(growth_run[1])){
 
 } #end list of generation cut points to check
 
+#check winning icrresults run
+
 
 
 
 #how to judge t1 compared to t2 growth.
 #t2 as a ratio to T1 growth?
+
+delete_these <- (growth_parameter_grid$achieved_t1==0)
+growth_parameter_grid <- growth_parameter_grid[!delete_these,]
 
 growth_parameter_grid$growth_value <-(((growth_parameter_grid$achieved_t2- growth_parameter_grid$achieved_t1)*2+ (growth_parameter_grid$achieved_t1-starting_value))/3)*(growth_parameter_grid$achieved_t2-starting_value)
 winning_parameter_set <- which(growth_parameter_grid$growth_value==max(growth_parameter_grid$growth_value))[1]
@@ -403,16 +488,17 @@ return(list(starting_pop=starting_pop,
 #' @examples
 #'  test <- benchmarking(random_seeds=100001:100025, n_cases=10000)
 #' @export
-benchmarking <- function( random_seeds=c(100001:100050),#:100050, #parameter for testing
+benchmarking <- function( random_seed=c(123),#:100050, #parameter for testing
+                          n_random_iterations, #this is the number of iterations per random seed to test
                           generations=c(40,200,1000), #parameter for testing
-                          solution_thresh = c( .01 ), #parameter for testing
-                          n_strands = c(50), #parameter for testing
+                          solution_thresh = c( .01 ), #automatically set by autotune
+                          n_strands = c(50), #automatically set by autotune
                           real_models = c( 20), #parameter for testing
                           error_sd = c(.05), #parameter for testing
                           n_IVs=c(30), #parameter for testing
                           n_cases= 5000, #n rows in dataset
-                          mutation_rate=.2,
-                          n_children=2,
+                          mutation_rate=.2, #automatically set by autotune
+                          n_children=2,#automatically set by autotune
                           test_set_model_closeness= c("residuals"),
                           parallelize=F,
                           detailed_plots_on=F,
@@ -420,40 +506,45 @@ benchmarking <- function( random_seeds=c(100001:100050),#:100050, #parameter for
                           starting_population,
                           hold_back_cores=2,#how many of the available cores are not used for parallel procedure?
                           death_by_ageing =60,
-                          nelitism=10){
+                          nelitism=10,
+                          target_training_percent=NULL,#FIX to 85####
+                          generation_limit=NULL,
+                          final_model_aggregation=T #initial analysis shows this has little impact. but potentiall increases reliability of case assignment score. keep it on.
+                                                    ){
 
 
-browser()
+
 #stop("Function not currently in working order.")
 
 
-  n_parameters <- 8
-  n_results <- 12
-  parameter_testing <- data.frame(matrix(0, nrow = 0, ncol=n_parameters+n_results))
-  colnames(parameter_testing) <- c("seed", "generations", "solution_thresh", "n_dna_strands", "real_model_n",
-                                   "N_IVs", "error_sd", "test_set_model_closeness",
-                                   "simple_r2","init_training_r2", "cond_Training_r2", "stream_training_r2", "cond_test_r2", "stream_test_r2",
-                                   "casebased_training_r2", "casebased_testing_r2", "case_assign_score", "model_similarity_error",
-                                   "nmodel_condense_streamline", "nmodel_case_based")
+  #number of combinations
+  p_number <- length(1:n_random_iterations)*
+    length(generations)*
+    length(solution_thresh)* #based on tuning
+    length(n_strands)* #based on tuning
+    length(real_models)*
+    length(n_IVs)*
+    length(error_sd)*
+    length(test_set_model_closeness)
 
 
 
+browser()
 
 
-
-
-
- #Parallelize?####
+# PARALLEL####
 
   if (parallelize==T){
 
     print("starting parallel parameter testing")
     closeAllConnections()
-    n_cores <- parallel::detectCores() - hold_back_cores
 
+    n_cores <- min(p_number,  parallel::detectCores() - hold_back_cores)
+unlink("log.txt")
     my_cluster <- parallel::makeCluster(
       n_cores,
-      type = "PSOCK")
+      type = "PSOCK",
+      outfile="log.txt")
 
     doParallel::registerDoParallel(my_cluster)
 
@@ -463,35 +554,31 @@ browser()
 
 
   }else { #if sequential
-    #SEQUENTIAL?####
+  #SEQUENTIAL####
 
     closeAllConnections()
     foreach::registerDoSEQ()
+    sink("log.txt")
   }
-  #number of combinations
-  p_number <- length(random_seeds)*
-    length(generations)*
-    length(solution_thresh)* #based on tuning
-    length(n_strands)* #based on tuning
-    length(real_models)*
-    length(n_IVs)*
-    length(error_sd)*
-    length(test_set_model_closeness)
 
-  combos <- expand.grid(random_seeds, generations, solution_thresh,
+
+  combos <- expand.grid(1:n_random_iterations, generations, solution_thresh,
                         n_strands, real_models, n_IVs,
                         error_sd, test_set_model_closeness)
 
+  registerDoRNG(random_seed, once = F)
+
+  #find out the rng's to be used
+# RNGseq(seed =  101, n=4)[1:4]
+
+    #foreach loop####
+   par_results <-  foreach(i = 1:p_number, .combine = rbind) %dopar% {
 
 
-  browser()
-
-  set.seed(774411)
-par_results <-  foreach(i = 1:p_number, .combine = rbind) %dorng% {
 
 
-browser()
 
+#sink(paste0("logging_", i,".txt"))
 
     ra <- combos$Var1[i]
     ge <- combos$Var2[i]
@@ -504,21 +591,22 @@ browser()
 
 
 
-    compare_three_methods <- data.frame(matrix(nrow=0, ncol=15))
 
 
-    parameter_set <- c(ra, ge, so, ns, re, ni, er, tc)
-    # saveRDS(parameter_testing, paste0(ra,ge,so,ns,re, ni, er, tc, "parameter testing.RDS"))
+    parameter_set <- c(ra, ge, so, ns, re, ni, er, as.character(tc))
+    names(parameter_set) <- c("seed", "generations", "solution threshold", "n strands",
+                              "real models","N ivs", "error sd", "testset closeness setting")
+     # saveRDS(parameter_testing, paste0(ra,ge,so,ns,re, ni, er, tc, "parameter testing.RDS"))
     #print is for for debugging
     print("these parameters")
     print(parameter_set)
 
-    #collect output row into parameter_testing table
+     #collect output row into parameter_testing table
 
 
 
 
-      set.seed(ra)
+    #  set.seed(ra)
 
     ##1B. Load fake data###
 
@@ -582,37 +670,160 @@ rownames(newdf) <- save_row_names
     newdf <- newdf[,!colnames(newdf)=="model"]
     iv <<- colnames(newdf)[2:length(colnames(newdf))]
 
+  #train and testset indices####
+    #split the training and testsets here, and just feed the indices into ICR?!
+    training_proportion <- 0.6
+    training_set_N <- round(nrow(newdf)*training_proportion)
+    training_indices <- sample(nrow(newdf), training_set_N, replace=F)
+    training_set <- as.data.frame(newdf[training_indices, ])
+    testing_set <- as.data.frame(newdf[-training_indices, ])
+
+
+    #autotune####
 
     #need to autotune once per parameter set. Otherwise takes forever.####
-    autotune_results <- autotune(newdf, dv=dv, iv=iv,
-                                 restrict_sample = T, #for dev version only?
-                             #    restrict_sample = F,
-                                 random_seed=ra)
+#There are better training results without restricted sample, and with training indices!
+#in other words, restrict sample does not pay off.
+        autotune_results <- autotune(newdf, dv=dv, iv=iv,
+                                #restrict_sample = T, #!for dev version only?####
+                                 restrict_sample = F,
+                                 random_seed=ra,
+                                training_indices = training_indices #or NULL if sample restricted
+                                )
+cat("\nAutotune complete. Task",i)
 
-browser()
-    #!!!Use ICR() function here!####
 
-    browser()
+    #1. ICR()####
+ns <- autotune_results$n_strands
+so  <- autotune_results$solution_threshold
 
-    # icr_results <- icr(generations=400, #1000 as default
-    #                    input_data=ess2016,
-    #                    dv="happy",
-    #                    iv=c("female", "age", "cntry", "ppltrst", "sclmeet","income", "health"),
-    #                    starting_pop=10000, #1000
-    #                    n_strands = 100,
-    #                    mutation_rate = .02,
-    #                    solution_thresh = .003,
-    #                    n_children=3,
-    #                    death_by_ageing =60,
-    #                    nelitism=10,
-    #                    force_subgroup_n = NA,
-    #                    re_use_variables=F,
-    #                    autotune_params = autotune_results) #or NULL if manually tuned
+#update parameter_set!
+
+parameter_set[3] <- so
+parameter_set[4] <- ns
+
+
+
+#!FIX verify that proper tuning is used when the actual ICR function is used!!####
+#DEBUG####
+capture.output({
+    icr_results <- icr(generations=ge, #1000 as default
+                       input_data=newdf,
+                       dv=dv,
+                       iv=iv,
+                       starting_pop=autotune_results$starting_pop, #1000
+                       n_strands = ns,
+                       mutation_rate = autotune_results$mutation_rate,
+                       solution_thresh = so,
+                       n_children=autotune_results$n_children,
+                       death_by_ageing =autotune_results$death_by_ageing,
+                       nelitism=autotune_results$elitism,
+                       force_subgroup_n = NA,
+                       re_use_variables=F,
+                       autotune_params = autotune_results,#or NULL if manually tuned
+                       training_indices=training_indices,
+                       target_training_percent=target_training_percent,
+                       generation_limit=generation_limit,
+                       final_model_aggregation = final_model_aggregation)
+
+
+})
+#DEBUG####
+cat("\nICR complete. Task",i)
+    #get case assignment score an and model comparison score
+    #compared with ground truth data
+
+ #check that the icr_results are different for with and without final_condense.
+#then check that compare ICR is different
+    compare_ICR <- compare_data(true_sample=sample.data$profile,
+                                   found_sample=icr_results$model_subgroup_profiles,
+                                   true_case_assignments=sample.data$data,
+                                   found_case_assignments = icr_results$original_data_with_new_models,
+                                   dna_pool=sample.data$models,
+                                   found_models=icr_results$models)
+
 
     #then collect results
+
+    if (nrow(icr_results$models)==1){
     # #if condensation ends only in one model
-    # compare_three_methods <- rbind(compare_three_methods, c("ICR case-based",NA, NA, NA, NA, parameter_set,1, "only one model from condensation" ))
-    # #if only one training row, then select this condensation becomes null and all ICR becomes NA
+
+      these_results <- list()
+      these_results['seed'] <- parameter_set[1]
+      these_results['generations'] <- parameter_set[2]
+      these_results['solution_thresh'] <-autotune_results$solution_threshold #fix to match autotune
+      these_results['n_dna_strands'] <- autotune_results$n_strands
+            these_results['real_model_n'] <- parameter_set[5]
+      these_results['N_IVs'] <- parameter_set[6]
+      these_results['error_sd'] <- parameter_set[7]
+      these_results["test_set_model_closeness"] <- parameter_set[8]
+
+ #compare results of full final model condensation with non condensation
+
+      these_results['method'] <- "ICR case-based"
+      these_results['discrete_solution'] <- icr_results$testing_results$discrete_percent_solved
+      these_results["case_assignment_score"] <- compare_ICR$case_assign_score
+      these_results[ "model_similarity_error"] <- compare_ICR$model_similarity_error
+      these_results["r2"] <- icr_results$testing_results$r_squared #testset r2
+      these_results["n_models"] <- nrow( icr_results$models) #n found models
+
+      these_results[ "notes"] <- "only one model produced"
+
+
+
+      compare_three_methods <- rbind(compare_three_methods, data.frame(t(unlist(these_results))))
+
+
+
+
+    }else {
+
+
+      #let the comparisons be with the FULL set (rather than a testing, training split). Otherwise we have a problem assigning the latent classes, clusters, which are based on the full set anyways.
+      #this also means that ICR results will be more convervative than the other methods, since icr results are based on the testset only, whereas other methods are full samples.
+
+
+      #we need the column headings for 'compare three methods' in order to fill them in!!
+      those_results <- list() #this list reflects icr settings and does not change for other methods
+      those_results['seed'] <- parameter_set[1]
+      those_results['generations'] <- parameter_set[2]
+      those_results['solution_thresh'] <-autotune_results$solution_threshold #fix to match autotune
+      those_results['n_dna_strands'] <- autotune_results$n_strands
+      those_results['real_model_n'] <- parameter_set[5]
+      those_results['N_IVs'] <- parameter_set[6]
+      those_results['error_sd'] <- parameter_set[7]
+      those_results["test_set_model_closeness"] <- parameter_set[8]
+      icr_info_bundle <- those_results
+
+
+
+      #verify all of this info comes from the test set stats, not the training run!
+
+these_results <- list()
+            these_results['method'] <- "ICR case-based"
+      these_results['discrete_solution'] <- icr_results$testing_results$discrete_percent_solved
+      these_results["case_assignment_score"] <- compare_ICR$case_assign_score
+      these_results[ "model_similarity_error"] <- compare_ICR$model_similarity_error
+      these_results["r2"] <- icr_results$testing_results$r_squared #testset r2
+      these_results["n_models"] <- nrow( icr_results$models) #n found models
+      these_results["generations_trained"] <-icr_results$generations_trained
+      these_results[ "notes"] <- ""
+      these_results[ "final_trained_percentage"] <- icr_results$ecological_results$discrete_percent_solved
+
+#add the ecological trained solution percentage!
+
+      compare_three_methods <- data.frame(matrix(nrow=0, ncol=length(these_results)+length(icr_info_bundle)))
+      colnames(compare_three_methods) <- c(names(these_results),names(those_results))
+
+
+
+
+
+      compare_three_methods <- rbind(compare_three_methods, data.frame(t(unlist(c(these_results, icr_info_bundle)))))
+
+
+       }
+      # #if only one training row, then select this condensation becomes null and all ICR becomes NA
     # compare_three_methods <- rbind(compare_three_methods, c("ICR case-based",NA, NA, NA, NA, parameter_set,1, "only one model survived training" ))
     # #if training was NA, no models
     # compare_three_methods <- rbind(compare_three_methods, c("ICR case-based",NA, NA, NA, NA, parameter_set,0,"no models survived training" ))
@@ -620,81 +831,101 @@ browser()
 
     #get the testset and training set from the icr output!
 
-    ##Simple regression####
+    ##2. Simple regression####
 
     #now the simple regression
-    #fit with training set
-    #then predictions with test set
+    #Full model
+    #
 
-    this_sample <- training_set
-    last_column <- ncol(this_sample)
-    dv <- colnames(this_sample)[1]
-    ivs <- colnames(this_sample)[2:last_column]
+    full_set <- newdf
+
+    last_column <- ncol(full_set)
+    dv <- colnames(full_set)[1]
+    ivs <- colnames(full_set)[2:last_column]
 
     f <- as.formula(
       paste(dv,
             paste(ivs, collapse = " + "),
             sep = " ~ "))
 
-    simple_regression <- eval(bquote(   lm(.(f), data = this_sample)   ))
-    #summary(simple_regression)
-    simple_model <- t(data.frame(simple_regression$coefficients))
-
-    #now predict
-    regression_testset <-     predict(simple_regression, testing_set)
-    error_trainingset <- Metrics:: rmse(training_set$y, predict(simple_regression, training_set) )
-    error_testset <-Metrics:: rmse(testing_set$y,regression_testset )
+    simple_regression <- eval(bquote(   lm(.(f), data = full_set)   ))
 
 
-    simple_testset_dna_profiles <- create_profile(data_after_dummies=df_full_dummies[-training_indices,],
-                                                  model_assignment_data=cbind(this_sample, model=1),
+     simple_model <- t(data.frame(simple_regression$coefficients))
+
+    #the above was for the training set!!!
+    #we need to apply it now to the testset
+
+
+
+    simple_dna_profiles_fullset <- create_profile(data_after_dummies=df_full_dummies,
+                                                  model_assignment_data=cbind(full_set, model=1),
                                                   dummy_vars=original_variables[dummy_sets],
                                                   model_labels = NULL)
 
 
 
-    result_simple_testset<- predict_new(models=simple_model,
-                                        profiles=simple_testset_dna_profiles,
-                                        new_data=this_sample,
-                                        closeness_threshold=solution_threshold,#set same as in training set!
+    result_simple_fullset<- predict_new(models=simple_model,
+                                        profiles=simple_dna_profiles_fullset,
+                                        new_data=full_set,
+                                        closeness_threshold=solution_thresh,#set same as in training set!
                                         assign_models = T,
                                         method="residuals")
 
 
+
+
+
     rownames(simple_model) <- "1"
-    browser()
-    compare_simple <- compare_data(true_sample=sample.data$profile,
-                                   found_sample=simple_testset_dna_profiles,
+
+
+
+compare_simple <- compare_data(true_sample=sample.data$profile,
+                                   found_sample=simple_dna_profiles_fullset,
                                    true_case_assignments=sample.data$data,
-                                   found_case_assignments = cbind(this_sample, model=1),
+                                   found_case_assignments = cbind(df_full_dummies, model=1),
                                    dna_pool=sample.data$models,
                                    found_models=simple_model)
 
 
-    compare_three_methods <- rbind(compare_three_methods,   c("simple regression", error_testset, result_simple_testset$discrete_percent_solved, compare_simple$case_assign_score, compare_simple$model_similarity_error, parameter_set,1,"" ))
+
+    #save results
+
+    these_results['method'] <- "standard regression"
+    these_results['discrete_solution'] <- result_simple_fullset$discrete_percent_solved
+    these_results["case_assignment_score"] <- compare_simple$case_assign_score
+    these_results[ "model_similarity_error"] <- compare_simple$model_similarity_error
+    these_results["r2"] <- result_simple_fullset$r_squared #testset r2
+    these_results["n_models"] <- 1 #n found models
+
+    these_results[ "notes"] <- ""
 
 
 
 
-    #Mixture Regression####
 
 
-    data <- training_set #form the model on the training set, test on testset
-    if (!is.null(select_this_condensation)){
-      #
-      this_many_models <- nrow(true_regression_case_based$dna_pool)
-    }else{
-      this_many_models <- 5
-    }
+    compare_three_methods <- rbind(compare_three_methods, data.frame(t(unlist(c(these_results, icr_info_bundle)))))
 
-    outcome <- colnames(testing_set)[1]
+    cat("\nSimple regression complete. Task",i)
+    #icr comes before this, because we need the number of condensations.
 
 
-    f <- as.formula(paste(outcome,paste0(colnames(testing_set)[-1], collapse = "+"), sep=" ~ " ))
+    #3. Mixture Regression####
 
-    ex1 <- flexmix::flexmix(f,data = data, k = this_many_models,
+
+
+      this_many_models <- nrow(icr_results$models)
+
+
+    outcome <- colnames(newdf)[1]
+
+
+    f <- as.formula(paste(outcome,paste0(colnames(newdf)[-1], collapse = "+"), sep=" ~ " ))
+    capture.output({
+    ex1 <- flexmix::flexmix(f,data = newdf, k = this_many_models,
                             control = list(verb = 5, iter = 1000))
-
+})
     #update to reflect how many models flexmix actually found
     this_many_models <- ex1@k
 
@@ -702,7 +933,7 @@ browser()
     #get coefficients here.
     #parameters(ex1, component = 2)
     #summary(ex1)
-    new_data <- testing_set
+
 
 
     mix_model_list <- list()
@@ -725,50 +956,67 @@ browser()
     rownames(mixture_models) <- 1:this_many_models
 
 
-    #assign with my function or with clusters function
-    new_data <- model_closeness(data = new_data,
-                                profiles = NULL,
-                                models = mixture_models,
-                                method = "residuals",
-                                cutlist = NA)
 
+#get assignments from output!!!
+new_data_full <- newdf
+new_data_full$model <- ex1@cluster
 
 
 
 
     mixture_dna_profiles <-    create_profile(data_after_dummies=df_full_dummies, #remove model column here
-                                              model_assignment_data=new_data,
+                                              model_assignment_data=new_data_full,
                                               dummy_vars=NULL,
                                               model_labels = NULL)
 
 
     result_mixture<- predict_new(models=mixture_models,
                                  profiles=mixture_dna_profiles,
-                                 new_data=testing_set,
-                                 closeness_threshold=solution_threshold,#set same as in training set!
-                                 assign_models = T,
+                                 new_data=new_data_full,
+                                 closeness_threshold=solution_thresh,#set same as in training set!
+                                 assign_models = F,
                                  method="residuals")
 
 
+
     mixture_compare_results <- compare_data(true_sample=sample.data$profile,
-                                            found_sample=mixture_dna_profiles,
+                                            found_sample=mixture_dna_profiles_full,
                                             true_case_assignments=sample.data$data,
-                                            found_case_assignments = new_data,
+                                            found_case_assignments = new_data_full,
                                             dna_pool=sample.data$models,
                                             found_models=mixture_models)
 
 
-    compare_three_methods <- rbind(compare_three_methods,   c("mixture regression", result_mixture$r_squared, result_mixture$discrete_percent_solved, mixture_compare_results$case_assign_score, mixture_compare_results$model_similarity_error, parameter_set ,this_many_models, ""))
+    #save results
+
+    these_results['method'] <- "LCA Mixture"
+    these_results['discrete_solution'] <- result_mixture$discrete_percent_solved
+    these_results["case_assignment_score"] <- mixture_compare_results$case_assign_score
+    these_results[ "model_similarity_error"] <- mixture_compare_results$model_similarity_error
+    these_results["r2"] <- result_mixture$r_squared #testset r2
+    these_results["n_models"] <- nrow(mixture_models) #n found models
+
+    these_results[ "notes"] <- ""
 
 
-    ##Clusters (k means) plus regression####
 
 
-    data <- training_set
+
+
+    compare_three_methods <- rbind(compare_three_methods, data.frame(t(unlist(c(these_results, icr_info_bundle)))))
+
+
+
+    cat("\nMixture regression complete. Task",i)
+
+    ##4. Clusters (k means) plus regression####
+
+
+
 
     #
 
-    k <- kmeans(data, this_many_models)
+    k <- kmeans(newdf, this_many_models)
 
     #now rotate through each cluster and get a model
 
@@ -777,7 +1025,7 @@ browser()
 
     for (m in 1:this_many_models){
 
-      this_sample <- data[k$cluster==m,]
+      this_sample <- newdf[k$cluster==m,]
       last_column <- ncol(this_sample)
       dv <- colnames(this_sample)[1]
       ivs <- colnames(this_sample)[2:last_column]
@@ -808,47 +1056,138 @@ browser()
     #replace NA's with zero
     cluster_models[is.na(cluster_models)] <- 0
 
-
-    #assign with my function or with clusters function
-    new_data <- model_closeness(data = data,
-                                profiles = NULL,
-                                models = cluster_models,
-                                method = "residuals",
-                                cutlist = NA)
-
-
-    #assign cluster models!
-    clust <- k$cluster
-    data$model <-clust
-
+#assign models based on found clusters
+    new_data_full_cluster <- newdf
+    new_data_full_cluster$model <- k$cluster
 
 
     cluster_dna_profiles <-    create_profile(data_after_dummies=df_full_dummies, #remove model column here
-                                              model_assignment_data=data,
+                                              model_assignment_data=new_data_full_cluster,
                                               dummy_vars=NULL,
                                               model_labels = NULL)
 
 
 
-    result_cluster<- predict_new(models=cluster_models,
+    result_cluster <- predict_new(models=cluster_models,
                                  profiles=cluster_dna_profiles,
-                                 new_data=testing_set,
-                                 closeness_threshold=solution_threshold,#set same as in training set!
-                                 assign_models = T,
+                                 new_data=new_data_full_cluster,
+                                 closeness_threshold=solution_thresh,#set same as in training set!
+                                 assign_models = F,
                                  method="residuals")
 
 
     cluster_compare_results <- compare_data(true_sample=sample.data$profile,
                                             found_sample=cluster_dna_profiles,
                                             true_case_assignments=sample.data$data,
-                                            found_case_assignments = data,
+                                            found_case_assignments = new_data_full_cluster,
                                             dna_pool=sample.data$models,
                                             found_models=cluster_models)
 
 
 
 
-    compare_three_methods <- rbind(compare_three_methods,    c("cluster regression", result_cluster$r_squared, result_cluster$discrete_percent_solved, cluster_compare_results$case_assign_score, cluster_compare_results$model_similarity_error, parameter_set,nrow(cluster_dna_profiles), "" ))
+    #save results
+
+
+
+    these_results['method'] <- "Clusters k-means"
+    these_results['discrete_solution'] <- result_cluster$discrete_percent_solved
+    these_results["case_assignment_score"] <- cluster_compare_results$case_assign_score
+    these_results[ "model_similarity_error"] <- cluster_compare_results$model_similarity_error
+    these_results["r2"] <- result_cluster$r_squared #testset r2
+    these_results["n_models"] <- nrow(cluster_models) #n found models
+
+    these_results[ "notes"] <- ""
+
+
+
+
+
+
+    compare_three_methods <- rbind(compare_three_methods, data.frame(t(unlist(c(these_results, icr_info_bundle)))))
+
+    cat("\nCluster regression complete. Task",i)
+    #5. Linear Model Trees (Standard)####
+
+
+
+    f <- as.formula(paste(outcome,"~ . | ."))
+
+
+
+   lmt_model = lmtree(f,data = newdf,maxdepth=  ceiling(sqrt(  this_many_models))+1)
+
+#terminal nodes are those with only 1 in the sublist
+   lmt_predictions <- predict(lmt_model, type = "node")
+   these_terminal_nodes <- unique(lmt_predictions)
+   this_many_models_lmt <-   length(these_terminal_nodes)
+
+lmt_model_frame <-  coef(lmt_model, node = these_terminal_nodes)
+lmt_model_frame <- data.frame(lmt_model_frame)
+
+#replace NA's with zero
+lmt_model_frame[is.na(lmt_model_frame)] <- 0
+
+
+if (dim(lmt_model_frame)[2]==1){
+  #if there is just one model, transpose the dataframe
+
+  lmt_model_frame <- t(lmt_model_frame)
+  rownames(lmt_model_frame) <- 1
+}
+
+#now get assignments.
+lmt_full_set <- newdf
+lmt_full_set$model <- lmt_predictions
+
+lmt_dna_profiles <-    create_profile(data_after_dummies=df_full_dummies, #remove model column here
+                                          model_assignment_data=lmt_full_set,
+                                          dummy_vars=NULL,
+                                          model_labels = NULL)
+
+
+result_lmt <- predict_new(models=lmt_model_frame,
+                             profiles=lmt_dna_profiles,
+                             new_data=lmt_full_set,
+                             closeness_threshold=solution_thresh,#set same as in training set!
+                             assign_models = F,
+                             method="residuals")
+
+
+
+lmt_compare_results <- compare_data(true_sample=sample.data$profile,
+                                        found_sample=lmt_dna_profiles,
+                                        true_case_assignments=sample.data$data,
+                                        found_case_assignments = lmt_full_set,
+                                        dna_pool=sample.data$models,
+                                        found_models=lmt_model_frame)
+
+
+#save results
+
+
+
+these_results['method'] <- "LMT"
+these_results['discrete_solution'] <- result_lmt$discrete_percent_solved
+these_results["case_assignment_score"] <- lmt_compare_results$case_assign_score
+these_results[ "model_similarity_error"] <- lmt_compare_results$model_similarity_error
+these_results["r2"] <- result_lmt$r_squared #testset r2
+these_results["n_models"] <- nrow(lmt_model_frame) #n found models
+
+these_results[ "notes"] <- ""
+
+
+
+
+
+
+compare_three_methods <- rbind(compare_three_methods, data.frame(t(unlist(c(these_results, icr_info_bundle)))))
+
+cat("\nLinear Model Trees complete. Task",i)
+
+
+
+
 
     cat("\n Tested:",ra, ge, so, ns, re, ni, er, tc, "\n")
 
@@ -891,24 +1230,26 @@ browser()
 
 
 
-    colnames(compare_three_methods) <- c("method", "rmse testset", "discrete solution", "case assignment score", "model similarity error","seed", "generations", "solution_thresh", "n_dna_strands", "real_model_n",
-                                         "N_IVs", "error_sd", "test_set_model_closeness","n models", "notes")
 
   #  saveRDS(compare_three_methods, paste0( "./testing/", paste0(parameter_set,collapse = "_"), ".RDS"))
     return(compare_three_methods)
   }#end foreach loop####
 
+
   if (parallelize==T){
-   # parallel::clusterEvalQ(my_cluster,  sink())
+    #for debugging, create logs
+    parallel::clusterEvalQ(my_cluster,  sink())
     parallel::stopCluster(my_cluster)
   }else{
-
+sink()
   }
 
+key_parameters <- c( "seed", "generations", "solution_thresh", "n_dna_strands", "real_model_n", "N_IVs", "error_sd", "test_set_model_closeness")
+key_parameter_columns <- which(colnames(par_results) %in% key_parameters)
 
 
-  par_results$parameter_ID <- cumsum(!duplicated(par_results[,6:13]))
-  View(par_results)
+  par_results$parameter_ID <- cumsum(!duplicated(par_results[,key_parameter_columns]))
+  #View(par_results)
 
   #saveRDS(par_results, "./testing/fresh parameter testing parallelized.RDS")
 
@@ -926,7 +1267,7 @@ browser()
 
  if (boxplots==T){
   ##boxplots####
-
+browser() #fix later
   these_parameter_files$method <- as.factor( these_parameter_files$method )
   these_parameter_files$generations <- as.factor( these_parameter_files$generations )
 
@@ -994,7 +1335,7 @@ browser()
 
  }#end boxplots condition
 
-    return(par_results)
+   return(par_results)
 
 
 }
@@ -1219,7 +1560,7 @@ predict.icr <- function(object, new_data){
                                  closeness_threshold=NA, #set same as in training set!
                                  assign_models = T,
                                  method="case-based",
-                                 cutlist = object$cutlist,
+                                 population_tree_results = object$cutlist,
                                  dv=F)
 #rescale predictions to original
 
@@ -1272,12 +1613,17 @@ icr <- function(generations=c(1000),
                           death_by_ageing =60,
                           nelitism=10,
                           force_subgroup_n=NA,
-                          re_use_variables=F,
+                          re_use_variables=F, #needs to be False. re-using variables does not work as some models become unpopulated when converting tree to case-based
                           .tuning=F,
                           autotune_params=NULL, #if an autotune set is provided, it overides all other manual settings
                            max_n_condensations=6,
-                          force_n_condensation=NULL #this will force the selection of a given n models (if they are available) or the max available
-                ){
+                          force_n_condensation=NULL, #this will force the selection of a given n models (if they are available) or the max available
+                          training_indices=NULL, #if this is not null, then the training indices are used that are fed into this parameter
+                          target_training_percent=NULL, #any percentage, e.g. 95 set here will override, extend or the generations until achieved
+                          generation_limit=NULL,
+                final_model_aggregation=T
+
+                 ){
 
   if (!is.null(autotune_params)){
     solution_thresh <- autotune_params$solution_threshold
@@ -1389,15 +1735,21 @@ df_full_dummies<<-data_prepped$df_dummies
 
 
 
-    ##2. SPLIT DATA INTO TRAINING AND TEST SETS###
+    ##2. SPLIT DATA INTO TRAINING AND TEST SETS####
 
+    if (is.null(training_indices)==T|length(training_indices)>nrow(newdf)){
     training_proportion <- 0.6
     training_set_N <- round(nrow(newdf)*training_proportion)
-    training_indices <<- sample(nrow(newdf), training_set_N, replace=F)
-    training_set <<- as.data.frame(newdf[training_indices, ])
-    testing_set <<- as.data.frame(newdf[-training_indices, ])
-
+    training_indices <- sample(nrow(newdf), training_set_N, replace=F)
+    training_set <- as.data.frame(newdf[training_indices, ])
+    testing_set <- as.data.frame(newdf[-training_indices, ])
+    }else{
+      training_set <- as.data.frame(newdf[training_indices, ])
+      testing_set <- as.data.frame(newdf[-training_indices, ])
+    }
     ##3. SPAWN CHILDREN###
+
+
     children <- children_spawn(n_children= starting_pop,
                                dna_length=ncol(newdf), #this should be the correct number of columns. We need one coefficient for every IV column (including dummies) and one forthe intercept (the DV column)
                                col_names=c('intercept',colnames(newdf)[2:length(colnames(newdf))]), #the DV name column is replaced with 'intercept'
@@ -1412,9 +1764,10 @@ df_full_dummies<<-data_prepped$df_dummies
     cat("Running training set \n")
 
 
-    solution_threshold <<- so
+    #solution_threshold <<- so
 
     #Training####
+
 
     result_training <- test_children(dna_pool=children,
                                      input_data=training_set,
@@ -1432,10 +1785,13 @@ df_full_dummies<<-data_prepped$df_dummies
                                      mating_power = 2,
                                      selection = "probability",
                                      rem_doppleganger=T,
-                                     nelitism = nelitism)
+                                     nelitism = nelitism,
+                                     training_indices = training_indices,
+                                     target_training_percent=target_training_percent,
+                                     generation_limit=generation_limit)
 
 
-
+cat("\nTest_children complete.")
 
 if (.tuning==T){
   #if this is just for tuning purposes, just exit!
@@ -1476,6 +1832,7 @@ if (is.na(result_training[1])){
 
       #only condense if more than one model was found!
       ###IF more than one training model found###
+
       if (nrow(result_training$dna_pool)>1){
 
         if (is.na(force_subgroup_n)){
@@ -1532,8 +1889,9 @@ if (is.na(result_training[1])){
           this_condense_number <- condense_number[i]
           this_method_style <- method_style[i]
 
-
-
+# if (i==5){
+#   browser() #match models to streamlined data and models
+# }
 
           this_condense <- condense_models(data = result_training,
                                            training_set = training_set,
@@ -1541,9 +1899,13 @@ if (is.na(result_training[1])){
                                            auto_cluster = TRUE, # indicates if algorithm should find the ideal number of cluster by itself
                                            nmodel = this_condense_number, # only relevant for method = best or when auto_cluster is set to FALSE
                                            solution_table=result_training$solution_table, #relevant only for genetic method
-                                           no_correlation_thresh =-.1)
+                                           no_correlation_thresh =-.1,
+                                           training_indices=training_indices,
+                                           final_model_aggregation =final_model_aggregation)
 
-        #  print("this condense")
+
+          cat("\nCondensation complete:", i, "of parameter checks.")
+             #  print("this condense")
         #  print(this_condense$models)
 
           model_plot(data_with_models=this_condense$data_with_models,
@@ -1554,7 +1916,7 @@ if (is.na(result_training[1])){
           condensed_training <- predict_new(models=this_condense$models,
                                             profiles=this_condense$dna_profiles,
                                             new_data=this_condense$data_with_models,
-                                            closeness_threshold=solution_threshold, #set same as in training set!
+                                            closeness_threshold=solution_thresh, #set same as in training set!
                                             assign_models = F)
 
           ##6. STREAMLINE Take solution table and calculate true regressions for underlying subpopulations###
@@ -1564,7 +1926,8 @@ if (is.na(result_training[1])){
           streamlined_data_and_models <- streamline(models=this_condense$models,
                                                     profiles=this_condense$dna_profiles,
                                                     data=this_condense$data_with_models,
-                                                    assign_models = F)
+                                                    assign_models = F,
+                                                    training_indices=training_indices)
 
 
 
@@ -1583,7 +1946,7 @@ if (is.na(result_training[1])){
           result_streamlined_training <- predict_new(models=streamlined_data_and_models$dna_pool,
                                                      profiles=streamlined_data_and_models$dna_profiles,
                                                      new_data=streamlined_data_and_models$model_assignment,
-                                                     closeness_threshold=solution_threshold, #set same as in training set!
+                                                     closeness_threshold=solution_thresh, #set same as in training set!
                                                      assign_models = F)
 
 
@@ -1592,13 +1955,13 @@ if (is.na(result_training[1])){
 
 
 
-          ##7.  TEST SET###
+          ##7.  TEST SET####
 
 
           result_testing <- predict_new(models=streamlined_data_and_models$dna_pool,
                                         profiles=streamlined_data_and_models$dna_profiles,
                                         new_data=testing_set,
-                                        closeness_threshold=solution_threshold, #set same as in training set!
+                                        closeness_threshold=solution_thresh, #set same as in training set!
                                         assign_models = T,
                                         method=tc)
 
@@ -1619,7 +1982,7 @@ if (is.na(result_training[1])){
           result_testing_condensed <- predict_new(models=this_condense$models,
                                                   profiles=this_condense$dna_profiles,
                                                   new_data=testing_set,
-                                                  closeness_threshold=solution_threshold, #set same as in training set!
+                                                  closeness_threshold=solution_thresh, #set same as in training set!
                                                   assign_models = T,
                                                   method=tc)
 
@@ -1641,7 +2004,7 @@ if (is.na(result_training[1])){
 
           streamline_compare <- NA #only valid for benchmarking function
           condense_possibilities[[i]] <-     list(condensed=this_condense,condensed_training=condensed_training, streamlined=streamlined_data_and_models,streamlined_training=result_streamlined_training, testset_streamlined= result_testing, testset_condensed= result_testing_condensed, streamline_compare=streamline_compare )
-
+rm(streamlined_data_and_models)
 
           ##8. Compare Results to Choose Condensation###
           #
@@ -1689,7 +2052,7 @@ if (is.na(result_training[1])){
 
         } #end parameter check
 
-
+ #check which condensation wins, record its models. Then watch them emerge
 
         select_this_condensation <- best_check_list$parameter_check
         print(best_check_list$parameter_check)
@@ -1699,7 +2062,7 @@ if (is.na(result_training[1])){
 
         #####IF condensation ends in only one model###
         if (!is.null( select_this_condensation)){
-          streamlined_data_and_models <- condense_possibilities[[select_this_condensation]]$streamlined
+          selected_streamlined_data_and_models <- condense_possibilities[[select_this_condensation]]$streamlined
 
 
         }else{ #if condensation ends only in one model
@@ -1769,7 +2132,7 @@ return("No condensation conducted because no models survived training")
       }
 
     }else{ #if condensation was unsuccessful/ not conducted
-      streamlined_data_and_models <- NA
+      selected_streamlined_data_and_models <- NA
       true_regression_case_based <- NA #there was no solution, children died out
     }
 
@@ -1781,21 +2144,24 @@ return("No condensation conducted because no models survived training")
 #adapt model names here!
 
       #change model names in the model assignment and in the dnaprofiles
-      models <- rownames( streamlined_data_and_models$dna_profiles)
+      models <- rownames( selected_streamlined_data_and_models$dna_profiles)
       new_model_names <- 1:length(models)
-      new_model_data_order <- match(streamlined_data_and_models$model_assignment$model, models)
-      rownames( streamlined_data_and_models$dna_profiles) <- new_model_names
-      streamlined_data_and_models$model_assignment$model <- new_model_data_order
+      new_model_data_order <- match(selected_streamlined_data_and_models$model_assignment$model, models)
+      rownames( selected_streamlined_data_and_models$dna_profiles) <- new_model_names
+      selected_streamlined_data_and_models$model_assignment$model <- new_model_data_order
 
 
       #this is not working properly for DF3!. it does not produce a universal model as it should.
-      population_tree_results <<- agglom_tree(data=streamlined_data_and_models,
+      population_tree_results <- agglom_tree(data=selected_streamlined_data_and_models,
                                              original_data = original_data[training_indices,],
                                              re_use_variables = re_use_variables)
 
+
 #dummy_set_ivs=population_tree_results$dummy_set_ivs
     }else{
-      population_tree_results <<- NA
+
+      population_tree_results <- NA
+
     }
 
     ##11. CONVERT FROM POPULATION-BASED TO CASE-BASED Model-Assignments###
@@ -1813,7 +2179,8 @@ return("No condensation conducted because no models survived training")
         #make sure all columsn are included here.
 
            case_based_model_assignment <- population_to_case_tree(cutlist=population_tree_results$cutlist,
-                                                               population_data=population_tree_results$data)
+                                                               population_data=population_tree_results$data,
+                                                               training_indices=training_indices)
 
       }else if (is.null( population_tree_results$data[1])){ #if only one model
 
@@ -1823,7 +2190,7 @@ return("No condensation conducted because no models survived training")
         case_based_model_assignment$data <-  training_set
         case_based_model_assignment$data$model <- 1
         # case_based_model_assignment$data$data <- dplyr::rename(case_based_model_assignment$data ,y="intercept")
-        case_based_model_assignment$profiles <- streamlined_data_and_models$dna_profiles
+        case_based_model_assignment$profiles <- selected_streamlined_data_and_models$dna_profiles
 
 
       }else{
@@ -1845,8 +2212,8 @@ return("No condensation conducted because no models survived training")
       #columns_to_keep <- c(colnames(newdf), "model")
       model_assignments <- case_based_model_assignment$data$model
       #case_based_model_assignment$data <- case_based_model_assignment$data[,colnames(case_based_model_assignment$data) %in% columns_to_keep]
-case_based_model_assignment$data <- streamlined_data_and_models$model_assignment
-case_based_model_assignment$data$model <- model_assignments
+#temp remove #case_based_model_assignment$data <- streamlined_data_and_models$model_assignment
+#temp remove #case_based_model_assignment$data$model <- model_assignments
 
 #check number of rows!
 
@@ -1866,7 +2233,7 @@ case_based_model_assignment$data$model <- model_assignments
       result_training_case_based <- predict_new(models=true_regression_case_based$dna_pool,
                                                 profiles=true_regression_case_based$dna_profiles,
                                                 new_data=true_regression_case_based$model_assignment,
-                                                closeness_threshold=solution_threshold, #set same as in training set!
+                                                closeness_threshold=solution_thresh, #set same as in training set!
                                                 assign_models = F)
 
       model_plot(data_with_models=case_based_model_assignment$data,
@@ -1885,10 +2252,10 @@ case_based_model_assignment$data$model <- model_assignments
       result_testing_case_based <- predict_new(models=true_regression_case_based$dna_pool,
                                                profiles=true_regression_case_based$dna_profiles,
                                                new_data=testing_set,
-                                               closeness_threshold=solution_threshold, #set same as in training set!
+                                               closeness_threshold=solution_thresh, #set same as in training set!
                                                assign_models = T,
                                                method="case-based",
-                                               cutlist=population_tree_results$cutlist
+                                               population_tree_results=population_tree_results
       )
 
 
@@ -1982,8 +2349,11 @@ case_based_model_assignment$data$model <- model_assignments
     #training and testing statistics
 
     original_data$model <- NA
+
+
     original_data$model[training_indices] <- true_regression_case_based$model_assignment$model
     original_data$model[-training_indices] <- as.integer( assign_test_case_based$model)
+#original_data new assignments are correct. rownames are in order
 
     original_after_dummies_df <- rbind(training_set, testing_set)
     integer_rows <- as.integer(rownames(original_after_dummies_df))
@@ -2035,11 +2405,11 @@ case_based_model_assignment$data$model <- model_assignments
  result_simple_testset<- predict_new(models=simple_model,
                                      profiles=simple_testset_dna_profiles,
                                      new_data=this_sample,
-                                     closeness_threshold=solution_threshold,#set same as in training set!
+                                     closeness_threshold=solution_thresh,#set same as in training set!
                                      assign_models = T,
                                      method="residuals")
 
-results <- list(original_data_with_new_models=original_data, model_distribution=table(original_data$model), cutlist=population_tree_results$cutlist,agglomeration_tree=population_tree_results$tree_blueprint,models= true_regression_case_based$dna_pool,  model_subgroup_profiles=overall_ICR_profiles, ecological_results=result_training, training_results=result_training_case_based, testing_results=result_testing_case_based, simple_regression_results=result_simple_testset, training_perc_solved=result_training$discrete_percent_solved, full_models=true_regression_case_based$full_models, dv=dv, iv=iv, original_data_unscaled=original_data_unscaled)
+results <- list(original_data_with_new_models=original_data, model_distribution=table(original_data$model), cutlist=population_tree_results$cutlist,agglomeration_tree=population_tree_results$tree_blueprint,models= true_regression_case_based$dna_pool,  model_subgroup_profiles=overall_ICR_profiles, ecological_results=result_training, training_results=result_training_case_based, testing_results=result_testing_case_based, simple_regression_results=result_simple_testset, training_perc_solved=result_training$discrete_percent_solved, full_models=true_regression_case_based$full_models, dv=dv, iv=iv, original_data_unscaled=original_data_unscaled, generations_trained=result_training$generations_trained)
 class(results) <- "icr"
 
 
@@ -2430,10 +2800,7 @@ children_spawn <- function(n_children,
 
   colnames(dna_table)[1:(ncol(dna_table)-2)] <- col_names
 
-  op <- options(digits.secs = 6)
-  options(op)
-  IDs <-  as.integer(as.POSIXct(Sys.time()))
-  IDs <- c(IDs:(IDs+(nrow(dna_table)-1)))
+IDs <- generate_id(nrow(dna_table))
 
 
   rownames(dna_table) <- IDs
@@ -2470,7 +2837,11 @@ test_children <- function(dna_pool=children,
                           mating_power = 1, # indicates the strength of the effect of closeness on mating
                           selection = c("threshold", "probability"), #note that threshold is always applied to the final generation results.
                           rem_doppleganger=T, #removes doppleganger dna, keeping the youngest
-                          nelitism = 0 #defines the number of best models that survive every generation
+                          nelitism = 0, #defines the number of best models that survive every generation
+                          training_indices=NULL,
+                          target_training_percent=NULL,
+                          generation_limit=NULL, #stops training at this number of g no matter what
+                          dynamic_mutation=T #mutation rate decreases as ecological solution improves
                           ){
 
   ###
@@ -2478,7 +2849,7 @@ test_children <- function(dna_pool=children,
 
   ###
   input_data <- data.frame(input_data)
-  original_data <- input_data
+  #original_data <- input_data
 
   #initial report about dna pool individual indicators
   dna_length <-  ncol(dna_pool)-2
@@ -2498,7 +2869,8 @@ test_children <- function(dna_pool=children,
   input_data <- input_data[,-1]
 
 
-  generation <- 0
+
+  g <- 1
 
   #capture best results over the course of all generations
 
@@ -2507,13 +2879,20 @@ test_children <- function(dna_pool=children,
 
   #need raw DNA strings without the ending two columns
 
-  for (g in 1:generations){
+  dynamic_mutation_threshold <- 70
+  #for (g in 1:generations){
+while (g <= generations){
 
-
-
-
+#DEBUG ONLY####
+# if (g>1000){
+#   browser()
+#   if ((g-1000)%%10==0){
+# #pause every xth generation
+#     browser()
+#   }
+# }
     highest_solved <- 0
-    generation <- generation+1
+
 
     #Main tables###
     #first is the dna_pool, that stores a strands history and score
@@ -2527,8 +2906,7 @@ test_children <- function(dna_pool=children,
 
 
 
-    if (g==1){ #if the first generation, run through iteratively, because the matrices will be too big. Otherwise, use matrix operations
-     cat("\n Running first generation. This may take a while. Further generations will be faster.")
+    if (g==1 | (nrow(input_data)*nrow(dna_pool)*ncol(input_data))>10000000){ #if the first generation, run through iteratively, because the matrices will be too big. Otherwise, use matrix operations
 
 
 
@@ -2538,8 +2916,15 @@ test_children <- function(dna_pool=children,
         dna_tracking <- dna_pool[,(ncol(dna_pool)-1):ncol(dna_pool)]
         dna_pool <- dna_pool[,1:(ncol(dna_pool)-2)]
 
+        if (g==1){
+        cat("\n Running first generation. This may take a while. Further generations will be faster.")
+        }
+
       for (dna in 1:nrow(dna_pool)){
+
+      if (g==1){
         cat("Processing child", dna, "of", nrow(dna_pool),"\n")
+      }
 
         this_dna_strand <- dna_pool[dna,]
         #now run that dna against every member of the input_data, collect residuals
@@ -2711,6 +3096,44 @@ test_children <- function(dna_pool=children,
 
     ecologically_solved <- round(length( which (rowSums(  ecological_solution_table)>0))/nrow(ecological_solution_table)*100, digits = 2)
 
+
+#DEBUG ONLY###
+    # if (!is.null(target_training_percent)){
+    #        if ( ecologically_solved>=target_training_percent){
+    #   browser()
+    # }
+    # }
+
+    if (!is.null(target_training_percent)){
+    if (ecologically_solved>=target_training_percent){
+      #if the target was reached, then make this the last generation
+    g <- generations
+
+    }else if (ecologically_solved<target_training_percent){
+      #if target is not reached, set this so it is not the last generation if it is currently the last
+   if (!is.null(generation_limit)){
+     #if there is a generation limit
+      if (g == generation_limit){
+        #if this generation is at the limit, stop training
+       g <- generations #stops the training
+     }else{
+       if (g==generations){
+         #extend the training
+      generations <- generations+1
+       }
+     }
+   }else{
+     #if there is no generation limit, and the training did not yet succeed
+     #extend the training
+     if (g==generations){
+       generations <- generations+1
+     }
+    }
+
+    }
+
+    }
+
     #save best ecological result here?
 
     if (ecologically_solved > best_ecological$best_percent){
@@ -2756,7 +3179,8 @@ if (nrow(dna_pool)>1){
 
     if(selection == "threshold" | g==generations){
       if (!is.null(death_number_thresh)){
-        dna_pool_noelit <- dna_pool_noelit[1:min(nrow(dna_pool_noelit), (death_number_thresh-nelitism)),]
+
+        dna_pool_noelit <- dna_pool_noelit[1:min(nrow(dna_pool_noelit),max(0, (death_number_thresh-nelitism))),]
 
         model.names <- rownames(dna_pool_noelit)
 
@@ -2768,7 +3192,8 @@ if (nrow(dna_pool)>1){
 #if not the last generation
       if (!g==generations & nrow(dna_pool_noelit)>0){
         if (!is.null(death_number_thresh)){
-          which_selected_noelit <- sample(nrow(dna_pool_noelit), min(nrow(dna_pool_noelit), (death_number_thresh-nelitism)), prob = dna_pool_noelit$DNA_rating)
+
+          which_selected_noelit <- sample(nrow(dna_pool_noelit),max(0,  min(nrow(dna_pool_noelit), (death_number_thresh-nelitism))), prob = dna_pool_noelit$DNA_rating)
           model.names <- rownames(dna_pool_noelit[which_selected_noelit,])
           #indices selected
           these_rows <- which(rownames(dna_pool) %in% model.names)
@@ -2803,6 +3228,7 @@ if (nrow(dna_pool)>1){
     # Update dna_pool, dna_profiles and solution_table
     dna_pool <- dna_pool[rownames(dna_pool) %in% which_selected,,drop=F]
     solution_table <- as.data.frame(solution_table[,colnames(solution_table) %in% which_selected, drop=F])
+
 
 
 #Mating####
@@ -2904,7 +3330,6 @@ if (nrow(dna_pool)>1){
     if (rem_doppleganger==T){ #remove dopplegangers
 
 
-
       original_dna <- rownames(dna_pool)
       which_unique <- rownames(unique(dna_pool[,1:(ncol(dna_pool)-2)])  )
       which_saved <- which(original_dna %in% which_unique)
@@ -2917,10 +3342,15 @@ if (nrow(dna_pool)>1){
 
 
 
-      #the solution table is wrong!!
-      if (length(which_saved)<=dim(solution_table)[2]){
-      solution_table <- solution_table[,which_saved, drop=F]
-      }
+      # #the solution table is wrong!! It is supposed to be..
+        # the dna_pool includes the new children, which have not yet been tested.
+      # if (length(which_saved)<=dim(solution_table)[2]){
+      #   if (g==1001){
+      #     browser()
+      #   }
+      #   #column 16 is saved, but there is no column 16!
+      # solution_table <- solution_table[,which_saved, drop=F]
+      # }
 
 
     }
@@ -2931,14 +3361,25 @@ if (nrow(dna_pool)>1){
 
 
 
-    cat("\n\n Generation", generation, "complete. Ecologically solved %:", ecologically_solved, "of",nrow(input_data), "cases, with", ncol(solution_table), "surviving DNA strands\n\n")
+    cat("\n\n Generation", g, "complete. Ecologically solved %:", ecologically_solved, "of",nrow(input_data), "cases, with", ncol(solution_table), "surviving DNA strands\n\n")
 
     # only for the purpose of visualization
 #    dna_pool_gen <-cbind(dna_pool, generation = rep(g, nrow(dna_pool)))
 #    dna_evolution <- rbind(dna_evolution, dna_pool_gen)
 dna_evolution <- NA
 
+#ADAPT####
+#adapt mutation rate according to ecologically_solved
+
+if (ecologically_solved>=dynamic_mutation_threshold){
+  mutations <- max(.01, mutations*.75)
+  dynamic_mutation_threshold <- dynamic_mutation_threshold +5
+cat("\nMutation rate reduced to", mutations)
+   }
+g <- g +1
+
   }#end generation loop
+
 
 #Output the best performance of all generations####
 
@@ -3018,13 +3459,14 @@ training_perc_explained <- predict_new(models=dna_pool,
                                        profiles=dna_profiles,
                                        new_data = original_data,
                                        assign_models = T,
-                                       method = "residuals")
+                                       method = "residuals",
+                                       closeness_threshold = closeness_threshold)
 
 
 
 
   # dna_evolution is only for visualization!! Deprecated.
-  return(list(dna_pool=dna_pool, dna_profiles=dna_profiles, solution_table=solution_table,   dna_evolution = dna_evolution, discrete_percent_solved=best_ecological$best_percent, r_squared=training_perc_explained$r_squared, ecological_results=ecologically_solved))
+  return(list(dna_pool=dna_pool, dna_profiles=dna_profiles, solution_table=solution_table,   dna_evolution = dna_evolution, discrete_percent_solved=best_ecological$best_percent, r_squared=training_perc_explained$r_squared, ecological_results=ecologically_solved, generations_trained=g-1))
 
 }
 
@@ -3095,10 +3537,8 @@ parents_mate <- function(dna_set=dna_pool,
     dna_set <- rbind(dna_set, this_child)
   }
 
-  op <- options(digits.secs = 6)
-  options(op)
-  IDs <-  as.integer(as.POSIXct(Sys.time()))
-  IDs <- c(IDs:(IDs+(nrow(dna_set)-1)))
+
+  IDs <- generate_id(nrow(dna_set))
 
   rownames(dna_set) <- IDs
 
@@ -3283,7 +3723,9 @@ interpret_results <- function(dna=dna_pool, profiles=dna_profiles, solution_tabl
                               closeness_threshold = solution_threshold,
                               solution_table, #needed for genetic method
                               no_correlation_thresh=-.1, #for genetic algo, a correlation between binary strings in the solution table
-                              pearson_corr_threshold=.7 #this compares the model cofficients directly and keeps the best, removing others over the threshold.
+                              pearson_corr_threshold=.7, #this compares the model cofficients directly and keeps the best, removing others over the threshold.
+                              training_indices=NULL,
+                              final_model_aggregation=T #this condenses the entire leftover solution table to the final model
                               ){
 
 
@@ -3309,73 +3751,137 @@ interpret_results <- function(dna=dna_pool, profiles=dna_profiles, solution_tabl
 
 
   #illegal correlation threshold####
-  #DISABLED FOR NOW####
-  #pearson_corr_threshold <- max(median(  rowMeans(dnapool_correlations)), pearson_corr_threshold)
-  #illegal_correlations <- dnapool_correlations>pearson_corr_threshold
 
-  illegal_correlations <- dnapool_correlations>1 #all correlations are valid
+  #add dynamic setting for illegality threshold. preserving about 25 percent or at least enough for the following models left.
 
-
-  #now we loop through columns keeping the column name (which is the best model), and removing all illegals
-
-  while (ncol(illegal_correlations)>0){
-    this_column <- illegal_correlations[,1, drop=F]
-    this_model <- colnames(this_column)
-
-
-    models_to_remove <-  rownames(this_column)[ this_column==T]
-    #make sure we don't remove the original comparison model
-models_to_remove <- models_to_remove[!models_to_remove==this_model]
-
-if (length(models_to_remove)>0){
-  #remove those models from the dna pool as well as the correlations
-  #this loop stops when the correlation table becomes too small
-
-  dna_pool <- dna_pool[!rownames(dna_pool) %in% models_to_remove,]
-illegal_correlations <- illegal_correlations[!rownames(illegal_correlations)%in% models_to_remove,!colnames(illegal_correlations)%in% models_to_remove, drop=F ]
-
-
-}
-#also shave off first column and row, which was just checked
-
-
-illegal_correlations <- illegal_correlations[-1,-1, drop=F]
-
-}
-
-
-  #cut solution table to match the dna_pool
-
-  these_models_alive <- rownames(dna_pool)
-
-  solution_table <- solution_table[,colnames(solution_table) %in% these_models_alive, drop=F]
- #cut out the models here too?
-  #where does 'models' come from?
+  #fix condensation for remaining rows in solution table! include those?!
 
    if(method == "best"){
 #best the best N models.
 
      nmodel <- min(as.integer(nmodel), nrow(dna_pool))
       which_best <- NULL
+      models_list <- vector("list", nmodel)
 
       for(e in 1:nmodel){
 
   if(nrow(solution_table)==0){
   break
-}
-        this_best <- attr(sort(colSums(solution_table),decreasing=TRUE)[1], "names")
-        this_best_index <- which(colnames(solution_table)== this_best)
-        solution_table <- solution_table[solution_table[,this_best_index] != 1,, drop=F] #trims the solution table of all cases already solved
-        which_best[e] <- this_best_index
-        models <- dna_pool[which_best,] #this does not save the models results
-      }
+  }
+        if (e== nmodel & final_model_aggregation==T){
+ #somehow the final model gets lost?! as if there were no final condense
 
+
+          #full model aggregation actually does nothing... as the solution table modification has no impact on the last model anyways!#
+          #final model aggregation assigns the ENTIRE remaining solution table to the best model
+    # which_best[e] <- "final_model" not needed
+
+          #new code
+          #we choose only those rows in the remaining solution table
+          keep_these_rows <- rownames(solution_table)
+          refined_sample <- training_set[rownames(training_set) %in% keep_these_rows,]
+
+          #now we make a true regression model for that refined sample and add it to the list of kept models
+
+          last_column <- ncol(refined_sample)
+          dv <- colnames(refined_sample)[1]
+          ivs <- colnames(refined_sample)[2:last_column]
+
+          f <- as.formula(
+            paste(dv,
+                  paste(ivs, collapse = " + "),
+                  sep = " ~ "))
+
+          simple_regression <- eval(bquote(   lm(.(f), data = refined_sample)   ))
+
+
+          final_model <- t(data.frame(simple_regression$coefficients))
+          remove_these <- ncol(dna_pool):(ncol(dna_pool)-1)
+colnames(final_model) <- colnames(dna_pool[,-remove_these])
+
+        } else if (e== nmodel){
+          #if no illegal correlations are removed, because this is the final model.
+          this_best <- attr(sort(colSums(solution_table),decreasing=TRUE)[1], "names")
+
+
+          which_best[e] <- which(rownames(dna_pool)==this_best)
+
+        }else{
+
+          #illegal correlation routine####
+
+#only if this is not the final model
+
+          this_best <- attr(sort(colSums(solution_table),decreasing=TRUE)[1], "names")
+          this_best_index <- which(colnames(solution_table)== this_best)
+
+
+
+            #only do this if it is not the last of the models to be condensed into
+          #illegal correllations####
+
+            #find a threshold that preserves at least 25% of the correlations
+
+            #first select the correct column
+           this_correlation_column <-  dnapool_correlations[,this_best]
+
+
+            pearson_corr_threshold <-     quantile(this_correlation_column, .75)
+#perhaps we need a max or a min to that threshold? For now, no, we need to eliminate diversity.
+
+          illegal_correlations_this_model <- this_correlation_column>pearson_corr_threshold #all correlations are valid
+#should not need to loop. Simply remove all the illegal models including this one from the solution table, so that they cannot be selected
+#remove models by name, not index. as the indices will change as the solution_table shrinks
+models_to_remove <-  names(illegal_correlations_this_model)[ illegal_correlations_this_model==T]
+
+#now remove them from the correlation table and the solution table.
+#don't need to remove from the dna pool
+
+#trims the solution table of solved cases from this winning model
+solution_table <- solution_table[solution_table[,this_best_index] != 1,, drop=F] #trims the solution table of all cases already solved
+which_best[e] <- which(rownames(dna_pool)==this_best)
+
+if (length(models_to_remove)>0){
+  #remove those models from the dna pool as well as the correlations
+  #this loop stops when the correlation table becomes too small
+
+  #correlated models to the winner are removed from dnapool correlations as well as from the solution table.
+  dnapool_correlations <- dnapool_correlations[!rownames(dnapool_correlations)%in% models_to_remove,!colnames(dnapool_correlations)%in% models_to_remove, drop=F ]
+  solution_table <- solution_table[,!colnames(solution_table)%in% models_to_remove, drop=F ]
+
+}
+        }
+
+
+} # end looping through condensation models
+
+
+
+
+
+      if (final_model_aggregation==F){
+      models_list <- dna_pool[which_best,]
          #we need to now assign all cases to these new clusters
       #and then take profiles from those cases
+      }else if (final_model_aggregation==T){
+
+
+        dna_with_no_stats_columns <- dna_pool[,-remove_these]
+        models_list <- dna_with_no_stats_columns[which_best,]
+        models_list <- rbind(models_list,final_model )
+
+      #op <- options(digits.secs = 6)
+      #options(op)
+
+      previous_models <-       sort(as.integer(rownames(models_list)[-nrow(models_list)]))
+      this_id <-  previous_models[length(previous_models)]+1
+          rownames(models_list)[nrow(models_list)] <-   this_id
+
+      }
 
       elitist_model_assignments <-       model_closeness(data = training_set,
                                                                    profiles = NULL, #we don't have profiles yet because cases not yet assigned to these new models
-                                                                   models = models,
+                                                                   models = models_list,
                                                                    method = "residuals") #'profiles' or 'residuals'
 
 
@@ -3434,14 +3940,14 @@ model_assignments <- elitist_model_assignments
 
       #calculate the cluster means with the above defined function
      #this is the moment when the models are renamed
-       models <- cluster_means(dna_pool)
-      colnames(models) <- colnames(dna_pool[,1:dna_length])
+       models_list <- cluster_means(dna_pool)
+      colnames(models_list) <- colnames(dna_pool[,1:dna_length])
      #cut off cluster column for pool, no longer needed
       dna_pool <- dna_pool[,-ncol(dna_pool)]
       #cut off all rows and replace with the new model row
       dna_pool <-  dna_pool[0,]
 
-      dna_pool[1:nrow(models),1:dna_length] <- models
+      dna_pool[1:nrow(models_list),1:dna_length] <- models_list
       dna_pool$DNA_age <- 0
       dna_pool$DNA_rating <- 0
         }
@@ -3454,7 +3960,7 @@ model_assignments <- elitist_model_assignments
 
   cluster_condensed_model_assignments <-       model_closeness(data = training_set,
                                   profiles = NULL, #we don't have profiles yet because cases not yet assigned to these new models
-                                  models = models,
+                                  models = models_list,
                                   method = "residuals") #'profiles' or 'residuals'
 
 
@@ -3466,11 +3972,11 @@ model_assignments <- elitist_model_assignments
       model_assignments <- cluster_condensed_model_assignments
         }else{ #if too few models for cluster analysis, still need the model assignments and profiles
 
-          models <- dna_pool
+          models_list <- dna_pool
 
           cluster_condensed_model_assignments <-       model_closeness(data = training_set,
                                                                        profiles = NULL, #we don't have profiles yet because cases not yet assigned to these new models
-                                                                       models = models,
+                                                                       models = models_list,
                                                                        method = "residuals") #'profiles' or 'residuals'
 
           dna_profiles <- create_profile(data_after_dummies=df_full_dummies[training_indices,],
@@ -3501,7 +4007,7 @@ model_assignments <- elitist_model_assignments
                                                                profiles = data$dna_profiles[rownames(data$dna_profiles) %in% these_models,], #we don't have profiles yet because cases not yet assigned to these new models
                                                                models = dna_pool,
                                                                method = "profiles") #'profiles' or 'residuals'
-  models <- dna_pool
+      models_list <- dna_pool
   }
 
 #make sure models, profiles, assignments all have same model name
@@ -3512,7 +4018,7 @@ if (nrow(dna_pool)==1){
   model_assignments$model <- rownames(dna_pool)
 }
 }
-    return(list(data_with_models=model_assignments, models = models, dna_profiles = dna_profiles))
+    return(list(data_with_models=model_assignments, models = models_list, dna_profiles = dna_profiles))
   }
 
 #' Gather R-squared
@@ -3561,6 +4067,27 @@ if (nrow(dna_pool)==1){
   }
 
 
+  #' Generate ID
+  #'
+  #' Used to generate unique model id's
+  #' @export
+  generate_id <- function(n){
+
+    options(digits.secs = 2)
+    #seconds since 1/1/1970
+    these_seconds <-  as.integer(as.POSIXct(Sys.time()))
+    # Extract last x digits
+    n_last <- 3
+    shortened_seconds <- as.integer( substr(these_seconds, nchar(these_seconds) - n_last + 1, nchar(these_seconds)))
+   #add a random 4 digit number
+    random_middle <- as.integer(paste0(sample(1:9, 4, replace = T), collapse = ""))
+
+    fusion <- as.integer(paste0(c(shortened_seconds, random_middle), collapse = ""))
+    #then a stepwise numbering for this set
+    IDs <- c(fusion:(fusion+(n-1)))
+
+  }
+
 
 
 #' Predict new
@@ -3573,10 +4100,14 @@ predict_new <- function(models=result_training$dna_pool,
                         closeness_threshold=solution_threshold, #set same as in training set!
                         assign_models=T, #if true, this assigns models based on the method below. #if we have assign on for only one model, it automatically assigns that model across the cases
                         method="case-based", #'residuals' when profiles are not known. 'profiles' when they are known, or 'case-based', when case rules are already created,
-                        cutlist=NA, #if case-based method, then a cutlist must be provided
+                        population_tree_results=NULL, #if case-based method, then a cutlist must be provided
                         dv=T){ #this is false when called by predict.icr()
 
-
+if (!is.null(population_tree_results)){
+  cutlist <- population_tree_results$cutlist
+}else{
+  cutlist <- NA
+}
 #In this function new data rows are tested against their assigned models
 imported_data <- new_data
   #Assess the size of the input data
@@ -3599,11 +4130,13 @@ imported_data <- new_data
      data_with_models$model <- rownames(models)
    }else{
 
+
      data_with_models <-     model_closeness(data = imported_data,
                     profiles = profiles, #we don't have profiles yet because cases not yet assigned to these new models
                     models = models,
                     method = method,
-                    cutlist=cutlist)
+                    cutlist=cutlist,
+                    population_tree_results = population_tree_results)
 
 }
 
@@ -3622,7 +4155,8 @@ imported_data <- new_data
   data_with_models$model <- model_assignment
   rownames(models) <- as.character(1:nrow(models))
 
-
+#save original model assignments in case we need them
+  #imported_data$model
 
 
   }
@@ -3707,6 +4241,18 @@ if  ( length(discrete_solution)==0){
   discrete_solution <- 0
 }
 
+#RMSE disabled.. use the R-squared instead####
+# #models
+# lapply(rownames(models), FUN= function(x) predict(models[x,], data_with_models[data_with_models$model==x,]))
+# #now predict
+# regression_testset <-     predict(models, testing_set)
+# error_trainingset <- Metrics:: rmse(training_set$y, predict(simple_regression, training_set) )
+# error_testset <-Metrics:: rmse(testing_set$y,regression_testset )
+
+
+
+
+
                                    #cat("\n",unlist(round(solved_or_not[2,2]/solved_or_not[1,2]*100, digits = 2)), "% of set solved")
 return(list(discrete_percent_solved=discrete_solution, r_squared=r_squared_solution, model_closeness_data=data_with_models, predictions=actual_predictions))
 
@@ -3727,7 +4273,8 @@ model_closeness <- function(data = training_set, #Get input_data with a column f
                             profiles = dna_profiles,
                             models = models,
                             method = NULL, #'residuals' when profiles are not known. 'profiles' when they are known, or 'case-based', when case rules are already created,
-                            cutlist=cutlist
+                            cutlist=cutlist,
+                            population_tree_results=NULL
                             ){
 
   #models need their row names.
@@ -3757,6 +4304,11 @@ model_closeness <- function(data = training_set, #Get input_data with a column f
  }
 
   data_for_sweep <- data_model
+
+  #remove model column!!
+  if ("model" %in% colnames(data_for_sweep)){
+    data_for_sweep <- data_for_sweep[,-which(colnames(data_for_sweep)=="model")]
+  }
 
 
 
@@ -3836,6 +4388,8 @@ model_closeness <- function(data = training_set, #Get input_data with a column f
 
     #remove the residual below
     if (nrow(models)>1){
+
+
 model_indices <- apply(data_model[,(ncol(data)+1):(ncol(data)+nrow(models))], MARGIN = 1, FUN = which.min)
 
     data_model <- data.frame(data_model)
@@ -4099,7 +4653,8 @@ data_cat$model <- as.factor(data_cat$model)
 streamline <- function(models,
                        profiles,
                        data,
-                       assign_models=T){  #this will *automatically* assign models through the algorithm. False means they are already assigned within the model data
+                       assign_models=T,
+                       training_indices=NULL){  #this will *automatically* assign models through the algorithm. False means they are already assigned within the model data
 
 if (!is.null(models)){
   if ("DNA_age" %in% colnames(models)){
@@ -4263,6 +4818,7 @@ combo_c_results <-    combinatorial_columns(original_data)
 
       already_considered <- c(already_considered | (all_ivs %in% c(greatest_gap$variable)))
 
+
       #if this variable belongs to a dummyset, remove it!
       if (T %in% dummy_sets){
         if(grepl(paste0(dummy_set_ivs,  collapse = "|"), greatest_gap$variable)){
@@ -4336,7 +4892,10 @@ combo_c_results <-    combinatorial_columns(original_data)
     if (re_use_variables==F){
 
       already_considered <- c(already_considered| (all_ivs %in% c(greatest_gap_in_similar_models_otherwise$variable)))
-    }
+    } #else we might remove models that are not valid according to remaining cases
+
+
+
 
     #if the greatest_gap_above is NA, then stop building the tree!
     if (is.na(greatest_gap_in_similar_models_otherwise$models_means)[1]){
@@ -4830,7 +5389,7 @@ working_df[,column_name] <- 0
  combos <- apply(combos,1,  FUN = function(x) x[!is.na(x)])
 
 #previous bug!?####
-#browser()
+
     for (combo in 1:length(combos)){
       this_combo <-  combos[[combo]]
       combo_subset <- df_these_columns[, grepl(paste0(this_combo, collapse="|"), these_columns), drop=F]
@@ -4840,7 +5399,7 @@ working_df[,column_name] <- 0
       if (this_new_colname %in% colnames(dummy_df)){
 
       }else{
-#browser()
+
         dummy_df <- eval(parse(text = paste0("cbind(dummy_df,", this_new_colname,"= new_values)" )))
       }
     }
@@ -4858,7 +5417,8 @@ working_df[,column_name] <- 0
 #' @param cutlist This is the blueprint for building the agglomeration tree, exported from the agglom_tree() function.
 #' @export
 population_to_case_tree <- function(cutlist,
-                                    population_data){
+                                    population_data,
+                                    training_indices=NULL){
 
   #determine if combinatorial columns are present!
   #If even one variable is converted, then they all are...
@@ -4952,6 +5512,7 @@ population_to_case_tree <- function(cutlist,
       #but now the cuts do not apply to all data but just some
     }else{
       threshhold_mask <-  processed_data[,which_var_column] <= threshhold
+
       processed_data$model[parent_mask & threshhold_mask ] <- this_cut$leaf1
       processed_data$model[parent_mask & !threshhold_mask] <- this_cut$leaf2
     }
@@ -5046,7 +5607,7 @@ biggest_anova_gap <- function(ivs, #the ivs that will be compared
     one.way <- aov(f, data = populations)
     #take variable with highest or lowest F value
     #summary(one.way)
-
+  #for each live model, this is the mean for that variable
     model_comparison <- aggregate(populations[,this_iv], by=list(model= populations$model[populations$model %in% models]), mean)
     F_value <- summary(one.way)[[1]]$`F value`[1]
     if (is.nan( F_value)){
@@ -5146,99 +5707,78 @@ compare_data <- function(true_sample=sample.data$profile,
 
 
   # Case assignments.####
-  #just compare the true with found and give a percentage accuracy.
+# we will use precision. True Positives / (TP + False Positives)
+#loop through model by model
 
-  #sort those found by row number so that we can easily match the sample data
-  found_case_rows <- rownames(found_case_assignments)
-  found_case_models <- found_case_assignments$model
+  found_models <- data.frame(found_models)
+  true_model_names <- rownames(dna_pool)
+  found_model_names <-  rownames(found_models)
+  true_rownames_all_models <- lapply(true_model_names, FUN=function(x) rownames(true_case_assignments[true_case_assignments$model==x,]))
+  true_rownames_lengths <- lapply(true_rownames_all_models, length)
 
-  #now try to match the names of the found, vs. not found models
+  match_list <- vector("list",0) #a list of matching true models for each found model
+  precision_list <- vector("list", 0) #a list of precision scores for found models
+  model_error_list <- vector("list",0) #a list of model errors for each found model
 
-  true_case_assignments <- true_case_assignments[match(found_case_rows, rownames(true_case_assignments)),]
+  for (i in 1:length(found_model_names)){
 
-  case_assign_comparison <- data.frame(matrix(nrow=0, ncol=3))
-  colnames(case_assign_comparison) <- c("original model", "new model", "percentage")
+  this_model <-   found_model_names[i]
+  found_rownames_this_model <-  rownames(found_case_assignments[found_case_assignments$model == this_model,])
+#in each ground truth model, we check how many of the found cases are within the true cases set
+  true_positives <- lapply(true_rownames_all_models,FUN=function(x)  sum(found_rownames_this_model %in% x))
 
-  for (i in unique(true_case_assignments$model)){
+  #we first check to which ground truth model this case set is the best match
+  ground_truth_precision <- unlist(true_positives)/unlist(true_rownames_lengths)
 
-    these_cases <-     which(true_case_assignments$model==i)
+  #which true model is closest to a match?
+  which_match <- which(ground_truth_precision==max(ground_truth_precision))[1] #if multiples, we simply choose the first
+  match_list[i] <- which_match
 
-    models_found_cases <- found_case_models[these_cases]
+  #and the matches should not be unique... because the number found will rarely perfectly match the true.
+  #then we calculate the precision for the found model subgroup based on the matching ground truth group
 
-    models_to_cases <- data.frame(table(models_found_cases))
+  found_precision <- true_positives[[which_match]]/length(found_rownames_this_model)
 
-    models_to_cases <- cbind(i, models_to_cases)
+    precision <- found_precision
+  precision_list[i] <- precision
 
-    case_assign_comparison <- rbind(case_assign_comparison, models_to_cases)
+  #model similarity score
+  #model comparison####
+
+  #now we can count the error between the original models and the assigned models, using the case assignment % as a weight.
+
+
+
+  this_found_model <- data.frame(found_models[rownames(found_models)==this_model,])
+  this_original_model <- dna_pool[  which_match,]
+
+
+
+  colnames(this_found_model) <- colnames(this_original_model)
+
+
+
+  #now sweep for the differences
+  model_difference <- sum(this_found_model-this_original_model)^2
+
+
+#?standardize this according to number of parameters in each model?####
+  model_error_list[i] <- model_difference
+
 
 
   }
 
-  case_assign_comparison$models_found_cases <- gsub(" ", "",case_assign_comparison$models_found_cases)
-  case_assign_comparison$models_found_cases <- as.character( case_assign_comparison$models_found_cases)
- # colnames(case_assign_comparison)[1] <- "true models"
-
-  #now I can  score the case_assign_comparison
-  #a perfect assignment would mean.
-  #1. all original cases are grouped together in the same new model.
-  #2. the number of new models is the same
-  #so 1. can be a percentage in each original model that share a new dominant model
-  #and 2. can be abs( new-models minus old)/old models.. and that penaltyshould range between 0 and 1 (max)
-  case_scores <- NULL
-  model_sim_scores <- NULL
-  for (i in 1:length(unique(case_assign_comparison$i))){
-    this_group <- case_assign_comparison[case_assign_comparison$i==i,]
-
-    #case assignment score
-    group_score <-   max(this_group$Freq)/sum(this_group$Freq)
-    case_scores <- append(case_scores, group_score)
-
-    #model similarity score
-    #model comparison####
-
-    #now we can count the error between the original models and the assigned models, using the case assignment % as a weight.
-
-    these_models <- this_group[,-3]
-    colnames(these_models) <- c("original", "found")
-
-    original_model <- dna_pool[  these_models[1,1],]
-
-    new_models <- found_models[match(these_models$found,rownames(found_models)  ),]
-
-    if (is.null(dim(new_models))){
-    new_models <- t(data.frame(new_models))
-    }
-
-        colnames(new_models) <- colnames(original_model)
-
-    #now sweep for the differences
-    x <-sweep(new_models, MARGIN=2,unlist( original_model), `-`) #input_data without dv column
-    x <- x^2
-    x <- rowSums(x)
-    #now multiply the error by its weight based on case assignments
-
-    group_case_total <- sum(this_group$Freq)
-    case_percentages <- this_group$Freq/group_case_total
-
-    x <- x*case_percentages
-    #now sum up the error, and we have the model_based error
-    model_similarity_error <- sum(x)
-    model_sim_scores <- append(model_sim_scores, model_similarity_error)
-
-  }
-  case_assign_score <- mean(case_scores)
-  model_similarity_error <-  mean(model_sim_scores)
-
-  if (is.na( model_similarity_error)){
-    #
-  }
 
 
-  #and now apply the n_model penalty, limited it to a 0 to .9 range
-  x <- min(abs(  length(unique(case_assign_comparison$models_found_cases)) - length(unique(case_assign_comparison$i)))/ length(unique(case_assign_comparison$i)), .9)
-  case_assign_score <- case_assign_score*(1-x)
 
-  #profile comparison perhaps not needed because we already look at exact case matches...
+  #now multiply the error by its weight based on case assignments
+  #do the same with case assignment
+
+#% of cases in each found model
+case_weight_list <- lapply(found_model_names, FUN = function(x) nrow(found_case_assignments[found_case_assignments$model==x,])/ nrow(found_case_assignments))
+overall_precision <- sum(unlist(case_weight_list)*unlist(precision_list))
+overall_model_error <- sum(unlist(case_weight_list)*unlist(model_error_list))
 
 
 
@@ -5249,7 +5789,7 @@ compare_data <- function(true_sample=sample.data$profile,
 
 
 
-  return(list(case_assign_score=case_assign_score, case_assign_comparison_data=case_assign_comparison, model_similarity_error=model_similarity_error))
+  return(list(case_assign_score=overall_precision, model_similarity_error=overall_model_error))
 
 }
 

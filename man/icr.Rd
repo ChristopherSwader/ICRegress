@@ -22,7 +22,11 @@ icr(
   .tuning = F,
   autotune_params = NULL,
   max_n_condensations = 6,
-  force_n_condensation = NULL
+  force_n_condensation = NULL,
+  training_indices = NULL,
+  target_training_percent = NULL,
+  generation_limit = NULL,
+  final_model_aggregation = T
 )
 }
 \arguments{

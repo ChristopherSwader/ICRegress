@@ -5,7 +5,8 @@
 \title{Benchmarking}
 \usage{
 benchmarking(
-  random_seeds = c(100001:100050),
+  random_seed = c(123),
+  n_random_iterations,
   generations = c(40, 200, 1000),
   solution_thresh = c(0.01),
   n_strands = c(50),
@@ -22,12 +23,13 @@ benchmarking(
   starting_population,
   hold_back_cores = 2,
   death_by_ageing = 60,
-  nelitism = 10
+  nelitism = 10,
+  target_training_percent = NULL,
+  generation_limit = NULL,
+  final_model_aggregation = T
 )
 }
 \arguments{
-\item{random_seeds}{Benchmarking parameter. A vector of integers to serve as random seeds.}
-
 \item{generations}{Benchmarking parameter. A vector of integers specifying the number of generations for initial ICR genetic training.}
 
 \item{solution_thresh}{Benchmarking parameter. A vector of positive numeric values specifying the discrete solution target on each side of the solution, where solutions may range from 0 to 1.}
@@ -53,6 +55,8 @@ benchmarking(
 \item{starting_population}{An integer representing the number of starting population.}
 
 \item{hold_back_cores}{Prevents X cores from being involved in the parallel processing, thus reserving computing power.}
+
+\item{random_seeds}{Benchmarking parameter. A vector of integers to serve as random seeds.}
 }
 \description{
 Run a random set of generated (fake) data and comparing the results across multiple methods

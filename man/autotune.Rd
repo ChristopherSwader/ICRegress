@@ -4,7 +4,14 @@
 \alias{autotune}
 \title{Autotune}
 \usage{
-autotune(input_data, dv, iv, restrict_sample = T, random_seed)
+autotune(
+  input_data,
+  dv,
+  iv,
+  restrict_sample = T,
+  random_seed,
+  training_indices = NULL
+)
 }
 \arguments{
 \item{input_data}{Input the same input data set as you will use for the main icr analysis.}

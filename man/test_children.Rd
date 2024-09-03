@@ -21,7 +21,11 @@ test_children(
   mating_power = 1,
   selection = c("threshold", "probability"),
   rem_doppleganger = T,
-  nelitism = 0
+  nelitism = 0,
+  training_indices = NULL,
+  target_training_percent = NULL,
+  generation_limit = NULL,
+  dynamic_mutation = T
 )
 }
 \description{

@@ -13,7 +13,9 @@ condense_models(
   closeness_threshold = solution_threshold,
   solution_table,
   no_correlation_thresh = -0.1,
-  pearson_corr_threshold = 0.7
+  pearson_corr_threshold = 0.7,
+  training_indices = NULL,
+  final_model_aggregation = T
 )
 }
 \description{

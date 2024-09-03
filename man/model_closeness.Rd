@@ -9,7 +9,8 @@ model_closeness(
   profiles = dna_profiles,
   models = models,
   method = NULL,
-  cutlist = cutlist
+  cutlist = cutlist,
+  population_tree_results = NULL
 )
 }
 \description{
