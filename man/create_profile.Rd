@@ -5,7 +5,11 @@
 \title{Create Profile}
 \usage{
 create_profile(
+<<<<<<< HEAD
+  data_after_dummies = original_data,
+=======
   data_after_dummies = df,
+>>>>>>> afb80ee0935fb3ec0dd7caacaef56f1ca436547f
   model_assignment_data = NULL,
   dummy_vars = "cntry",
   model_labels = NULL

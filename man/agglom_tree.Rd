@@ -7,6 +7,10 @@
 agglom_tree(
   data,
   original_data = original_data[training_indices, ],
+<<<<<<< HEAD
+  training_set,
+=======
+>>>>>>> afb80ee0935fb3ec0dd7caacaef56f1ca436547f
   re_use_variables = F
 )
 }

@@ -4,7 +4,11 @@
 \alias{combinatorial_columns}
 \title{Create combinatorial columns}
 \usage{
+<<<<<<< HEAD
+combinatorial_columns(input_data, training_set, testing_set, training_indices)
+=======
 combinatorial_columns(input_data)
+>>>>>>> afb80ee0935fb3ec0dd7caacaef56f1ca436547f
 }
 \arguments{
 \item{input_data}{Dataframe to be converted into combinatorial columns.}

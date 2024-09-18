@@ -70,6 +70,7 @@ autotune <- function( input_data,
   #adjust mutation rate, death by ageging, nchildren, elitism
   #add a few strands
 
+
   n_original_cases <- nrow(input_data)
 
 #reduce sample size for speed up.
@@ -163,7 +164,6 @@ starting_percentage_run <-  icr(generations=1, #1000 as default
 
   })
 #DEBUG####
-
 
 
 starting_value <-  starting_percentage_run$ecological_results
@@ -374,7 +374,6 @@ if (n_strands<20){
 #D. elitism (should be limited by N_strands)
 
 
-
 #plan... get a list of combinations of each of these possibility vectors, test them all for stability across the growth to 40 generations and from 40 to 80.
 growth_parameter_grid <- expand.grid(mutation_rate=mutation_vector, n_children=n_children_vector, death_by_ageing=death_by_ageing_vector, elitism=elitism_vector)
 growth_parameter_grid$achieved_t1 <- 0
@@ -532,7 +531,7 @@ benchmarking <- function( random_seed=c(123),#:100050, #parameter for testing
 
 
 
-# PARALLEL####
+            # PARALLEL####
 
   if (parallelize==T){
 
@@ -573,8 +572,6 @@ unlink("log.txt")
 
     #foreach loop####
    par_results <-  foreach(i = 1:p_number, .combine = rbind) %dopar% {
-
-
 
 
 
@@ -870,7 +867,10 @@ these_results <- list()
                                         new_data=full_set,
                                         closeness_threshold=solution_thresh,#set same as in training set!
                                         assign_models = T,
-                                        method="residuals")
+                                        method="residuals",
+                                        training_set = training_set,
+                                        testing_set = testing_set,
+                                        training_indices = training_indices)
 
 
 
@@ -975,7 +975,10 @@ new_data_full$model <- ex1@cluster
                                  new_data=new_data_full,
                                  closeness_threshold=solution_thresh,#set same as in training set!
                                  assign_models = F,
-                                 method="residuals")
+                                 method="residuals",
+                                 training_set = training_set,
+                                 testing_set = testing_set,
+                                 training_indices = training_indices)
 
 
 
@@ -1073,7 +1076,10 @@ new_data_full$model <- ex1@cluster
                                  new_data=new_data_full_cluster,
                                  closeness_threshold=solution_thresh,#set same as in training set!
                                  assign_models = F,
-                                 method="residuals")
+                                 method="residuals",
+                                 training_set = training_set,
+                                 testing_set = testing_set,
+                                 training_indices = training_indices)
 
 
     cluster_compare_results <- compare_data(true_sample=sample.data$profile,
@@ -1151,7 +1157,10 @@ result_lmt <- predict_new(models=lmt_model_frame,
                              new_data=lmt_full_set,
                              closeness_threshold=solution_thresh,#set same as in training set!
                              assign_models = F,
-                             method="residuals")
+                             method="residuals",
+                          training_set = training_set,
+                          testing_set = testing_set,
+                          training_indices = training_indices)
 
 
 
@@ -1267,7 +1276,7 @@ key_parameter_columns <- which(colnames(par_results) %in% key_parameters)
 
  if (boxplots==T){
   ##boxplots####
-browser() #fix later
+#browser() #fix later
   these_parameter_files$method <- as.factor( these_parameter_files$method )
   these_parameter_files$generations <- as.factor( these_parameter_files$generations )
 
@@ -1523,7 +1532,6 @@ if (!is.na(dv)){
     newdf <- dummy_cols(newdf, select_columns = original_variables[dummy_sets], remove_first_dummy = T, ignore_na = T, remove_selected_columns = T)
 
 
-
     df_full_dummies <- dummy_cols(df, select_columns = original_variables[dummy_sets], remove_first_dummy = F, ignore_na = T, remove_selected_columns = T)
     df_full_dummies<<- df_full_dummies
     #the above function reset the row names!
@@ -1561,7 +1569,10 @@ predict.icr <- function(object, new_data){
                                  assign_models = T,
                                  method="case-based",
                                  population_tree_results = object$cutlist,
-                                 dv=F)
+                                 dv=F,
+                                 training_set = training_set,
+                                 testing_set = testing_set,
+                                 training_indices = training_indices)
 #rescale predictions to original
 
   original_dv <- object$original_data_unscaled[,object$dv]
@@ -1621,10 +1632,14 @@ icr <- function(generations=c(1000),
                           training_indices=NULL, #if this is not null, then the training indices are used that are fed into this parameter
                           target_training_percent=NULL, #any percentage, e.g. 95 set here will override, extend or the generations until achieved
                           generation_limit=NULL,
-                final_model_aggregation=T
+                          final_model_aggregation=T,
+                          training_set = NULL,
+                          testing_set = NULL
 
                  ){
 
+  
+  
   if (!is.null(autotune_params)){
     solution_thresh <- autotune_params$solution_threshold
     n_strands <- autotune_params$n_strands
@@ -1635,6 +1650,7 @@ icr <- function(generations=c(1000),
     death_by_ageing <- autotune_params$death_by_ageing
   }
 
+  
   #max_n_condensation and force_n_condensation are limited to the number of IV's plus 1 when variables are not split multiple times
   if (re_use_variables==F){
    max_n_condensations <- min(length(iv)+1, max_n_condensations)
@@ -1665,14 +1681,14 @@ if (!is.na( force_subgroup_n)){
 
   ###data prep start####
 
-
     data_prepped <- icr_data_prep(input_data = input_data, iv=iv, dv=dv)
 
 original_data_unscaled <- data_prepped$original_data_unscaled
  ###data prep end####
 
 newdf <- data_prepped$df_dummies_no_ref_cat
-df_full_dummies<<-data_prepped$df_dummies
+  newdf<<-newdf
+df_full_dummies <<-data_prepped$df_dummies
 
 
 
@@ -1790,7 +1806,8 @@ df_full_dummies<<-data_prepped$df_dummies
                                      target_training_percent=target_training_percent,
                                      generation_limit=generation_limit)
 
-
+  
+    
 cat("\nTest_children complete.")
 
 if (.tuning==T){
@@ -1803,7 +1820,7 @@ if (is.na(result_training[1])){
 }
 }
     # saveRDS(result_training,paste0("./testing/",i, " training results.RDS"))
-    #
+    #browser()
     ### IF no training. training is NA###
     if (!is.na(result_training[1])){ #if the dna did not die out, then continue with condensation ONLY
 
@@ -1811,7 +1828,10 @@ if (is.na(result_training[1])){
 
       assign_after_training <- model_closeness(data = training_set, result_training$dna_profiles,
                                                models = result_training$dna_pool ,
-                                               method = tc)
+                                               method = tc,
+                                               training_set = training_set,
+                                               testing_set = testing_set,
+                                               training_indices = training_indices)
 
 
       model_plot(data_with_models=assign_after_training, label = "Post training",
@@ -1820,8 +1840,6 @@ if (is.na(result_training[1])){
                  turned_on = detailed_plots_on,
                  X_variable = 1,
                  local_regression_line = T)
-
-
 
 
 
@@ -1893,6 +1911,7 @@ if (is.na(result_training[1])){
 #   browser() #match models to streamlined data and models
 # }
 
+
           this_condense <- condense_models(data = result_training,
                                            training_set = training_set,
                                            method = this_method_style, #or "cluster" / "best"
@@ -1913,11 +1932,16 @@ if (is.na(result_training[1])){
                      turned_on = detailed_plots_on,
                      X_variable=1)
 
+          
+        
           condensed_training <- predict_new(models=this_condense$models,
                                             profiles=this_condense$dna_profiles,
                                             new_data=this_condense$data_with_models,
                                             closeness_threshold=solution_thresh, #set same as in training set!
-                                            assign_models = F)
+                                            assign_models = F,
+                                            training_set = training_set,
+                                            testing_set = testing_set,
+                                            training_indices = training_indices)
 
           ##6. STREAMLINE Take solution table and calculate true regressions for underlying subpopulations###
           #This makes predictions more accurate and more clearly separates subpopulations
@@ -1947,7 +1971,10 @@ if (is.na(result_training[1])){
                                                      profiles=streamlined_data_and_models$dna_profiles,
                                                      new_data=streamlined_data_and_models$model_assignment,
                                                      closeness_threshold=solution_thresh, #set same as in training set!
-                                                     assign_models = F)
+                                                     assign_models = F,
+                                                     training_set = training_set,
+                                                     testing_set = testing_set,
+                                                     training_indices = training_indices)
 
 
 
@@ -1963,12 +1990,18 @@ if (is.na(result_training[1])){
                                         new_data=testing_set,
                                         closeness_threshold=solution_thresh, #set same as in training set!
                                         assign_models = T,
-                                        method=tc)
+                                        method=tc,
+                                        training_set = training_set,
+                                        testing_set = testing_set,
+                                        training_indices = training_indices)
 
           assign_after_testing <- model_closeness(data = testing_set,
                                                   profiles=streamlined_data_and_models$dna_profiles,
                                                   models = streamlined_data_and_models$dna_pool ,
-                                                  method = tc)
+                                                  method = tc,
+                                                  training_set = training_set,
+                                                  testing_set = testing_set,
+                                                  training_indices = training_indices)
 
 
           model_plot(data_with_models=assign_after_testing,
@@ -1984,12 +2017,18 @@ if (is.na(result_training[1])){
                                                   new_data=testing_set,
                                                   closeness_threshold=solution_thresh, #set same as in training set!
                                                   assign_models = T,
-                                                  method=tc)
+                                                  method=tc,
+                                                  training_set = training_set,
+                                                  testing_set = testing_set,
+                                                  training_indices = training_indices)
 
           assign_condensed_after_testing <- model_closeness(data = testing_set,
                                                             profiles=this_condense$dna_profiles,
                                                             models = this_condense$models ,
-                                                            method = tc)
+                                                            method = tc,
+                                                            training_set = training_set,
+                                                            testing_set = testing_set,
+                                                            training_indices = training_indices)
 
 
           model_plot(data_with_models=assign_condensed_after_testing,
@@ -2152,6 +2191,8 @@ return("No condensation conducted because no models survived training")
 
 
       #this is not working properly for DF3!. it does not produce a universal model as it should.
+      
+      
       population_tree_results <- agglom_tree(data=selected_streamlined_data_and_models,
                                              original_data = original_data[training_indices,],
                                              re_use_variables = re_use_variables)
@@ -2177,10 +2218,14 @@ return("No condensation conducted because no models survived training")
      #this is the training data being converted into case-base assignments from population-based ones.
 
         #make sure all columsn are included here.
+     
 
            case_based_model_assignment <- population_to_case_tree(cutlist=population_tree_results$cutlist,
                                                                population_data=population_tree_results$data,
-                                                               training_indices=training_indices)
+                                                               training_indices = training_indices,
+                                                               training_set = training_set,
+                                                               testing_set = testing_set
+                                                             )
 
       }else if (is.null( population_tree_results$data[1])){ #if only one model
 
@@ -2215,13 +2260,15 @@ return("No condensation conducted because no models survived training")
 #temp remove #case_based_model_assignment$data <- streamlined_data_and_models$model_assignment
 #temp remove #case_based_model_assignment$data$model <- model_assignments
 
+
+data_without_dummy_columns <- cbind(training_set, model = model_assignments)
+
 #check number of rows!
-
-
+   
 
       true_regression_case_based <- streamline(models=NULL,
                                                profiles=case_based_model_assignment$profiles,
-                                               data=case_based_model_assignment$data,
+                                               data= data_without_dummy_columns,
                                                assign_models = F)
 
 
@@ -2234,7 +2281,10 @@ return("No condensation conducted because no models survived training")
                                                 profiles=true_regression_case_based$dna_profiles,
                                                 new_data=true_regression_case_based$model_assignment,
                                                 closeness_threshold=solution_thresh, #set same as in training set!
-                                                assign_models = F)
+                                                assign_models = F,
+                                                training_set = training_set,
+                                                testing_set = testing_set,
+                                                training_indices = training_indices)
 
       model_plot(data_with_models=case_based_model_assignment$data,
                  label = "Case-based Training",
@@ -2255,7 +2305,10 @@ return("No condensation conducted because no models survived training")
                                                closeness_threshold=solution_thresh, #set same as in training set!
                                                assign_models = T,
                                                method="case-based",
-                                               population_tree_results=population_tree_results
+                                               population_tree_results=population_tree_results,
+                                               training_set = training_set,
+                                               testing_set = testing_set,
+                                               training_indices = training_indices
       )
 
 
@@ -2407,7 +2460,10 @@ return("No condensation conducted because no models survived training")
                                      new_data=this_sample,
                                      closeness_threshold=solution_thresh,#set same as in training set!
                                      assign_models = T,
-                                     method="residuals")
+                                     method="residuals",
+                                     training_set = training_set,
+                                     testing_set = testing_set,
+                                     training_indices = training_indices)
 
 results <- list(original_data_with_new_models=original_data, model_distribution=table(original_data$model), cutlist=population_tree_results$cutlist,agglomeration_tree=population_tree_results$tree_blueprint,models= true_regression_case_based$dna_pool,  model_subgroup_profiles=overall_ICR_profiles, ecological_results=result_training, training_results=result_training_case_based, testing_results=result_testing_case_based, simple_regression_results=result_simple_testset, training_perc_solved=result_training$discrete_percent_solved, full_models=true_regression_case_based$full_models, dv=dv, iv=iv, original_data_unscaled=original_data_unscaled, generations_trained=result_training$generations_trained)
 class(results) <- "icr"
@@ -2955,7 +3011,6 @@ while (g <= generations){
 
 
 
-
     input_data <- data.matrix(input_data)
 
         dna_pool <- data.matrix(dna_pool)
@@ -2977,7 +3032,6 @@ while (g <= generations){
     solved_or_not <- gap_from_real_dv<= closeness_threshold
 
     #now fill in solution table and then get dna profiles.
-
     large_solution_set <-   which( solved_or_not==T ) #indices of the LARGE matrix, not case IDs!
     attr(large_solution_set, "names") <- NULL
     large_solution_set_plotting <- data.frame(index=large_solution_set, row=ceiling(large_solution_set/nrow(dna_pool)),col= large_solution_set-(ceiling(large_solution_set/nrow(dna_pool))-1)*nrow(dna_pool) )
@@ -3004,8 +3058,6 @@ while (g <= generations){
 
 
     }
-
-
 
     #Adding the IDs from the dna pool
 
@@ -3177,6 +3229,8 @@ if (nrow(dna_pool)>1){
 #Model survival####
     #save models based on threshold (only the top x number)
 
+
+    
     if(selection == "threshold" | g==generations){
       if (!is.null(death_number_thresh)){
 
@@ -3239,6 +3293,7 @@ if (nrow(dna_pool)>1){
     # in order to enable the simultaneous exploration of different local maxima
     # First: Create a closeness table based on the sum of the standard deviation differences
     #         for all coefficients between two models
+      
     if (mating == "pam" || mating == "dam"){
       closeness_table <- matrix(0, nrow = nrow(dna_pool), ncol = nrow(dna_pool))
       for(row in 1:nrow(closeness_table)) {
@@ -3449,7 +3504,7 @@ solution_table <- best_ecological$ecological_solution_table
   #and then remove the model column here because it does not make sense because models overlap
   solution_table <- solution_table[,-which(colnames(solution_table)== "model"), drop=F]
 
-
+#browser()
 
 #add R-squared solution
   #and the prediction solution for the training set. The points are assigned to a model based on their closest residual values
@@ -3457,10 +3512,13 @@ dna_pool <- best_ecological$dna_pool
 
 training_perc_explained <- predict_new(models=dna_pool,
                                        profiles=dna_profiles,
-                                       new_data = original_data,
+                                       new_data = newdf,
                                        assign_models = T,
                                        method = "residuals",
-                                       closeness_threshold = closeness_threshold)
+                                       closeness_threshold = closeness_threshold,
+                                       training_set = training_set,
+                                       testing_set = testing_set,
+                                       training_indices = training_indices)
 
 
 
@@ -3550,7 +3608,8 @@ parents_mate <- function(dna_set=dna_pool,
 #'
 #'Create a descriptive profile of the subpopulations for each model, including all categories (reference categories are not left out)
 #' @export
-create_profile <- function(data_after_dummies=df,
+
+create_profile <- function(data_after_dummies= original_data,
                            model_assignment_data=NULL,#must have rownames for each case and a column called model. If NULL, it assumes one model
                            dummy_vars="cntry",#a vector of the categorical variables (3+ categories) for which dummies should be made
                            model_labels=NULL #whether model labels are specified or automatically assigned
@@ -3571,6 +3630,7 @@ create_profile <- function(data_after_dummies=df,
   #   initial_levels_list[[i]] <- initial_levels
   # }
 
+  
   if (length(dummy_vars)>0){
   save_rownames <- rownames(data_after_dummies)
 
@@ -3715,6 +3775,8 @@ interpret_results <- function(dna=dna_pool, profiles=dna_profiles, solution_tabl
 #' Condenses models.
 #'
 #' @export
+#' 
+
   condense_models <- function(data = NULL,
                               training_set = training_set,
                               method = c("best", "cluster", "genetic"), #genetic is a bit broken... the cross problem.
@@ -3879,10 +3941,14 @@ if (length(models_to_remove)>0){
 
       }
 
+
       elitist_model_assignments <-       model_closeness(data = training_set,
                                                                    profiles = NULL, #we don't have profiles yet because cases not yet assigned to these new models
                                                                    models = models_list,
-                                                                   method = "residuals") #'profiles' or 'residuals'
+                                                                   method = "residuals",
+                                                         training_set = training_set,
+                                                         testing_set = testing_set,
+                                                         training_indices = training_indices) #'profiles' or 'residuals'
 
 
        dna_profiles <-  create_profile(data_after_dummies=df_full_dummies[training_indices,],
@@ -3961,7 +4027,10 @@ model_assignments <- elitist_model_assignments
   cluster_condensed_model_assignments <-       model_closeness(data = training_set,
                                   profiles = NULL, #we don't have profiles yet because cases not yet assigned to these new models
                                   models = models_list,
-                                  method = "residuals") #'profiles' or 'residuals'
+                                  method = "residuals",
+                                  training_set = training_set,
+                                  testing_set = testing_set,
+                                  training_indices = training_indices) #'profiles' or 'residuals'
 
 
       dna_profiles <- create_profile(data_after_dummies=df_full_dummies[training_indices,],
@@ -3977,7 +4046,10 @@ model_assignments <- elitist_model_assignments
           cluster_condensed_model_assignments <-       model_closeness(data = training_set,
                                                                        profiles = NULL, #we don't have profiles yet because cases not yet assigned to these new models
                                                                        models = models_list,
-                                                                       method = "residuals") #'profiles' or 'residuals'
+                                                                       method = "residuals",
+                                                                       training_set = training_set,
+                                                                       testing_set = testing_set,
+                                                                       training_indices = training_indices) #'profiles' or 'residuals'
 
           dna_profiles <- create_profile(data_after_dummies=df_full_dummies[training_indices,],
                                          model_assignment_data=cluster_condensed_model_assignments,
@@ -4006,7 +4078,10 @@ model_assignments <- elitist_model_assignments
       model_assignments <-       model_closeness(data = training_set,
                                                                profiles = data$dna_profiles[rownames(data$dna_profiles) %in% these_models,], #we don't have profiles yet because cases not yet assigned to these new models
                                                                models = dna_pool,
-                                                               method = "profiles") #'profiles' or 'residuals'
+                                                               method = "profiles",
+                                                 training_set = training_set,
+                                                 testing_set = testing_set,
+                                                 training_indices = training_indices) #'profiles' or 'residuals'
       models_list <- dna_pool
   }
 
@@ -4101,8 +4176,12 @@ predict_new <- function(models=result_training$dna_pool,
                         assign_models=T, #if true, this assigns models based on the method below. #if we have assign on for only one model, it automatically assigns that model across the cases
                         method="case-based", #'residuals' when profiles are not known. 'profiles' when they are known, or 'case-based', when case rules are already created,
                         population_tree_results=NULL, #if case-based method, then a cutlist must be provided
-                        dv=T){ #this is false when called by predict.icr()
+                        dv=T,
+                        training_set = training_set,
+                        testing_set = testing_set,
+                        training_indices = training_indices){ #this is false when called by predict.icr()
 
+  
 if (!is.null(population_tree_results)){
   cutlist <- population_tree_results$cutlist
 }else{
@@ -4131,12 +4210,16 @@ imported_data <- new_data
    }else{
 
 
+     
      data_with_models <-     model_closeness(data = imported_data,
                     profiles = profiles, #we don't have profiles yet because cases not yet assigned to these new models
                     models = models,
                     method = method,
                     cutlist=cutlist,
-                    population_tree_results = population_tree_results)
+                    population_tree_results = population_tree_results,
+                    training_set = training_set,
+                    testing_set = testing_set,
+                    training_indices = training_indices)
 
 }
 
@@ -4206,7 +4289,6 @@ if ("DNA_rating" %in% colnames(relevant_model_matrix)){
   relevant_model_matrix <- relevant_model_matrix[,-which(colnames(relevant_model_matrix) %in% c("DNA_rating", "DNA_age"))]
 }
 
-
 product_matrix <- new_data_matrix*relevant_model_matrix
 actual_predictions <- rowSums(product_matrix)
 
@@ -4274,7 +4356,10 @@ model_closeness <- function(data = training_set, #Get input_data with a column f
                             models = models,
                             method = NULL, #'residuals' when profiles are not known. 'profiles' when they are known, or 'case-based', when case rules are already created,
                             cutlist=cutlist,
-                            population_tree_results=NULL
+                            population_tree_results=NULL,
+                            training_set = training_set,
+                            testing_set = testing_set,
+                            training_indices = training_indices
                             ){
 
   #models need their row names.
@@ -4374,6 +4459,7 @@ model_closeness <- function(data = training_set, #Get input_data with a column f
   if (is.null(this_model)){
     this_model <- t(data.frame(this_model))
   }
+ 
       #now run that model against every member of the input_data, collect residuals
       x <-sweep(data_for_sweep[,, drop=F], MARGIN=2,unlist(this_model), `*`) #input_data without dv column
 
@@ -4416,7 +4502,10 @@ model_indices <- apply(data_model[,(ncol(data)+1):(ncol(data)+nrow(models))], MA
 
 
 results <-     population_to_case_tree(population_data = data_for_sweep,
-                                          cutlist = cutlist)
+                                          cutlist = cutlist,
+                                       training_set = training_set,
+                                       testing_set = testing_set,
+                                       training_indices = training_indices)
     data_model$model <- as.integer(results$data$model)
 
 
@@ -4479,7 +4568,8 @@ interpret_by_case <- function(data,
   #Assign cases to models
   if (is.null(assignments)){
   data_model <- model_closeness(data = data, profiles = profiles,
-                                models = models, method = "residuals")
+                                models = models, method = "residuals",
+                                testing_set = testing_set)
   }else{
     model_order <- assignments$model
     data$model <- model_order
@@ -4666,7 +4756,8 @@ if (assign_models==T){
 data_with_models <- model_closeness(data=data,
                        profiles=profiles,
                        models=models,
-                       method="residuals")
+                       method="residuals",
+                       testing_set = testing_set)
 }else{
   data_with_models <- data
   data_with_models$model <- as.integer(data_with_models$model )
@@ -4749,6 +4840,7 @@ full_models[[i]] <- true_regression
 #' @export
 agglom_tree <- function(data,
                         original_data=original_data[training_indices,],  #this one is without the dummy variables
+                        training_set, 
                         re_use_variables=F){
 
 
@@ -4759,7 +4851,8 @@ agglom_tree <- function(data,
 
  }else{
 
-combo_c_results <-    combinatorial_columns(original_data)
+  
+combo_c_results <-    combinatorial_columns(original_data, training_set, testing_set, training_indices)
    dummy_df <- combo_c_results$dummy_df
   # dummy_set_ivs <- combo_c_results$dummy_set_ivs
 
@@ -4795,6 +4888,7 @@ combo_c_results <-    combinatorial_columns(original_data)
   original_models <- unique(populations$model )
   already_considered <- vector("logical", length(all_ivs))
 
+  
 
   while(length( unique(populations$model))>1){
 
@@ -5280,7 +5374,7 @@ cut_list$original_cut <-  cut_list$cut
 #' Creates combinatorial columns for use in the agglomerative decision tree
 #' @param input_data Dataframe to be converted into combinatorial columns.
 #' @export
-combinatorial_columns <- function(input_data){
+combinatorial_columns <- function(input_data, training_set, testing_set, training_indices){
   #for dummy variable sets, will build their combinations, so that splits can be made properly between multiple categories (e.g. Eastern and Southern Europe vs. the rest)
  #input data lacks mining column
 
@@ -5288,6 +5382,7 @@ combinatorial_columns <- function(input_data){
 
   #now take all possible combinations of that dummy variable and keep all but the full combinations (So that there can be a comparison)
 
+  
   initial_levels_list <- vector("list", length(dummy_set_ivs))
   combos_list <- vector("list", length(dummy_set_ivs))
 
@@ -5418,7 +5513,9 @@ working_df[,column_name] <- 0
 #' @export
 population_to_case_tree <- function(cutlist,
                                     population_data,
-                                    training_indices=NULL){
+                                    training_set,
+                                    testing_set,
+                                    training_indices = NULL){
 
   #determine if combinatorial columns are present!
   #If even one variable is converted, then they all are...
@@ -5431,7 +5528,7 @@ population_to_case_tree <- function(cutlist,
   if (dummy_set_ivs_columns== original_length-1){
     #if comb columns not present not use combinatorial_columns here... otherwise the final model assignments are not accurate.
 
-    processed_data <- combinatorial_columns(population_data)$dummy_df
+    processed_data <- combinatorial_columns(population_data, training_set, testing_set, training_indices)$dummy_df
     processed_data$model <- population_data$model
   }else{
     #if combinatorial columns already present, leave columns alone

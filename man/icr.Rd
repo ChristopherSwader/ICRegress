@@ -26,7 +26,13 @@ icr(
   training_indices = NULL,
   target_training_percent = NULL,
   generation_limit = NULL,
+<<<<<<< HEAD
+  final_model_aggregation = T,
+  training_set = NULL,
+  testing_set = NULL
+=======
   final_model_aggregation = T
+>>>>>>> afb80ee0935fb3ec0dd7caacaef56f1ca436547f
 )
 }
 \arguments{

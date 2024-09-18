@@ -4,7 +4,17 @@
 \alias{population_to_case_tree}
 \title{Population tree to case tree}
 \usage{
+<<<<<<< HEAD
+population_to_case_tree(
+  cutlist,
+  population_data,
+  training_set,
+  testing_set,
+  training_indices = NULL
+)
+=======
 population_to_case_tree(cutlist, population_data, training_indices = NULL)
+>>>>>>> afb80ee0935fb3ec0dd7caacaef56f1ca436547f
 }
 \arguments{
 \item{cutlist}{This is the blueprint for building the agglomeration tree, exported from the agglom_tree() function.}

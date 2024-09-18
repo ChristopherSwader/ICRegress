@@ -1,6 +1,10 @@
 Package: ICRegress
 Title: Interpretable Configurational Regression
+<<<<<<< HEAD
+Version: 0.0.0.9004
+=======
 Version: 0.0.0.9003
+>>>>>>> afb80ee0935fb3ec0dd7caacaef56f1ca436547f
 Authors@R: 
     person("Christopher", "Swader", , "christopher.swader@soc.lu.se", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0001-5920-4129"))

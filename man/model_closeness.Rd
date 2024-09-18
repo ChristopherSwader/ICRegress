@@ -10,7 +10,14 @@ model_closeness(
   models = models,
   method = NULL,
   cutlist = cutlist,
+<<<<<<< HEAD
+  population_tree_results = NULL,
+  training_set = training_set,
+  testing_set = testing_set,
+  training_indices = training_indices
+=======
   population_tree_results = NULL
+>>>>>>> afb80ee0935fb3ec0dd7caacaef56f1ca436547f
 )
 }
 \description{
