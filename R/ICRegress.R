@@ -1686,7 +1686,8 @@ if (!is.na( force_subgroup_n)){
 original_data_unscaled <- data_prepped$original_data_unscaled
  ###data prep end####
 
-newdf <<- data_prepped$df_dummies_no_ref_cat
+newdf <- data_prepped$df_dummies_no_ref_cat
+  newdf<<-newdf
 df_full_dummies <<-data_prepped$df_dummies
 
 
