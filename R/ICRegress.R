@@ -386,9 +386,9 @@ autotune <- function( input_data,
   for (gen in 1:length(generation_t_points)){
     n_generations <- generation_t_points[gen]
 
-    #for (combo in 1:nrow(growth_parameter_grid)){
+    for (combo in 1:nrow(growth_parameter_grid)){
 
-    for (combo in 1:1){
+    #for (combo in 1:1){
       #!!CHANGE DEBUG ONLY####
 
       #pull parameters out of the combination grid
