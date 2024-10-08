@@ -12,14 +12,10 @@ predict_new(
   assign_models = T,
   method = "case-based",
   population_tree_results = NULL,
-<<<<<<< HEAD
   dv = T,
   training_set = training_set,
   testing_set = testing_set,
   training_indices = training_indices
-=======
-  dv = T
->>>>>>> afb80ee0935fb3ec0dd7caacaef56f1ca436547f
 )
 }
 \description{

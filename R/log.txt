@@ -1,0 +1,2507 @@
+starting worker pid=11312 on localhost:11458 at 08:00:28.759
+starting worker pid=17724 on localhost:11458 at 08:00:28.939
+starting worker pid=71008 on localhost:11458 at 08:00:29.109
+starting worker pid=3764 on localhost:11458 at 08:00:29.270
+starting worker pid=12400 on localhost:11458 at 08:00:29.439
+starting worker pid=71764 on localhost:11458 at 08:00:29.609
+starting worker pid=50680 on localhost:11458 at 08:00:29.775
+starting worker pid=47144 on localhost:11458 at 08:00:29.952
+starting worker pid=31336 on localhost:11458 at 08:00:30.125
+Loading required package: haven
+Loading required package: haven
+Loading required package: haven
+Loading required package: haven
+Loading required package: haven
+Loading required package: haven
+Loading required package: haven
+Loading required package: fastDummies
+Loading required package: fastDummies
+Loading required package: scales
+Loading required package: scales
+Loading required package: fastDummies
+Loading required package: fastDummies
+Loading required package: fastDummies
+Loading required package: scales
+Loading required package: fastDummies
+Loading required package: fastDummies
+Loading required package: scales
+Loading required package: fastDummies
+Loading required package: scales
+Loading required package: fastDummies
+Loading required package: scales
+Loading required package: scales
+Loading required package: scales
+Loading required package: scales
+Loading required package: data.table
+Loading required package: data.table
+Loading required package: data.table
+Loading required package: data.table
+Loading required package: data.table
+Loading required package: data.table
+Loading required package: data.table
+Loading required package: data.table
+Loading required package: data.table
+Loading required package: tibble
+Loading required package: tibble
+Loading required package: tibble
+Loading required package: matrixStats
+Loading required package: matrixStats
+Loading required package: matrixStats
+Loading required package: tibble
+Loading required package: matrixStats
+Loading required package: dplyr
+Loading required package: dplyr
+Loading required package: tibble
+Loading required package: tibble
+Loading required package: matrixStats
+Loading required package: tibble
+Loading required package: dplyr
+Loading required package: dplyr
+Loading required package: matrixStats
+Loading required package: tibble
+Loading required package: matrixStats
+Loading required package: matrixStats
+Loading required package: dplyr
+Loading required package: tibble
+Loading required package: dplyr
+Loading required package: dplyr
+Loading required package: dplyr
+Loading required package: matrixStats
+Loading required package: dplyr
+
+Attaching package: 'dplyr'
+
+The following object is masked from 'package:matrixStats':
+
+    count
+
+The following objects are masked from 'package:data.table':
+
+    between, first, last
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+Loading required package: gifski
+
+Attaching package: 'dplyr'
+
+The following object is masked from 'package:matrixStats':
+
+    count
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:data.table':
+
+    between, first, last
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+The following object is masked from 'package:matrixStats':
+
+    count
+
+The following object is masked from 'package:matrixStats':
+
+    count
+
+The following objects are masked from 'package:data.table':
+
+    between, first, last
+
+The following objects are masked from 'package:data.table':
+
+    between, first, last
+
+Loading required package: gifski
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: 'dplyr'
+
+Loading required package: gifski
+
+Attaching package: 'dplyr'
+
+Loading required package: gifski
+m 'package:matrixStats':
+
+    count
+
+The following objects are masked from 'package:data.table':
+
+    between, first, last
+
+The following object is masked from 'package:matrixStats':
+
+    count
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:data.table':
+
+    between, first, last
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+Loading required package: gifski
+Loading required package: ggplot2
+Loading required package: gifski
+Loading required package: ggplot2
+Loading required package: ggplot2
+Loading required package: ggplot2
+
+Attaching package: 'dplyr'
+
+The following object is masked from 'package:matrixStats':
+
+    count
+
+
+Attaching package: 'dplyr'
+
+The following objects are masked from 'package:data.table':
+
+    between, first, last
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following object is masked from 'package:matrixStats':
+
+    count
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+The following objects are masked from 'package:data.table':
+
+    between, first, last
+
+Loading required package: ggplot2
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+Loading required package: ggplot2
+Loading required package: gifski
+Loading required package: gifski
+Loading required package: ggplot2
+Loading required package: ggplot2
+
+Attaching package: 'dplyr'
+
+The following object is masked from 'package:matrixStats':
+
+    count
+
+The following objects are masked from 'package:data.table':
+
+    between, first, last
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+Loading required package: gifski
+Loading required package: ggplot2
+Loading required package: gganimate
+Loading required package: gganimate
+Loading required package: gganimate
+Loading required package: gganimate
+Loading required package: gganimate
+Loading required package: gganimate
+Loading required package: gganimate
+Loading required package: gganimate
+Loading required package: gganimate
+Loading required package: stringr
+Loading required package: stringr
+Loading required package: stringr
+Loading required package: stringr
+Loading required package: stringr
+Loading required package: stringr
+Loading required package: stringr
+Loading required package: stringr
+Loading required package: cluster
+Loading required package: cluster
+Loading required package: cluster
+Loading required package: cluster
+Loading required package: cluster
+Loading required package: cluster
+Loading required package: cluster
+Loading required package: cluster
+Loading required package: cluster
+Loading required package: rpart
+Loading required package: rpart
+Loading required package: rpart
+Loading required package: rpart
+Loading required package: rpart
+Loading required package: rpart
+Loading required package: rpart
+Loading required package: rpart
+Loading required package: rpart
+Loading required package: rattle
+Loading required package: rattle
+Loading required package: rattle
+Loading required package: rattle
+Loading required package: rattle
+Loading required package: rattle
+Loading required package: rattle
+Loading required package: rattle
+Loading required package: bitops
+Loading required package: bitops
+Loading required package: bitops
+Loading required package: bitops
+Loading required package: bitops
+Loading required package: bitops
+Loading required package: bitops
+Loading required package: bitops
+Loading required package: bitops
+Rattle: A free graphical interface for data science with R.
+Version 5.5.1 Copyright (c) 2006-2021 Togaware Pty Ltd.
+Type 'rattle()' to shake, rattle, and roll your data.
+Rattle: A free graphical interface for data science with R.
+Version 5.5.1 Copyright (c) 2006-2021 Togaware Pty Ltd.
+Type 'rattle()' to shake, rattle, and roll your data.
+Rattle: A free graphical interface for data science with R.
+Version 5.5.1 Copyright (c) 2006-2021 Togaware Pty Ltd.
+Type 'rattle()' to shake, rattle, and roll your data.
+Rattle: A free graphical interface for data science with R.
+Version 5.5.1 Copyright (c) 2006-2021 Togaware Pty Ltd.
+Type 'rattle()' to shake, rattle, and roll your data.
+Rattle: A free graphical interface for data science with R.
+Version 5.5.1 Copyright (c) 2006-2021 Togaware Pty Ltd.
+Type 'rattle()' to shake, rattle, and roll your data.
+Rattle: A free graphical interface for data science with R.
+Version 5.5.1 Copyright (c) 2006-2021 Togaware Pty Ltd.
+Type 'rattle()' to shake, rattle, and roll your data.
+Rattle: A free graphical interface for data science with R.
+Version 5.5.1 Copyright (c) 2006-2021 Togaware Pty Ltd.
+Type 'rattle()' to shake, rattle, and roll your data.
+Rattle: A free graphical interface for data science with R.
+Version 5.5.1 Copyright (c) 2006-2021 Togaware Pty Ltd.
+Type 'rattle()' to shake, rattle, and roll your data.
+Loading required package: stringi
+Loading required package: stringi
+Rattle: A free graphical interface for data science with R.
+Version 5.5.1 Copyright (c) 2006-2021 Togaware Pty Ltd.
+Type 'rattle()' to shake, rattle, and roll your data.
+Loading required package: stringi
+Loading required package: stringi
+Loading required package: stringi
+Loading required package: stringi
+Loading required package: stringi
+Loading required package: stringi
+Loading required package: stringi
+Loading required package: ggpubr
+Loading required package: ggpubr
+Loading required package: ggpubr
+Loading required package: ggpubr
+Loading required package: ggpubr
+Loading required package: ggpubr
+Loading required package: ggpubr
+Loading required package: ggpubr
+Loading required package: tidyverse
+Loading required package: tidyverse
+Loading required package: tidyverse
+Loading required package: tidyverse
+Loading required package: tidyverse
+Loading required package: tidyverse
+Loading required package: tidyverse
+Loading required package: tidyverse
+── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ forcats   1.0.0     ✔ readr     2.1.5
+✔ lubridate 1.9.3     ✔ tidyr     1.3.1
+✔ purrr     1.0.2     
+── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ forcats   1.0.0     ✔ readr     2.1.5
+✔ lubridate 1.9.3     ✔ tidyr     1.3.1
+✔ purrr     1.0.2     
+── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ forcats   1.0.0     ✔ readr     2.1.5
+✔ lubridate 1.9.3     ✔ tidyr     1.3.1
+✔ purrr     1.0.2     
+── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ forcats   1.0.0     ✔ readr     2.1.5
+✔ lubridate 1.9.3     ✔ tidyr     1.3.1
+✔ purrr     1.0.2     
+── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ forcats   1.0.0     ✔ readr     2.1.5
+✔ lubridate 1.9.3     ✔ tidyr     1.3.1
+✔ purrr     1.0.2     
+── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ forcats   1.0.0     ✔ readr     2.1.5
+✔ lubridate 1.9.3     ✔ tidyr     1.3.1
+✔ purrr     1.0.2     
+── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ forcats   1.0.0     ✔ readr     2.1.5
+✔ lubridate 1.9.3     ✔ tidyr     1.3.1
+✔ purrr     1.0.2     
+── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ forcats   1.0.0     ✔ readr     2.1.5
+✔ lubridate 1.9.3     ✔ tidyr     1.3.1
+✔ purrr     1.0.2     
+── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ forcats   1.0.0     ✔ readr     2.1.5
+✔ lubridate 1.9.3     ✔ tidyr     1.3.1
+✔ purrr     1.0.2     
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::between()     masks data.table::between()
+✖ readr::col_factor()  masks scales::col_factor()
+✖ dplyr::count()       masks matrixStats::count()
+✖ purrr::discard()     masks scales::discard()
+✖ dplyr::filter()      masks stats::filter()
+✖ dplyr::first()       masks data.table::first()
+✖ lubridate::hour()    masks data.table::hour()
+✖ lubridate::isoweek() masks data.table::isoweek()
+✖ dplyr::lag()         masks stats::lag()
+✖ dplyr::last()        masks data.table::last()
+✖ lubridate::mday()    masks data.table::mday()
+✖ lubridate::minute()  masks data.table::minute()
+✖ lubridate::month()   masks data.table::month()
+✖ lubridate::quarter() masks data.table::quarter()
+✖ lubridate::second()  masks data.table::second()
+✖ purrr::transpose()   masks data.table::transpose()
+✖ lubridate::wday()    masks data.table::wday()
+✖ lubridate::week()    masks data.table::week()
+✖ lubridate::yday()    masks data.table::yday()
+✖ lubridate::year()    masks data.table::year()
+ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::between()     masks data.table::between()
+✖ readr::col_factor()  masks scales::col_factor()
+✖ dplyr::count()       masks matrixStats::count()
+✖ purrr::discard()     masks scales::discard()
+✖ dplyr::filter()      masks stats::filter()
+✖ dplyr::first()       masks data.table::first()
+✖ lubridate::hour()    masks data.table::hour()
+✖ lubridate::isoweek() masks data.table::isoweek()
+✖ dplyr::lag()         masks stats::lag()
+✖ dplyr::last()        masks data.table::last()
+✖ lubridate::mday()    masks data.table::mday()
+✖ lubridate::minute()  masks data.table::minute()
+✖ lubridate::month()   masks data.table::month()
+✖ lubridate::quarter() masks data.table::quarter()
+✖ lubridate::second()  masks data.table::second()
+✖ purrr::transpose()   masks data.table::transpose()
+✖ lubridate::wday()    masks data.table::wday()
+✖ lubridate::week()    masks data.table::week()
+✖ lubridate::yday()    masks data.table::yday()
+✖ lubridate::year()    masks data.table::year()
+ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
+Loading required package: broom
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::between()     masks data.table::between()
+✖ readr::col_factor()  masks scales::col_factor()
+✖ dplyr::count()       masks matrixStats::count()
+✖ purrr::discard()     masks scales::discard()
+✖ dplyr::filter()      masks stats::filter()
+✖ dplyr::first()       masks data.table::first()
+✖ lubridate::hour()    masks data.table::hour()
+✖ lubridate::isoweek() masks data.table::isoweek()
+✖ dplyr::lag()         masks stats::lag()
+✖ dplyr::last()        masks data.table::last()
+✖ lubridate::mday()    masks data.table::mday()
+✖ lubridate::minute()  masks data.table::minute()
+✖ lubridate::month()   masks data.table::month()
+✖ lubridate::quarter() masks data.table::quarter()
+✖ lubridate::second()  masks data.table::second()
+✖ purrr::transpose()   masks data.table::transpose()
+✖ lubridate::wday()    masks data.table::wday()
+✖ lubridate::week()    masks data.table::week()
+✖ lubridate::yday()    masks data.table::yday()
+✖ lubridate::year()    masks data.table::year()
+ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
+Loading required package: broom
+Loading required package: broom
+Loading required package: AICcmodavg
+Loading required package: AICcmodavg
+Loading required package: AICcmodavg
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::between()     masks data.table::between()
+✖ readr::col_factor()  masks scales::col_factor()
+✖ dplyr::count()       masks matrixStats::count()
+✖ purrr::discard()     masks scales::discard()
+✖ dplyr::filter()      masks stats::filter()
+✖ dplyr::first()       masks data.table::first()
+✖ lubridate::hour()    masks data.table::hour()
+✖ lubridate::isoweek() masks data.table::isoweek()
+✖ dplyr::lag()         masks stats::lag()
+✖ dplyr::last()        masks data.table::last()
+✖ lubridate::mday()    masks data.table::mday()
+✖ lubridate::minute()  masks data.table::minute()
+✖ lubridate::month()   masks data.table::month()
+✖ lubridate::quarter() masks data.table::quarter()
+✖ lubridate::second()  masks data.table::second()
+✖ purrr::transpose()   masks data.table::transpose()
+✖ lubridate::wday()    masks data.table::wday()
+✖ lubridate::week()    masks data.table::week()
+✖ lubridate::yday()    masks data.table::yday()
+✖ lubridate::year()    masks data.table::year()
+ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::between()     masks data.table::between()
+✖ readr::col_factor()  masks scales::col_factor()
+✖ dplyr::count()       masks matrixStats::count()
+✖ purrr::discard()     masks scales::discard()
+✖ dplyr::filter()      masks stats::filter()
+✖ dplyr::first()       masks data.table::first()
+✖ lubridate::hour()    masks data.table::hour()
+✖ lubridate::isoweek() masks data.table::isoweek()
+✖ dplyr::lag()         masks stats::lag()
+✖ dplyr::last()        masks data.table::last()
+✖ lubridate::mday()    masks data.table::mday()
+✖ lubridate::minute()  masks data.table::minute()
+✖ lubridate::month()   masks data.table::month()
+✖ lubridate::quarter() masks data.table::quarter()
+✖ lubridate::second()  masks data.table::second()
+✖ purrr::transpose()   masks data.table::transpose()
+✖ lubridate::wday()    masks data.table::wday()
+✖ lubridate::week()    masks data.table::week()
+✖ lubridate::yday()    masks data.table::yday()
+✖ lubridate::year()    masks data.table::year()
+ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
+Loading required package: broom
+Loading required package: broom
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::between()     masks data.table::between()
+✖ readr::col_factor()  masks scales::col_factor()
+✖ dplyr::count()       masks matrixStats::count()
+✖ purrr::discard()     masks scales::discard()
+✖ dplyr::filter()      masks stats::filter()
+✖ dplyr::first()       masks data.table::first()
+✖ lubridate::hour()    masks data.table::hour()
+✖ lubridate::isoweek() masks data.table::isoweek()
+✖ dplyr::lag()         masks stats::lag()
+✖ dplyr::last()        masks data.table::last()
+✖ lubridate::mday()    masks data.table::mday()
+✖ lubridate::minute()  masks data.table::minute()
+✖ lubridate::month()   masks data.table::month()
+✖ lubridate::quarter() masks data.table::quarter()
+✖ lubridate::second()  masks data.table::second()
+✖ purrr::transpose()   masks data.table::transpose()
+✖ lubridate::wday()    masks data.table::wday()
+✖ lubridate::week()    masks data.table::week()
+✖ lubridate::yday()    masks data.table::yday()
+✖ lubridate::year()    masks data.table::year()
+ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
+Loading required package: broom
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::between()     masks data.table::between()
+✖ readr::col_factor()  masks scales::col_factor()
+✖ dplyr::count()       masks matrixStats::count()
+✖ purrr::discard()     masks scales::discard()
+✖ dplyr::filter()      masks stats::filter()
+✖ dplyr::first()       masks data.table::first()
+✖ lubridate::hour()    masks data.table::hour()
+✖ lubridate::isoweek() masks data.table::isoweek()
+✖ dplyr::lag()         masks stats::lag()
+✖ dplyr::last()        masks data.table::last()
+✖ lubridate::mday()    masks data.table::mday()
+✖ lubridate::minute()  masks data.table::minute()
+✖ lubridate::month()   masks data.table::month()
+✖ lubridate::quarter() masks data.table::quarter()
+✖ lubridate::second()  masks data.table::second()
+✖ purrr::transpose()   masks data.table::transpose()
+✖ lubridate::wday()    masks data.table::wday()
+✖ lubridate::week()    masks data.table::week()
+✖ lubridate::yday()    masks data.table::yday()
+✖ lubridate::year()    masks data.table::year()
+ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
+Loading required package: AICcmodavg
+Loading required package: AICcmodavg
+Loading required package: broom
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::between()     masks data.table::between()
+✖ readr::col_factor()  masks scales::col_factor()
+✖ dplyr::count()       masks matrixStats::count()
+✖ purrr::discard()     masks scales::discard()
+✖ dplyr::filter()      masks stats::filter()
+✖ dplyr::first()       masks data.table::first()
+✖ lubridate::hour()    masks data.table::hour()
+✖ lubridate::isoweek() masks data.table::isoweek()
+✖ dplyr::lag()         masks stats::lag()
+✖ dplyr::last()        masks data.table::last()
+✖ lubridate::mday()    masks data.table::mday()
+✖ lubridate::minute()  masks data.table::minute()
+✖ lubridate::month()   masks data.table::month()
+✖ lubridate::quarter() masks data.table::quarter()
+✖ lubridate::second()  masks data.table::second()
+✖ purrr::transpose()   masks data.table::transpose()
+✖ lubridate::wday()    masks data.table::wday()
+✖ lubridate::week()    masks data.table::week()
+✖ lubridate::yday()    masks data.table::yday()
+✖ lubridate::year()    masks data.table::year()
+ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
+Loading required package: AICcmodavg
+Loading required package: broom
+Loading required package: AICcmodavg
+Loading required package: AICcmodavg
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::between()     masks data.table::between()
+✖ readr::col_factor()  masks scales::col_factor()
+✖ dplyr::count()       masks matrixStats::count()
+✖ purrr::discard()     masks scales::discard()
+✖ dplyr::filter()      masks stats::filter()
+✖ dplyr::first()       masks data.table::first()
+✖ lubridate::hour()    masks data.table::hour()
+✖ lubridate::isoweek() masks data.table::isoweek()
+✖ dplyr::lag()         masks stats::lag()
+✖ dplyr::last()        masks data.table::last()
+✖ lubridate::mday()    masks data.table::mday()
+✖ lubridate::minute()  masks data.table::minute()
+✖ lubridate::month()   masks data.table::month()
+✖ lubridate::quarter() masks data.table::quarter()
+✖ lubridate::second()  masks data.table::second()
+✖ purrr::transpose()   masks data.table::transpose()
+✖ lubridate::wday()    masks data.table::wday()
+✖ lubridate::week()    masks data.table::week()
+✖ lubridate::yday()    masks data.table::yday()
+✖ lubridate::year()    masks data.table::year()
+ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
+Loading required package: broom
+Loading required package: AICcmodavg
+
+Attaching package: 'AICcmodavg'
+
+The following object is masked from 'package:rattle':
+
+    importance
+
+
+Attaching package: 'AICcmodavg'
+
+The following object is masked from 'package:rattle':
+
+    importance
+
+Loading required package: ade4
+Loading required package: ade4
+
+Attaching package: 'AICcmodavg'
+
+The following object is masked from 'package:rattle':
+
+    importance
+
+Loading required package: ade4
+Loading required package: geomtextpath
+Loading required package: geomtextpath
+Loading required package: geomtextpath
+
+Attaching package: 'AICcmodavg'
+
+The following object is masked from 'package:rattle':
+
+    importance
+
+Loading required package: ade4
+Loading required package: geomtextpath
+
+Attaching package: 'AICcmodavg'
+
+The following object is masked from 'package:rattle':
+
+    importance
+
+Loading required package: ade4
+
+Attaching package: 'AICcmodavg'
+
+The following object is masked from 'package:rattle':
+
+    importance
+
+Loading required package: ade4
+
+Attaching package: 'AICcmodavg'
+
+The following object is masked from 'package:rattle':
+
+    importance
+
+Loading required package: ade4
+Loading required package: geomtextpath
+
+Attaching package: 'AICcmodavg'
+
+The following object is masked from 'package:rattle':
+
+    importance
+
+Loading required package: ade4
+
+Attaching package: 'AICcmodavg'
+
+The following object is masked from 'package:rattle':
+
+    importance
+
+Loading required package: ade4
+Loading required package: geomtextpath
+Loading required package: geomtextpath
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: geomtextpath
+Loading required package: foreach
+Loading required package: geomtextpath
+
+Attaching package: 'foreach'
+
+
+Attaching package: 'foreach'
+
+
+Attaching package: 'foreach'
+
+The following objects are masked from 'package:purrr':
+
+    accumulate, when
+
+The following objects are masked from 'package:purrr':
+
+    accumulate, when
+
+The following objects are masked from 'package:purrr':
+
+    accumulate, when
+
+
+Attaching package: 'foreach'
+
+The following objects are masked from 'package:purrr':
+
+    accumulate, when
+
+Loading required package: flexmix
+Loading required package: flexmix
+
+Attaching package: 'foreach'
+
+Loading required package: flexmix
+Loading required package: flexmix
+The following objects are masked from 'package:purrr':
+
+    accumulate, when
+
+Loading required package: flexmix
+Loading required package: lattice
+Loading required package: lattice
+Loading required package: lattice
+Loading required package: lattice
+Loading required package: lattice
+Loading required package: foreach
+Loading required package: foreach
+
+Attaching package: 'foreach'
+
+The following objects are masked from 'package:purrr':
+
+    accumulate, when
+
+Loading required package: foreach
+Loading required package: flexmix
+Loading required package: lattice
+Loading required package: foreach
+
+Attaching package: 'foreach'
+
+The following objects are masked from 'package:purrr':
+
+    accumulate, when
+
+Loading required package: flexmix
+
+Attaching package: 'foreach'
+
+The following objects are masked from 'package:purrr':
+
+    accumulate, when
+
+Loading required package: lattice
+Loading required package: flexmix
+Loading required package: lattice
+
+Attaching package: 'foreach'
+
+The following objects are masked from 'package:purrr':
+
+    accumulate, when
+
+Loading required package: flexmix
+Loading required package: lattice
+Loading required package: doRNG
+Loading required package: doRNG
+Loading required package: rngtools
+Loading required package: doRNG
+Loading required package: rngtools
+Loading required package: doRNG
+Loading required package: rngtools
+Loading required package: doParallel
+Loading required package: doRNG
+Loading required package: iterators
+Loading required package: rngtools
+Loading required package: doRNG
+Loading required package: doParallel
+Loading required package: doParallel
+Loading required package: doParallel
+Loading required package: doRNG
+Loading required package: rngtools
+Loading required package: iterators
+Loading required package: iterators
+Loading required package: parallel
+Loading required package: iterators
+Loading required package: rngtools
+Loading required package: parallel
+Loading required package: parallel
+Loading required package: parallel
+Loading required package: Metrics
+Loading required package: Metrics
+Loading required package: doRNG
+Loading required package: Metrics
+Loading required package: rngtools
+Loading required package: partykit
+Loading required package: doParallel
+Loading required package: partykit
+Loading required package: grid
+Loading required package: Metrics
+Loading required package: iterators
+Loading required package: doParallel
+Loading required package: grid
+Loading required package: iterators
+Loading required package: partykit
+Loading required package: doParallel
+Loading required package: libcoin
+Loading required package: grid
+Loading required package: parallel
+Loading required package: libcoin
+Loading required package: iterators
+Loading required package: partykit
+Loading required package: grid
+Loading required package: libcoin
+Loading required package: parallel
+Loading required package: doRNG
+Loading required package: parallel
+Loading required package: rngtools
+Loading required package: libcoin
+Loading required package: doParallel
+Loading required package: Metrics
+Loading required package: partykit
+Loading required package: iterators
+Loading required package: grid
+Loading required package: Metrics
+Loading required package: mvtnorm
+Loading required package: Metrics
+Loading required package: parallel
+Loading required package: mvtnorm
+Loading required package: libcoin
+Loading required package: doParallel
+Loading required package: iterators
+Loading required package: mvtnorm
+Loading required package: partykit
+Loading required package: partykit
+Loading required package: mvtnorm
+Loading required package: grid
+Loading required package: grid
+Loading required package: mvtnorm
+Loading required package: Metrics
+Loading required package: libcoin
+Loading required package: libcoin
+Loading required package: parallel
+Loading required package: partykit
+Loading required package: grid
+Loading required package: libcoin
+Loading required package: mvtnorm
+Loading required package: Metrics
+Loading required package: mvtnorm
+Loading required package: partykit
+Loading required package: grid
+Loading required package: mvtnorm
+Loading required package: libcoin
+Loading required package: mvtnorm
+[1] "these parameters"
+                     seed               generations        solution threshold 
+                      "1"                       "1"                    "0.01" 
+   [1]          n strands  "these parameters"models                    
+ ivs 
+                     "50"                       "5"  "these parameters"ations        solution threshold 
+                      "2"                       "1"                    "0.01" 
+                   seed                 n strands                      seed  "these parameters"eshold 
+            generations 
+[1]                  seed 
+][1] "these parameters"   "3"                  error sd 
+these parameters"   "1" 
+                 "0.01" 
+                      "1"                     N ivs 
+                   seed                 n strands        solution threshold                                  solution threshold                "5" 
+                      "5" 
+                    "7"                      seed                       "1"                    "0.01"               generations 
+
+set closeness setting 
+              n strands                       "9" 
+ "these parameters"models                 n strands                       "1" 
+            real models                    "0.01"                       "5" 
+                      "8"                 n strands                       "8"                     N ivs 
+                  N ivs 
+                     "50"                      "50"                       "5"                       "8" " 
+                 seed                  error sd 
+testset closeness setting 
+                   "0.05"                    "0.05"                       "1"                    "0.01" 
+                    "8" 
+            "residuals" 
+                 error sd                 n strands               real models 
+                   "0.05"               "residuals" 
+                    N ivs                  error sd                      "50" testset closeness setting                       "5"                       "8"   testset closeness setting   
+             error sd testset closeness setting               "residuals"                    "0.05"               "residuals" 
+
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+Starting value is  99.83 for a target between 40 and 55.
+Current solved to strand ratio is  1.247875
+New n_strands decreased to  37
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+Starting value is  100 for a target between 40 and 55.
+Current solved to strand ratio is  1.25
+New n_strands decreased to  33
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+Starting value is  100 for a target between 40 and 55.
+Current solved to strand ratio is  1.25
+New n_strands decreased to  37
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+Starting value is  100 for a target between 40 and 55.
+Current solved to strand ratio is  1.25
+New n_strands decreased to  36
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+Starting value is  99.83 for a target between 40 and 55.
+Current solved to strand ratio is  1.247875
+New n_strands decreased to  37
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+Starting value is  99.83 for a target between 40 and 55.
+Current solved to strand ratio is  1.247875
+New n_strands decreased to  35
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+Starting value is  99.67 for a target between 40 and 55.
+Current solved to strand ratio is  1.245875
+New n_strands decreased to  35
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+Starting value is  100 for a target between 40 and 55.
+Current solved to strand ratio is  1.25
+New n_strands decreased to  35
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+Starting value is  100 for a target between 40 and 55.
+Current solved to strand ratio is  1.25
+New n_strands decreased to  36
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+Starting value is  98.33 for a target between 40 and 55.
+Current solved to strand ratio is  2.657568
+New n_strands decreased to  16
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+Starting value is  98.67 for a target between 40 and 55.
+Current solved to strand ratio is  2.819143
+New n_strands decreased to  16
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+Starting value is  98.33 for a target between 40 and 55.
+Current solved to strand ratio is  2.809429
+New n_strands decreased to  15
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+Starting value is  98.83 for a target between 40 and 55.
+Current solved to strand ratio is  2.671081
+New n_strands decreased to  16
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+Starting value is  96.33 for a target between 40 and 55.
+Current solved to strand ratio is  2.603514
+New n_strands decreased to  16
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+Starting value is  98.5 for a target between 40 and 55.
+Current solved to strand ratio is  2.736111
+New n_strands decreased to  15
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+Starting value is  99.17 for a target between 40 and 55.
+Current solved to strand ratio is  3.005152
+New n_strands decreased to  15
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+Starting value is  98.67 for a target between 40 and 55.
+Current solved to strand ratio is  2.819143
+New n_strands decreased to  15
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+Starting value is  99.17 for a target between 40 and 55.
+Current solved to strand ratio is  2.754722
+New n_strands decreased to  15
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+Starting value is  79 for a target between 40 and 55.
+Current solved to strand ratio is  4.9375
+New n_strands decreased to  10
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+Starting value is  91.33 for a target between 40 and 55.
+Current solved to strand ratio is  6.088667
+New n_strands decreased to  10
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+Starting value is  83 for a target between 40 and 55.
+Current solved to strand ratio is  5.533333
+New n_strands decreased to  10
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+Starting value is  77.33 for a target between 40 and 55.
+Current solved to strand ratio is  4.833125
+New n_strands decreased to  10
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+Starting value is  88.17 for a target between 40 and 55.
+Current solved to strand ratio is  5.878
+New n_strands decreased to  10
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+Starting value is  84.33 for a target between 40 and 55.
+Current solved to strand ratio is  5.622
+New n_strands decreased to  10
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+Starting value is  86.17 for a target between 40 and 55.
+Current solved to strand ratio is  5.385625
+New n_strands decreased to  10
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+Starting value is  90.17 for a target between 40 and 55.
+Current solved to strand ratio is  5.635625
+New n_strands decreased to  10
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+Starting value is  89.33 for a target between 40 and 55.
+Current solved to strand ratio is  5.955333
+New n_strands decreased to  10
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+Starting value is  77 for a target between 40 and 55.
+Current solved to strand ratio is  7.7
+New solution_threshold decreased to  0.02099421
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+Starting value is  81.67 for a target between 40 and 55.
+Current solved to strand ratio is  8.167
+New solution_threshold decreased to  0.02114868
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+Starting value is  76.33 for a target between 40 and 55.
+Current solved to strand ratio is  7.633
+New solution_threshold decreased to  0.02196084
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+Starting value is  77 for a target between 40 and 55.
+Current solved to strand ratio is  7.7
+New solution_threshold decreased to  0.02155743
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+Starting value is  72.33 for a target between 40 and 55.
+Current solved to strand ratio is  7.233
+New solution_threshold decreased to  0.02259363
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+Starting value is  76.67 for a target between 40 and 55.
+Current solved to strand ratio is  7.667
+New solution_threshold decreased to  0.02043316
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+Starting value is  79.83 for a target between 40 and 55.
+Current solved to strand ratio is  7.983
+New solution_threshold decreased to  0.02111249
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+Starting value is  76.17 for a target between 40 and 55.
+Current solved to strand ratio is  7.617
+New solution_threshold decreased to  0.02318169
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+Starting value is  80.17 for a target between 40 and 55.
+Current solved to strand ratio is  8.017
+New solution_threshold decreased to  0.02086706
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+Starting value is  48.17 for a target between 40 and 55.
+Current solved to strand ratio is  4.817
+Acceptable starting value found of 48.17
+Strands 10
+Solution threshold 0.02099421
+Starting population 10000
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 1 of 24
+Starting value is  53.17 for a target between 40 and 55.
+Current solved to strand ratio is  5.317
+Acceptable starting value found of 53.17
+Strands 10
+Solution threshold 0.02114868
+Starting population 10000
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 1 of 24
+Starting value is  42 for a target between 40 and 55.
+Current solved to strand ratio is  4.2
+Acceptable starting value found of 42
+Strands 10
+Solution threshold 0.02196084
+Starting population 10000
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 1 of 24
+Starting value is  37.83 for a target between 40 and 55.
+Current solved to strand ratio is  3.783
+New solution_threshold is increased to  0.01338015
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+Starting value is  44.33 for a target between 40 and 55.
+Current solved to strand ratio is  4.433
+Acceptable starting value found of 44.33
+Strands 10
+Solution threshold 0.02259363
+Starting population 10000
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 1 of 24
+Starting value is  55.67 for a target between 40 and 55.
+Current solved to strand ratio is  5.567
+New solution_threshold decreased to  0.01399457
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+Starting value is  43.17 for a target between 40 and 55.
+Current solved to strand ratio is  4.317
+Acceptable starting value found of 43.17
+Strands 10
+Solution threshold 0.02043316
+Starting population 10000
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 1 of 24
+Starting value is  44 for a target between 40 and 55.
+Current solved to strand ratio is  4.4
+Acceptable starting value found of 44
+Strands 10
+Solution threshold 0.02086706
+Starting population 10000
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 1 of 24
+Starting value is  46.17 for a target between 40 and 55.
+Current solved to strand ratio is  4.617
+Acceptable starting value found of 46.17
+Strands 10
+Solution threshold 0.02111249
+Starting population 10000
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 1 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 2 of 24
+Starting value is  25.17 for a target between 40 and 55.
+Current solved to strand ratio is  2.517
+New solution_threshold is increased to  0.005705639
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 2 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 2 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 2 of 24
+Starting value is  38.83 for a target between 40 and 55.
+Current solved to strand ratio is  3.883
+New solution_threshold is increased to  0.008649467
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 2 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 2 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 2 of 24
+Starting value is  14.5 for a target between 40 and 55.
+Current solved to strand ratio is  1.45
+New solution_threshold increased to  0.02291269
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 3 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 3 of 24
+Starting value is  27.17 for a target between 40 and 55.
+Current solved to strand ratio is  2.717
+New solution_threshold is increased to  0.003717787
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 3 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 3 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 3 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 3 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 3 of 24
+Starting value is  51.17 for a target between 40 and 55.
+Current solved to strand ratio is  5.117
+Acceptable starting value found of 51.17
+Strands 10
+Solution threshold 0.02291269
+Starting population 10000
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 1 of 24
+Starting value is  12 for a target between 40 and 55.
+Current solved to strand ratio is  1.2
+New solution_threshold increased to  0.01882337
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 4 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 4 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 4 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 4 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 4 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 4 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 4 of 24
+Starting value is  42.33 for a target between 40 and 55.
+Current solved to strand ratio is  4.233
+Acceptable starting value found of 42.33
+Strands 10
+Solution threshold 0.01882337
+Starting population 10000
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 1 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 2 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 5 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 5 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 5 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 5 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 5 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 5 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 5 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 2 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 3 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 6 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 6 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 6 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 6 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 6 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 6 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 6 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 3 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 4 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 7 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 7 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 7 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 7 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 7 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 7 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 7 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 4 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 5 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 8 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 8 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 8 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 8 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 8 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 8 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 8 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 5 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 9 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 6 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 9 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 9 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 9 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 9 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 9 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 9 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 6 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 10 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 7 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 10 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 10 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 10 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 10 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 10 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 10 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 7 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 11 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 8 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 11 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 11 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 11 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 11 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 11 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 11 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 8 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 12 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 12 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 9 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 12 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 12 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 12 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 12 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 12 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 9 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 13 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 13 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 10 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 13 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 13 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 13 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 13 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 13 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 10 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 14 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 14 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 14 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 11 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 14 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 14 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 14 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 14 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 15 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 11 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 15 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 15 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 12 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 15 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 15 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 15 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 15 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 16 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 12 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 16 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 16 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 13 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 16 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 16 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 16 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 16 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 17 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 13 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 17 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 17 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 17 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 14 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 17 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 17 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 17 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 18 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 14 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 18 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 18 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 15 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 18 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 18 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 18 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 18 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 19 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 15 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 16 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 19 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 19 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 19 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 19 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 19 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 19 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 20 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 16 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 17 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 20 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 20 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 20 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 20 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 20 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 20 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 21 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 17 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 18 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 21 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 21 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 21 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 21 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 21 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 21 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 22 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 18 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 19 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 22 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 22 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 22 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 22 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 22 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 22 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 23 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 19 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 23 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 20 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 23 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 23 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 23 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 23 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 23 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 24 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 20 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 21 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 24 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 24 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 24 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 24 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 24 of 24
+Autotune complete. Task 7
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 24 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 21 of 24
+Autotune complete. Task 1
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 22 of 24
+Autotune complete. Task 2
+Autotune complete. Task 5
+ICR complete. Task 7
+Simple regression complete. Task 7
+Mixture regression complete. Task 7
+Cluster regression complete. Task 7
+Autotune complete. Task 4
+Linear Model Trees complete. Task 7
+ Tested: 7 1 0.02259363 10 5 8 0.05 1 
+[1] "these parameters"
+                     seed               generations        solution threshold 
+                     "10"                       "1"                    "0.01" 
+                n strands               real models                     N ivs 
+                     "50"                       "5"                       "8" 
+                 error sd testset closeness setting 
+                   "0.05"               "residuals" 
+
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+Autotune complete. Task 8
+Autotune complete. Task 6
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 22 of 24
+ICR complete. Task 1
+Simple regression complete. Task 1
+Mixture regression complete. Task 1
+Cluster regression complete. Task 1
+Linear Model Trees complete. Task 1
+ Tested: 1 1 0.02114868 10 5 8 0.05 1 
+[1] "these parameters"
+                     seed               generations        solution threshold 
+                     "11"                       "1"                    "0.01" 
+                n strands               real models                     N ivs 
+                     "50"                       "5"                       "8" 
+                 error sd testset closeness setting 
+                   "0.05"               "residuals" 
+
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 23 of 24
+Starting value is  99.5 for a target between 40 and 55.
+Current solved to strand ratio is  1.24375
+New n_strands decreased to  36
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+ICR complete. Task 2
+Simple regression complete. Task 2
+Mixture regression complete. Task 2
+Cluster regression complete. Task 2
+Linear Model Trees complete. Task 2
+ Tested: 2 1 0.02099421 10 5 8 0.05 1 
+[1] "these parameters"
+                     seed               generations        solution threshold 
+                     "12"                       "1"                    "0.01" 
+                n strands               real models                     N ivs 
+                     "50"                       "5"                       "8" 
+                 error sd testset closeness setting 
+                   "0.05"               "residuals" 
+
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+ICR complete. Task 5
+Simple regression complete. Task 5
+Mixture regression complete. Task 5
+Cluster regression complete. Task 5
+Linear Model Trees complete. Task 5
+ Tested: 5 1 0.02043316 10 5 8 0.05 1 
+[1] "these parameters"
+                     seed               generations        solution threshold 
+                     "13"                       "1"                    "0.01" 
+                n strands               real models                     N ivs 
+                     "50"                       "5"                       "8" 
+                 error sd testset closeness setting 
+                   "0.05"               "residuals" 
+
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+ICR complete. Task 4
+Simple regression complete. Task 4
+Mixture regression complete. Task 4
+Cluster regression complete. Task 4
+Linear Model Trees complete. Task 4
+ Tested: 4 1 0.02196084 10 5 8 0.05 1 
+[1] "these parameters"
+                     seed               generations        solution threshold 
+                     "14"                       "1"                    "0.01" 
+                n strands               real models                     N ivs 
+                     "50"                       "5"                       "8" 
+                 error sd testset closeness setting 
+                   "0.05"               "residuals" 
+
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+ICR complete. Task 8
+Simple regression complete. Task 8
+Mixture regression complete. Task 8
+Cluster regression complete. Task 8
+ICR complete. Task 6
+Simple regression complete. Task 6
+Linear Model Trees complete. Task 8
+ Tested: 8 1 0.02111249 10 5 8 0.05 1 
+[1] "these parameters"
+                     seed               generations        solution threshold 
+                     "15"                       "1"                    "0.01" 
+                n strands               real models                     N ivs 
+                     "50"                       "5"                       "8" 
+                 error sd testset closeness setting 
+                   "0.05"               "residuals" 
+
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+Mixture regression complete. Task 6
+Cluster regression complete. Task 6
+Linear Model Trees complete. Task 6
+ Tested: 6 1 0.02086706 10 5 8 0.05 1 
+[1] "these parameters"
+                     seed               generations        solution threshold 
+                     "16"                       "1"                    "0.01" 
+                n strands               real models                     N ivs 
+                     "50"                       "5"                       "8" 
+                 error sd testset closeness setting 
+                   "0.05"               "residuals" 
+
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 23 of 24
+Starting value is  99.5 for a target between 40 and 55.
+Current solved to strand ratio is  1.24375
+New n_strands decreased to  36
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+Starting value is  96.67 for a target between 40 and 55.
+Current solved to strand ratio is  2.685278
+New n_strands decreased to  18
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+Starting value is  100 for a target between 40 and 55.
+Current solved to strand ratio is  1.25
+New n_strands decreased to  37
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+Starting value is  100 for a target between 40 and 55.
+Current solved to strand ratio is  1.25
+New n_strands decreased to  37
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 24 of 24
+Starting value is  100 for a target between 40 and 55.
+Current solved to strand ratio is  1.25
+New n_strands decreased to  35
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+Starting value is  100 for a target between 40 and 55.
+Current solved to strand ratio is  1.25
+New n_strands decreased to  38
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+Starting value is  99.17 for a target between 40 and 55.
+Current solved to strand ratio is  1.239625
+New n_strands decreased to  36
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 24 of 24
+Starting value is  83.83 for a target between 40 and 55.
+Current solved to strand ratio is  4.657222
+New n_strands decreased to  10
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+Starting value is  98.67 for a target between 40 and 55.
+Current solved to strand ratio is  2.740833
+New n_strands decreased to  16
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+Starting value is  99.83 for a target between 40 and 55.
+Current solved to strand ratio is  2.698108
+New n_strands decreased to  16
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+Starting value is  97.83 for a target between 40 and 55.
+Current solved to strand ratio is  2.644054
+New n_strands decreased to  16
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+Starting value is  97.33 for a target between 40 and 55.
+Current solved to strand ratio is  2.780857
+New n_strands decreased to  16
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+Starting value is  97.5 for a target between 40 and 55.
+Current solved to strand ratio is  2.565789
+New n_strands decreased to  18
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+Starting value is  96.67 for a target between 40 and 55.
+Current solved to strand ratio is  2.685278
+New n_strands decreased to  16
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+Autotune complete. Task 3
+Starting value is  69.33 for a target between 40 and 55.
+Current solved to strand ratio is  6.933
+New solution_threshold decreased to  0.02385567
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+Starting value is  88 for a target between 40 and 55.
+Current solved to strand ratio is  5.5
+New n_strands decreased to  10
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+Starting value is  93.83 for a target between 40 and 55.
+Current solved to strand ratio is  5.864375
+New n_strands decreased to  10
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+Autotune complete. Task 9
+Starting value is  86 for a target between 40 and 55.
+Current solved to strand ratio is  5.375
+New n_strands decreased to  10
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+Starting value is  90.17 for a target between 40 and 55.
+Current solved to strand ratio is  5.635625
+New n_strands decreased to  10
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+Starting value is  86.5 for a target between 40 and 55.
+Current solved to strand ratio is  4.805556
+New n_strands decreased to  10
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+Starting value is  82 for a target between 40 and 55.
+Current solved to strand ratio is  5.125
+New n_strands decreased to  10
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+ICR complete. Task 3
+Simple regression complete. Task 3
+Mixture regression complete. Task 3
+Cluster regression complete. Task 3
+Linear Model Trees complete. Task 3
+ Tested: 3 1 0.02291269 10 5 8 0.05 1 
+[1] "these parameters"
+                     seed               generations        solution threshold 
+                     "17"                       "1"                    "0.01" 
+                n strands               real models                     N ivs 
+                     "50"                       "5"                       "8" 
+                 error sd testset closeness setting 
+                   "0.05"               "residuals" 
+
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+Starting value is  49.33 for a target between 40 and 55.
+Current solved to strand ratio is  4.933
+Acceptable starting value found of 49.33
+Strands 10
+Solution threshold 0.02385567
+Starting population 10000
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 1 of 24
+Starting value is  81 for a target between 40 and 55.
+Current solved to strand ratio is  8.1
+New solution_threshold decreased to  0.02124248
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+Starting value is  72.17 for a target between 40 and 55.
+Current solved to strand ratio is  7.217
+New solution_threshold decreased to  0.0231868
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+Starting value is  75 for a target between 40 and 55.
+Current solved to strand ratio is  7.5
+New solution_threshold decreased to  0.0209078
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+Starting value is  74.5 for a target between 40 and 55.
+Current solved to strand ratio is  7.45
+New solution_threshold decreased to  0.02343787
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+ICR complete. Task 9
+Simple regression complete. Task 9
+Mixture regression complete. Task 9
+Cluster regression complete. Task 9
+Starting value is  70 for a target between 40 and 55.
+Current solved to strand ratio is  7
+New solution_threshold decreased to  0.02385828
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+Linear Model Trees complete. Task 9
+ Tested: 9 1 0.01882337 10 5 8 0.05 1 
+[1] "these parameters"
+                     seed               generations        solution threshold 
+                     "18"                       "1"                    "0.01" 
+                n strands               real models                     N ivs 
+                     "50"                       "5"                       "8" 
+                 error sd testset closeness setting 
+                   "0.05"               "residuals" 
+
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+Starting value is  67.17 for a target between 40 and 55.
+Current solved to strand ratio is  6.717
+New solution_threshold decreased to  0.02535702
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+Starting value is  99.33 for a target between 40 and 55.
+Current solved to strand ratio is  1.241625
+New n_strands decreased to  37
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+Starting value is  47.5 for a target between 40 and 55.
+Current solved to strand ratio is  4.75
+Acceptable starting value found of 47.5
+Strands 10
+Solution threshold 0.02124248
+Starting population 10000
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 1 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 2 of 24
+Starting value is  55 for a target between 40 and 55.
+Current solved to strand ratio is  5.5
+Acceptable starting value found of 55
+Strands 10
+Solution threshold 0.0231868
+Starting population 10000
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 1 of 24
+Starting value is  46 for a target between 40 and 55.
+Current solved to strand ratio is  4.6
+Acceptable starting value found of 46
+Strands 10
+Solution threshold 0.0209078
+Starting population 10000
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 1 of 24
+Starting value is  49.33 for a target between 40 and 55.
+Current solved to strand ratio is  4.933
+Acceptable starting value found of 49.33
+Strands 10
+Solution threshold 0.02343787
+Starting population 10000
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 1 of 24
+Starting value is  43.33 for a target between 40 and 55.
+Current solved to strand ratio is  4.333
+Acceptable starting value found of 43.33
+Strands 10
+Solution threshold 0.02385828
+Starting population 10000
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 1 of 24
+Starting value is  100 for a target between 40 and 55.
+Current solved to strand ratio is  1.25
+New n_strands decreased to  38
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+Starting value is  45.33 for a target between 40 and 55.
+Current solved to strand ratio is  4.533
+Acceptable starting value found of 45.33
+Strands 10
+Solution threshold 0.02535702
+Starting population 10000
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 1 of 24
+Starting value is  97.33 for a target between 40 and 55.
+Current solved to strand ratio is  2.630541
+New n_strands decreased to  17
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 2 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 3 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 2 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 2 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 2 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 2 of 24
+Starting value is  98.83 for a target between 40 and 55.
+Current solved to strand ratio is  2.600789
+New n_strands decreased to  18
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 2 of 24
+Starting value is  88 for a target between 40 and 55.
+Current solved to strand ratio is  5.176471
+New n_strands decreased to  10
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 4 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 3 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 3 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 3 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 3 of 24
+Starting value is  93.17 for a target between 40 and 55.
+Current solved to strand ratio is  5.176111
+New n_strands decreased to  10
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 3 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 3 of 24
+Starting value is  74.17 for a target between 40 and 55.
+Current solved to strand ratio is  7.417
+New solution_threshold decreased to  0.02197565
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 5 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 4 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 4 of 24
+Starting value is  82.83 for a target between 40 and 55.
+Current solved to strand ratio is  8.283
+New solution_threshold decreased to  0.02003837
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 4 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 4 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 4 of 24
+Starting value is  46.83 for a target between 40 and 55.
+Current solved to strand ratio is  4.683
+Acceptable starting value found of 46.83
+Strands 10
+Solution threshold 0.02197565
+Starting population 10000
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 1 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 4 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 6 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 5 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 5 of 24
+Starting value is  50.5 for a target between 40 and 55.
+Current solved to strand ratio is  5.05
+Acceptable starting value found of 50.5
+Strands 10
+Solution threshold 0.02003837
+Starting population 10000
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 1 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 5 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 5 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 5 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 2 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 5 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 7 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 6 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 6 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 2 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 6 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 6 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 6 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 3 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 6 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 8 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 7 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 7 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 3 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 7 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 7 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 7 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 4 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 7 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 9 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 8 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 8 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 4 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 8 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 8 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 5 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 8 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 8 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 10 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 9 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 9 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 5 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 9 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 6 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 9 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 9 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 9 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 11 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 10 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 10 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 6 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 7 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 10 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 10 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 10 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 12 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 10 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 11 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 11 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 7 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 8 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 11 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 11 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 11 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 13 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 11 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 12 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 12 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 8 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 9 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 12 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 12 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 12 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 14 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 12 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 13 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 13 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 9 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 10 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 13 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 13 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 13 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 15 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 13 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 14 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 14 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 10 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 11 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 14 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 14 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 14 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 16 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 14 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 15 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 15 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 11 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 12 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 15 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 15 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 17 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 15 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 15 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 16 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 16 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 12 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 13 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 16 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 16 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 18 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 16 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 16 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 17 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 17 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 13 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 14 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 17 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 17 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 17 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 19 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 17 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 18 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 18 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 14 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 15 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 18 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 18 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 20 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 18 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 18 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 19 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 19 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 15 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 16 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 19 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 19 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 21 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 19 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 19 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 20 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 20 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 16 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 17 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 20 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 20 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 22 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 20 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 21 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 20 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 21 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 17 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 18 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 21 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 21 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 23 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 21 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 22 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 21 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 22 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 18 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 19 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 22 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 24 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 22 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 23 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 22 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 22 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 23 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 19 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 20 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 23 of 24
+Autotune complete. Task 10
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 23 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 24 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 23 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 23 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 24 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 20 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 21 of 24
+ICR complete. Task 10
+Simple regression complete. Task 10
+Mixture regression complete. Task 10
+Cluster regression complete. Task 10
+Linear Model Trees complete. Task 10
+ Tested: 10 1 0.02385567 10 5 8 0.05 1 
+
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 24 of 24[1] "these parameters"
+                     seed               generations        solution threshold 
+                     "19"                       "1"                    "0.01" 
+                n strands               real models                     N ivs 
+                     "50"                       "5"                       "8" 
+                 error sd testset closeness setting 
+                   "0.05"               "residuals" 
+
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 24 of 24
+Autotune complete. Task 11
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 24 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 24 of 24
+Autotune complete. Task 12
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 21 of 24
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 22 of 24
+Starting value is  100 for a target between 40 and 55.
+Current solved to strand ratio is  1.25
+New n_strands decreased to  34
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+Autotune complete. Task 14
+ICR complete. Task 11
+Simple regression complete. Task 11
+Mixture regression complete. Task 11
+Cluster regression complete. Task 11
+Linear Model Trees complete. Task 11
+ Tested: 11 1 0.02124248 10 5 8 0.05 1 
+[1] "these parameters"
+                     seed               generations        solution threshold 
+                     "20"                       "1"                    "0.01" 
+                n strands               real models                     N ivs 
+                     "50"                       "5"                       "8" 
+                 error sd testset closeness setting 
+                   "0.05"               "residuals" 
+
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+Autotune complete. Task 13
+Autotune complete. Task 15
+ICR complete. Task 12
+Simple regression complete. Task 12
+Mixture regression complete. Task 12
+Cluster regression complete. Task 12
+Linear Model Trees complete. Task 12
+ Tested: 12 1 0.0231868 10 5 8 0.05 1 
+
+Autotune complete. Task 16[1] "these parameters"
+                     seed               generations        solution threshold 
+                     "21"                       "1"                    "0.01" 
+                n strands               real models                     N ivs 
+                     "50"                       "5"                       "8" 
+                 error sd testset closeness setting 
+                   "0.05"               "residuals" 
+
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 22 of 24
+Starting value is  99 for a target between 40 and 55.
+Current solved to strand ratio is  2.911765
+New n_strands decreased to  16
+
+Calculating ideal tuning for your data and variable set. Part 1. N strands and threshold sizes.
+
+Calculating ideal tuning for your data and variable set. Part 2. Mutations, N children, ageing, elitism. 23 of 24
