@@ -565,6 +565,8 @@ benchmarking <- function( random_seed=c(123),#:100050, #parameter for testing
                         n_strands, real_models, n_IVs,
                         error_sd, test_set_model_closeness)
 
+  saveRDS(combos, "combos_debug.RDS")
+
   registerDoRNG(random_seed, once = F)
 
   #find out the rng's to be used
