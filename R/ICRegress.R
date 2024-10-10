@@ -530,7 +530,6 @@ benchmarking <- function( random_seed=c(123),#:100050, #parameter for testing
 
 
 
-
    # PARALLEL####
 
   if (parallelize==T){
@@ -561,6 +560,7 @@ benchmarking <- function( random_seed=c(123),#:100050, #parameter for testing
   }
 
 
+
   combos <- expand.grid(1:n_random_iterations, generations, solution_thresh,
                         n_strands, real_models, n_IVs,
                         error_sd, test_set_model_closeness)
@@ -572,7 +572,6 @@ benchmarking <- function( random_seed=c(123),#:100050, #parameter for testing
 
   #foreach loop####
   par_results <-  foreach(i = 1:p_number, .combine = rbind) %dopar% {
-
 
 
     #sink(paste0("logging_", i,".txt"))
@@ -1123,18 +1122,20 @@ benchmarking <- function( random_seed=c(123),#:100050, #parameter for testing
     f <- as.formula(paste(outcome,"~ . | ."))
 
 
-    constant <- 2
-    multiplicator1 <- 0.5
-    multiplicator2 <- 0.5
-
     lmt_model <- lmtree(f,
                         data = newdf,
-                        maxdepth = ceiling(sqrt(this_many_models)) + constant,  # Allow a larger tree to grow by adjust how "deep" the tree can grow
-                        minsplit = max(2, floor(nrow(data) / (this_many_models * multiplicator1))), #If minsplit is too restrictive, the tree might not branch out sufficiently
-                        minbucket = max(1, floor(nrow(data) / (this_many_models * multiplicator2)))) #If minbucket is set too high, the tree might not grow enough branches because terminal nodes are constrained
+                        maxdepth = this_many_models,
+                        minsize = 2,
+                        alpha = 0.1)
+
 
 
     this_many_models_lmt <- width(lmt_model)
+    #plot(lmt_model)
+
+
+  #browser()
+
     # code for pruning
     while(this_many_models != this_many_models_lmt){
 
