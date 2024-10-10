@@ -386,9 +386,9 @@ autotune <- function( input_data,
   for (gen in 1:length(generation_t_points)){
     n_generations <- generation_t_points[gen]
 
-    for (combo in 1:nrow(growth_parameter_grid)){
+    #for (combo in 1:nrow(growth_parameter_grid)){
 
-    #for (combo in 1:1){
+    for (combo in 1:1){
       #!!CHANGE DEBUG ONLY####
 
       #pull parameters out of the combination grid
@@ -531,7 +531,7 @@ benchmarking <- function( random_seed=c(123),#:100050, #parameter for testing
 
 
 
-   # PARALLEL####
+  # PARALLEL####
 
   if (parallelize==T){
 
@@ -564,6 +564,11 @@ benchmarking <- function( random_seed=c(123),#:100050, #parameter for testing
   combos <- expand.grid(1:n_random_iterations, generations, solution_thresh,
                         n_strands, real_models, n_IVs,
                         error_sd, test_set_model_closeness)
+  colnames(combos) <- c("iteration", "generations","solution_thresh", "n_strands",
+                        "real_models", "n_IVs", "error_sd","test_set_model_closeness" )
+
+  saveRDS(combos, "combos_debug.RDS")
+
 
   registerDoRNG(random_seed, once = F)
 
@@ -577,14 +582,14 @@ benchmarking <- function( random_seed=c(123),#:100050, #parameter for testing
 
     #sink(paste0("logging_", i,".txt"))
 
-    ra <- combos$Var1[i]
-    ge <- combos$Var2[i]
-    so <- combos$Var3[i]
-    ns <- combos$Var4[i]
-    re <- combos$Var5[i]
-    ni <- combos$Var6[i]
-    er <- combos$Var7[i]
-    tc <- combos$Var8[i]
+    ra <- combos[i, 1]
+    ge <- combos[i, 2]
+    so <- combos[i, 3]
+    ns <- combos[i, 4]
+    re <- combos[i, 5]
+    ni <- combos[i, 6]
+    er <- combos[i, 7]
+    tc <- combos[i, 8]
 
 
 
@@ -771,7 +776,9 @@ benchmarking <- function( random_seed=c(123),#:100050, #parameter for testing
 
       compare_three_methods <- rbind(compare_three_methods, data.frame(t(unlist(these_results))))
 
-
+if (i==28){
+  browser()
+}
 
 
     }else {

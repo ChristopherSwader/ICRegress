@@ -2,3 +2,6 @@
 ICRegress.Rproj
 desktop.ini
 .Rhistory
+agglomeration_tree.txt
+combos_debug.RDS
+log.txt
