@@ -556,7 +556,7 @@ benchmarking <- function( random_seed=c(123),#:100050, #parameter for testing
 
     closeAllConnections()
     foreach::registerDoSEQ()
-    sink("log.txt")
+    #sink("log.txt")
   }
 
 
@@ -564,6 +564,9 @@ benchmarking <- function( random_seed=c(123),#:100050, #parameter for testing
   combos <- expand.grid(1:n_random_iterations, generations, solution_thresh,
                         n_strands, real_models, n_IVs,
                         error_sd, test_set_model_closeness)
+  combos$Var8 <- as.character(combos$Var8)
+
+
 
   saveRDS(combos, "combos_debug.RDS")
 
@@ -574,6 +577,7 @@ benchmarking <- function( random_seed=c(123),#:100050, #parameter for testing
 
   #foreach loop####
   par_results <-  foreach(i = 1:p_number, .combine = rbind) %dopar% {
+
 
 
     #sink(paste0("logging_", i,".txt"))
@@ -1126,7 +1130,7 @@ benchmarking <- function( random_seed=c(123),#:100050, #parameter for testing
 
     lmt_model <- lmtree(f,
                         data = newdf,
-                        maxdepth = this_many_models,
+                        maxdepth = this_many_models +1,
                         minsize = 2,
                         alpha = 0.1)
 
@@ -1134,8 +1138,20 @@ benchmarking <- function( random_seed=c(123),#:100050, #parameter for testing
 
     this_many_models_lmt <- width(lmt_model)
     #plot(lmt_model)
+new_alpha <- .1
+while(this_many_models_lmt<this_many_models){
+  new_alpha <- new_alpha*1.1
+  lmt_model <- lmtree(f,
+                      data = newdf,
+                      maxdepth = this_many_models,
+                      minsize = 2,
+                      alpha = new_alpha)
 
 
+
+  this_many_models_lmt <- width(lmt_model)
+
+}
   #browser()
 
     # code for pruning
@@ -1307,10 +1323,10 @@ benchmarking <- function( random_seed=c(123),#:100050, #parameter for testing
 
   if (parallelize==T){
     #for debugging, create logs
-    parallel::clusterEvalQ(my_cluster,  sink())
+   # parallel::clusterEvalQ(my_cluster,  sink())
     parallel::stopCluster(my_cluster)
   }else{
-    sink()
+    #sink()
   }
 
   key_parameters <- c( "seed", "generations", "solution_thresh", "n_dna_strands", "real_model_n", "N_IVs", "error_sd", "test_set_model_closeness")
